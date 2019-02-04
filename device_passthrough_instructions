@@ -1,0 +1,29 @@
+
+1. Unbinding device from host OS- (use lspci)
+  echo -n 0000:03:00.1 | sudo tee -a /sys/bus/pci/devices/0000:03:00:1/driver/unbind
+
+2. Remove Ethernet controller-
+    rmmod <device driver>      Eg: r8169
+    or modprobe -rf <device driver>
+   check using lspci -nnk
+
+3. Make sure VFIO modules are loaded
+
+4. echo echo "10ec 5287" | sudo tee -a new_id
+
+5. Make sure to passthrough all devices in a group.
+
+6. Add hardware <host device> from virt-manager ui.
+
+7. boot into VM and check ifconfig.
+8. https://www.tecmint.com/configure-network-static-ip-address-in-ubuntu/
+
+
+virsh-
+ virsh list
+ virsh dumpxml 1
+ virsh list --all
+ virsh dumpxml ubuntu18.04
+
+sudo qemu-system-x86_64 -redir tcp:2222::22 -hda ubuntu.img -m 2048
+sftp -P 2222 tushargr@localhost
