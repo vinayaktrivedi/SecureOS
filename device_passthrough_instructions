@@ -10,13 +10,13 @@
 3. load vfio-pci module using
     modprobe vfio-pci
 
-4.  go to vfio-pci driver directory and add unbinded devices
+4.  go to cd /sys/bus/pci/drivers/vfio-pci/ and add unbinded devices
     echo "10ec 5287" | sudo tee -a new_id
 
-5. Make sure to passthrough all devices in a group.
+5. Make sure to passthrough all devices in an iommu group.
 
 6. Add hardware <host device> from virt-manager ui.
-    if running using qemu - sudo qemu-system-x86_64 -m 2048 -boot c -net none -hda ubuntu.img -device vfio-pci,host=03:00.1
+    if running using qemu - sudo qemu-system-x86_64 -m 2048 -boot c -net none -hda ubuntu.img -device vfio-pci,host=03:00.0
 
 7. boot into VM and check ifconfig.
 8. https://www.tecmint.com/configure-network-static-ip-address-in-ubuntu/
