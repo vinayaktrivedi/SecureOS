@@ -27,3 +27,7 @@ Some useful virsh commands-
  virsh dumpxml 1
  virsh list --all
  virsh dumpxml ubuntu18.04
+
+
+Using chardevice for communication 
+sudo qemu-system-x86_64 -m 2048 -boot c -net none -hda ubuntu.img -device vfio-pci,host=03:00.1 -device virtio-serial -chardev socket,path=/tmp/foo,server,nowait,id=foo -device virtserialport,chardev=foo,name=org.fedoraproject.port.0
