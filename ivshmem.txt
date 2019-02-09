@@ -1,0 +1,11 @@
+#Create ivshmem meory backend
+dd if=/dev/zero of=/dev/shm/ivshmem bs=1M count=1
+
+#Create VM
+
+sudo qemu-system-x86_64 -m 2048 -boot c -net none -hda ubuntu.img -device 
+vfio-pci,host=03:00.0 -object 
+memory-backend-file,size=1M,share,mem-path=/dev/shm/ivshmem,id=hostmem -device 
+ivshmem-plain,memdev=hostmem
+
+
