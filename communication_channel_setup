@@ -1,0 +1,9 @@
+-Using chardevice for communication 
+
+ sudo qemu-system-x86_64 -m 2048 -boot c -net none -hda ubuntu.img -device vfio-pci,host=03:00.1 -device virtio-serial -chardev socket,path=/tmp/foo,server,nowait,id=foo -device virtserialport,chardev=foo,name=org.fedoraproject.port.0
+
+ To send data from host to guest
+ socat /tmp/foo - on host and sudo cat /dev/vport0p1 on guest
+ 
+ To send data from guest to host
+ sudo nc -U /tmp/foo on host and echo "hello" | sudo tee -a /dev/vport0p1
