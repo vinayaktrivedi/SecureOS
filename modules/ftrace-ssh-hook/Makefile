@@ -1,4 +1,4 @@
-KERNEL_PATH ?= ~/Desktop/6thsem/UGP/SecureOS/src/kernel/host/linux-4.20.6
+KERNEL_PATH ?= ~/Desktop/6thSem/UGP/SecureOS/src/kernel/host/linux-4.20.6
 
 obj-m += ftrace_hook.o
 

@@ -1,0 +1,18 @@
+#Create ivshmem memory backend on host
+dd if=/dev/zero of=/dev/shm/ivshmem bs=1M count=1
+
+#Create VM
+
+sudo qemu-system-x86_64 -m 2048 -boot c -net none -hda ubuntu.img -device vfio-pci,host=03:00.0 -object memory-backend-file,size=1M,share,mem-path=/dev/shm/ivshmem,id=hostmem -device ivshmem-plain,memdev=hostmem
+
+#read and write to file /dev/shm/ivshmem from host
+
+#On VM
+mkdir ivshmem
+Copy the files uio_ivshmem.c and Makefile
+make
+sudo insmod uio_ivshmem.ko
+Then Use ioremap in uio_ivshmem.c to convert PCI address to virtual address
+Then read and write to it like a shared memory
+
+
