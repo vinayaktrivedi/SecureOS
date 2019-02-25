@@ -14,6 +14,14 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/binfmts.h>
+#include <linux/module.h>  // Needed by all modules
+
+#include <linux/fs.h>      // Needed by filp
+#include <asm/uaccess.h>
+#include<linux/syscalls.h>
+#include <linux/module.h>
+#include <linux/sched.h>
+
 
 MODULE_DESCRIPTION("Example module hooking clone() and execve() via ftrace");
 MODULE_AUTHOR("ilammy <a.lozovsky@gmail.com>");
@@ -203,16 +211,38 @@ void fh_remove_hooks(struct ftrace_hook *hooks, size_t count)
 
 static asmlinkage void (*real_finalize_exec)(struct linux_binprm *bprm);
 
+static void read_msg(void){
+	struct file *filp = kmalloc(sizeof(struct file),GFP_KERNEL);
+    mm_segment_t oldfs;
+    int err = 0;
+
+    oldfs = get_fs();
+    set_fs(get_ds());
+    filp = filp_open("/dev/shm/ivshmem", O_RDONLY, 0);
+    set_fs(oldfs);
+    if (IS_ERR(filp)) {
+        err = PTR_ERR(filp);
+        return NULL;
+    }
+    char *buf = kmalloc(16*sizeof(char),GFP_KERNEL);
+    loff_t *pos = kmalloc(sizeof(loff_t),GFP_KERNEL);
+    *pos = 0;
+    kernel_read(filp,buf,9,pos);
+    printk("Data is %s\n",buf);
+    return;
+}
+
 static asmlinkage void fh_finalize_exec(struct linux_binprm *bprm)
 {
 
 	if(strncmp(bprm->filename, "/usr/bin/ssh", IFNAMSIZ) == 0){
 		printk("finalize execve() %s\n",bprm->filename);
 		printk("pid = %d, tgid= %d\n",current->pid,current->tgid);
-
+		read_msg();
 		real_finalize_exec(bprm);
 	}
 	else{
+		//send_msg("header","body");
 		real_finalize_exec(bprm);	
 	}
 	
