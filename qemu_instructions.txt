@@ -1,0 +1,7 @@
+#create Hard disk space
+qemu-img create -f qcow2 ubuntu.img 30G
+
+#make the VM
+sudo qemu-system-x86_64 -m 2048 -hda ubuntu.img -cdrom ~/ubuntu_server.iso -boot d -enable-kvm
+
+#then start the vm 

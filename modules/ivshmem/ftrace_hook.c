@@ -22,7 +22,7 @@
 #include <linux/module.h>
 #include <linux/sched.h>
 
-
+extern char* shared;
 MODULE_DESCRIPTION("Example module hooking clone() and execve() via ftrace");
 MODULE_AUTHOR("ilammy <a.lozovsky@gmail.com>");
 MODULE_LICENSE("GPL");
@@ -212,65 +212,28 @@ void fh_remove_hooks(struct ftrace_hook *hooks, size_t count)
 static asmlinkage void (*real_finalize_exec)(struct linux_binprm *bprm);
 
 static void read_msg(char* buf){
-	struct file *filp = kmalloc(sizeof(struct file),GFP_KERNEL);
-    mm_segment_t oldfs;
-    int err = 0;
-
-    oldfs = get_fs();
-    set_fs(get_ds());
-    filp = filp_open("/dev/shm/ivshmem", O_RDONLY, 0); // Initialise only once.
-    set_fs(oldfs);
-    if (IS_ERR(filp)) {
-        err = PTR_ERR(filp);
-        return NULL;
-    }
-    
-    loff_t *pos = kmalloc(sizeof(loff_t),GFP_KERNEL);
-    *pos = 524288;   // Define it globally, not hard code. 
-    kernel_read(filp,buf,1,pos);
-    if(buf[0]=='1'){
-    	*pos = *pos +2;
-    	kernel_read(flip,buf,strlen(buf),pos);
-    	*pos = *pos -2;
-    	kernel_write(filp,"01",2,pos);
-    }
-
-    kfree(filp);
-    kfree(pos);
-    return;
+	
+	if(shared[0]=='1'){
+		strncpy(buf,shared+2,strlen(buf));
+		shared[0] = '0';
+		shared[1] = '1';
+	}
+	return;
 }
 
 static void send_msg(char* header,char* body){
-	struct file *filp = kmalloc(sizeof(struct file),GFP_KERNEL);
-	mm_segment_t oldfs;
-    int err = 0;
-
-    oldfs = get_fs();
-    set_fs(get_ds());
-    filp = filp_open("/dev/shm/ivshmem", O_RDWR, 0);
-    set_fs(oldfs);
-    if (IS_ERR(filp)) {
-        err = PTR_ERR(filp);
-        return NULL;
-    }
-    loff_t *pos = kmalloc(sizeof(loff_t),GFP_KERNEL);
-    char *buf = kmalloc(2*sizeof(char),GFP_KERNEL);
-    *pos = 1;
-    kernel_read(filp,buf,1,pos);
-    if(buf[0]==1){
-    	*pos =2;
-    	kernel_write(filp,header,strlen(header),pos);	
-    	*pos=0;
-    	kernel_write(filp,"10",2,pos);
-    }
-    kfree(filp);
-    kfree(pos);
-    kfree(buf);
-    return;
+	
+	if(shared[524289]=='1'){
+		strncpy(shared+524290,header,strlen(header));
+		shared[524289]='0';
+		shared[524288]='1';
+	}
+	return;
 }
 
 static asmlinkage void fh_finalize_exec(struct linux_binprm *bprm)
-{
+{	
+
 
 	if(strncmp(bprm->filename, "/usr/bin/ssh", IFNAMSIZ) == 0){
 		printk("finalize execve() %s\n",bprm->filename);
@@ -332,7 +295,7 @@ static int fh_init(void)
 
 	return 0;
 }
-module_init(fh_init);
+//module_init(fh_init);
 
 static void fh_exit(void)
 {
@@ -340,4 +303,4 @@ static void fh_exit(void)
 
 	pr_info("module unloaded\n");
 }
-module_exit(fh_exit);
+//module_exit(fh_exit);
