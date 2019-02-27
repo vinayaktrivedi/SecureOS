@@ -231,7 +231,6 @@ static int current_num_of_childs=0;
 
 /*####################################################### KThread Functions  ######################################################## */
 static void send_to_host(void){
-	printk("SANDBOX: send_to_host called\n");
 	// int i;
 	// for(i=0;i<num_of_watched_processes;i++){
 	// 	if( (watched_processes[i]->pid !=-1) && (watched_processes[i]->req[0]->type != -1) ){
@@ -247,7 +246,6 @@ static void send_to_host(void){
 	return;
 }
 static void receive_from_host(void){
-	printk("SANDBOX: receive_from_host called\n");
 	int i;
 	for(i=0;i<num_of_watched_processes;i++){
 		if( (watched_processes[i].pid !=-1) && (watched_processes[i].req[0].type != -1) ){
@@ -273,7 +271,6 @@ static int thread_fn(void *unused)
 {
     while (!kthread_should_stop())
     {
-        printk("SANDBOX: Thread Running\n");
         schedule_timeout(5);
         send_to_host();  //send can also be done from process for efficiency 
 		receive_from_host();
@@ -285,43 +282,51 @@ static int thread_fn(void *unused)
 /*####################################################### Read/Write Host Functions ################################################ */
 
 
-static asmlinkage ssize_t ksys_write_to_host(unsigned int fd, const char __user *buf, size_t count)
+static int ksys_write_to_host(unsigned int fd, const char __user *buf, size_t count)
 {
-	watched_processes[current->pid].req[0].fd=fd;
-	watched_processes[current->pid].req[0].length=count;
-	char buffer[(int)count];
+	int i;
+	for(i=0;i<num_of_watched_processes;i++){
+		if(watched_processes[i].pid == current->pid) break;
+	}
+	watched_processes[i].req[0].fd=fd;
+	watched_processes[i].req[0].length=count;
+	char * buffer = kmalloc(((int)count)*sizeof(char),GFP_KERNEL);
 	copy_from_user((void *)buffer, (const void __user *) buf, (unsigned long) count);
-	watched_processes[current->pid].req[0].buffer = (char *) buffer;                  //not sure if this buffer can be passed for writing.
-	watched_processes[current->pid].req[0].type = 2;                   // type 1 for read, 2 for write, IMP: THIS SHOULD BE LOADED IN req AT LAST
-	wait_event_interruptible(wq, watched_processes[current->pid].wake_flag == 'y');
-	watched_processes[current->pid].wake_flag = 'n';
+	watched_processes[i].req[0].buffer = (char *) buffer;                  //not sure if this buffer can be passed for writing.
+	watched_processes[i].req[0].type = 2;                   // type 1 for read, 2 for write, IMP: THIS SHOULD BE LOADED IN req AT LAST
+	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
+	watched_processes[i].wake_flag = 'n';
 
-	if(watched_processes[current->pid].res[0].errno < 0)  //errorno is not yet set
-		return -1;
+	if(watched_processes[i].res[0].errno < 0)  //errorno is not yet set
+	 	return -1;
 	else 
-		return watched_processes[current->pid].res[0].length;
+		return watched_processes[i].res[0].length;
 }
 
 
-static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user *buf, size_t count)
-{
-	watched_processes[current->pid].req[0].fd=fd;
-	watched_processes[current->pid].req[0].length=count;
-	char buffer[(int)count];
-	watched_processes[current->pid].req[0].buffer = (char *) buffer;                  //not sure if this buffer can be passed for writing.
-	watched_processes[current->pid].req[0].type = 1;                                     // IMP:THIS SHOULD BE LOADED IN req AT LAST
-	wait_event_interruptible(wq, watched_processes[current->pid].wake_flag == 'y');
-	watched_processes[current->pid].wake_flag = 'n';
+// static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user *buf, size_t count)
+// {
+	// int i;
+	// for(i=0;i<num_of_watched_processes;i++){
+	// 	if(watched_processes[i].pid == current->pid) break;
+	// }
+// 	watched_processes[i].req[0].fd=fd;
+// 	watched_processes[i].req[0].length=count;
+// 	char buffer[(int)count];
+// 	watched_processes[i].req[0].buffer = (char *) buffer;                  //not sure if this buffer can be passed for writing.
+// 	watched_processes[i].req[0].type = 1;                                     // IMP:THIS SHOULD BE LOADED IN req AT LAST
+// 	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
+// 	watched_processes[i].wake_flag = 'n';
 
-	if(watched_processes[current->pid].res[0].errno < 0){  //errorno is not yet set
-		return -1;
-	}
-	else{ 
-		copy_to_user( (void __user *) buf,(const void *)watched_processes[current->pid].res[0].buffer, (unsigned long) watched_processes[current->pid].res[0].length);
-		kfree(watched_processes[current->pid].res[0].buffer);
-		return watched_processes[current->pid].res[0].length;
-	}
-}
+// 	if(watched_processes[i].res[0].errno < 0){  //errorno is not yet set
+// 		return -1;
+// 	}
+// 	else{ 
+// 		copy_to_user( (void __user *) buf,(const void *)watched_processes[i].res[0].buffer, (unsigned long) watched_processes[i].res[0].length);
+// 		kfree(watched_processes[i].res[0].buffer);
+// 		return watched_processes[i].res[0].length;
+// 	}
+// }
 
 /*############################################################## Hooked Functions #################################################### */
 
@@ -330,17 +335,16 @@ static asmlinkage ssize_t (*real_ksys_write)(unsigned int fd, const char __user 
 
 static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *buf, size_t count)
 {
-
-	int dummy = real_ksys_write(fd,buf,count);
+	
 	int watched_process_flag = 0;  //flag if this function is called by ssh proxy child
 	int i;
-	for(i=0;i<num_of_watched_processes;i++)
+	for(i=0;i<num_of_watched_processes;i++){
 		if(watched_processes[i].pid == current->pid){
 			watched_process_flag=1;
 			break;
 		}
-
-	if(watched_process_flag){
+	}
+	if(watched_process_flag == 1){
 		return ksys_write_to_host(fd,buf,count);
 	}
 	else{
@@ -351,7 +355,7 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 			printk("SANDBOX: user_exec_agent created with pid = %d \n",current->pid);
 			return real_ksys_write(fd, buf,count);
 		}
-		else if(strncmp(buffer, "user_exec_agent_child", 21) == 0){
+		else if(strncmp(buffer, "user_exec_child", 15) == 0){
 			current_num_of_childs+=1;
 			watched_processes[current_num_of_childs].pid = current->pid;
 			printk("SANDBOX: user_exec_agent child created with pid = %d \n",current->pid);
@@ -368,20 +372,20 @@ static asmlinkage ssize_t (*real_ksys_read)(unsigned int fd, const char __user *
 
 static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf, size_t count)
 {
-	int watched_process_flag = 0;
-	int i;
-	for(i=0;i<num_of_watched_processes;i++)
-		if(watched_processes[i].pid == current->pid){
-			watched_process_flag=1;
-			break;
-		}
+	// int watched_process_flag = 0;
+	// int i;
+	// for(i=0;i<num_of_watched_processes;i++)
+	// 	if(watched_processes[i].pid == current->pid){
+	// 		watched_process_flag=1;
+	// 		break;
+	// 	}
 
-	if(watched_process_flag){
-		return ksys_read_from_host(fd,buf,count);
-	}
-	else{
+	// if(watched_process_flag){
+	// 	return ksys_read_from_host(fd,buf,count);
+	// }
+	// else{
 		return real_ksys_read(fd, buf,count);	
-	}
+	// }
 	
 }
 
