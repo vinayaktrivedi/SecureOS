@@ -28,7 +28,7 @@ MODULE_LICENSE("GPL");
  * - avoid recusion by jumping over the ftrace call (USE_FENTRY_OFFSET = 1)
  */
 #define USE_FENTRY_OFFSET 0
-
+static DEFINE_SPINLOCK(send_lock);
 /**
  * struct ftrace_hook - describes a single hook to install
  *
@@ -212,13 +212,14 @@ struct request{
 	int length;
 };
 struct response{
-	int type;
+	//int type;
 	int length; //important in case of read/write 
 	char * buffer;
 	int errno;
 };
 struct process_info{
 	int pid;
+	int host_pid;
 	char wake_flag;
 	struct request req[1];
 	struct response res[1];
@@ -231,37 +232,43 @@ static int current_num_of_childs=0;
 
 /*####################################################### KThread Functions  ######################################################## */
 static void send_to_host(void){
-	// int i;
-	// for(i=0;i<num_of_watched_processes;i++){
-	// 	if( (watched_processes[i]->pid !=-1) && (watched_processes[i]->req[0]->type != -1) ){
-	// 		if(watched_processes[i]->req[0]->type == 1){  //read request
-				
-	// 		}
-	// 		else if(watched_processes[i]->req[0]->type == 2){ //write request
-
-	// 		}
-	// 		watched_processes[i]->req[0]->type= -1;
-	// 	}
-	// }
+	int i;
+	for(i=0;i<num_of_watched_processes;i++){
+		if( (watched_processes[i].host_pid !=-1) && (watched_processes[i].req[0].type == 2) ){
+			spin_lock(&send_lock);
+			int l = send_msg( (char*)&(watched_processes[i].host_pid),watched_processes[i].req[0].buffer);
+			watched_processes[i].req[0].type= -1;
+			watched_processes[i].wake_flag = 'y';
+			wake_up(&wq);
+			watched_processes[i].res[0].errno = 0;
+			watched_processes[i].res[0].length = l;
+			spin_unlock(&send_lock);
+		}
+	}
 	return;
 }
 static void receive_from_host(void){
-	int i;
-	for(i=0;i<num_of_watched_processes;i++){
-		if( (watched_processes[i].pid !=-1) && (watched_processes[i].req[0].type != -1) ){
-			if(watched_processes[i].req[0].type == 1){  //read request
-				char * buffer = kmalloc(31*sizeof(char),GFP_KERNEL);
-				strncpy(buffer,"tushargr@turing.cse.iitk.ac.in",30);
-				watched_processes[i].res[0].buffer = (char *) buffer;
-				watched_processes[i].res[0].length = 11;
-				watched_processes[i].res[0].errno = 0;
-			}
-			else if(watched_processes[i].req[0].type == 2){ //write request
-				watched_processes[i].res[0].length = 1;
-				watched_processes[i].res[0].errno = 0;
-			}
-			watched_processes[i].req[0].type= -1;
+	char *buff = read_msg();
+	read_msg(buff);
+	int *pid_addr = (int*)buff+2;
+	int pid = *pid_addr;
+	for(int i=0;i<num_of_watched_processes;i++){
+		if(watched_processes[i].host_pid == pid){
+			watched_processes[i].res[0].buffer = buff;
+			watched_processes[i].res[0].length = strlen(buff); 
+			watched_processes[i].res[0].errno = 0;
 			watched_processes[i].wake_flag = 'y';
+			watched_processes[i].req[0].type = -1;
+			wake_up(&wq);
+			break;
+		}
+	}
+	for(int i=0;i<num_of_watched_processes;i++) {
+		if(watched_processes[i].pid == -1){
+			watched_processes[i].host_pid = pid;
+			watched_processes[i].wake_flag = 'y';
+			wake_up(&wq);
+			break;
 		}
 	}
 	return;
@@ -304,29 +311,27 @@ static int ksys_write_to_host(unsigned int fd, const char __user *buf, size_t co
 }
 
 
-// static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user *buf, size_t count)
-// {
-	// int i;
-	// for(i=0;i<num_of_watched_processes;i++){
-	// 	if(watched_processes[i].pid == current->pid) break;
-	// }
-// 	watched_processes[i].req[0].fd=fd;
-// 	watched_processes[i].req[0].length=count;
-// 	char buffer[(int)count];
-// 	watched_processes[i].req[0].buffer = (char *) buffer;                  //not sure if this buffer can be passed for writing.
-// 	watched_processes[i].req[0].type = 1;                                     // IMP:THIS SHOULD BE LOADED IN req AT LAST
-// 	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
-// 	watched_processes[i].wake_flag = 'n';
+static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user *buf, size_t count)
+{
+	int i;
+	for(i=0;i<num_of_watched_processes;i++){
+		if(watched_processes[i].pid == current->pid) break;
+	}
+	watched_processes[i].req[0].fd=fd;
+	watched_processes[i].req[0].length=count;
+	watched_processes[i].req[0].type = 1;                                     // IMP:THIS SHOULD BE LOADED IN req AT LAST
+	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
+	watched_processes[i].wake_flag = 'n';
 
-// 	if(watched_processes[i].res[0].errno < 0){  //errorno is not yet set
-// 		return -1;
-// 	}
-// 	else{ 
-// 		copy_to_user( (void __user *) buf,(const void *)watched_processes[i].res[0].buffer, (unsigned long) watched_processes[i].res[0].length);
-// 		kfree(watched_processes[i].res[0].buffer);
-// 		return watched_processes[i].res[0].length;
-// 	}
-// }
+	if(watched_processes[i].res[0].errno < 0){  //errorno is not yet set
+		return -1;
+	}
+	else{ 
+		copy_to_user( (void __user *) buf,(const void *)watched_processes[i].res[0].buffer, (unsigned long) watched_processes[i].res[0].length);
+		kfree(watched_processes[i].res[0].buffer);
+		return watched_processes[i].res[0].length;
+	}
+}
 
 /*############################################################## Hooked Functions #################################################### */
 
@@ -421,6 +426,7 @@ static int fh_init(void)
 	int i;
 	for(i=0;i<num_of_watched_processes;i++){
 		watched_processes[i].pid = -1;
+		watched_processes[i].host_pid = -1;
 		watched_processes[i].wake_flag = 'n';
 		watched_processes[i].req[0].type = -1;         //-1 implies no request yet
 		watched_processes[i].res[0].type = -1;		 // -1 implies no response yet
