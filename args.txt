@@ -1,0 +1,6 @@
+LC_ALL=C PATH=/bin HOME=/home/vinayakt USER=vinayakt \
+LOGNAME=vinayakt /usr/bin/qemu-system-x86_64 \
+-m 2048 -boot c -net none -hda /home/vinayakt/Desktop/6thSem/UGP/ubuntu.img -device 
+vfio-pci,host=03:00.0 \ 
+-object memory-backend-file,size=1M,share,mem-path=/dev/shm/ivshmem,id=hostmem \
+-device ivshmem-plain,memdev=hostmem
