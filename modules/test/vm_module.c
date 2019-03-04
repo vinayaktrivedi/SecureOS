@@ -18,10 +18,6 @@
 #include <linux/delay.h>
 #include <linux/wait.h>
 
-MODULE_DESCRIPTION("Example module hooking clone() and execve() via ftrace");
-MODULE_AUTHOR("ilammy <a.lozovsky@gmail.com>");
-MODULE_LICENSE("GPL");
-
 /*
  * There are two ways of preventing vicious recursive loops when hooking:
  * - detect recusion using function return address (USE_FENTRY_OFFSET = 0)
@@ -273,9 +269,9 @@ static int thread_fn(void *unused)
 {
     while (!kthread_should_stop())
     {
-        schedule_timeout(5);
+        schedule_timeout_interruptible(5);
         send_to_host();  //send can also be done from process for efficiency 
-		receive_from_host();
+	receive_from_host();
     }
     printk("SANDBOX: Thread Stopping\n");
     return 0;
@@ -374,12 +370,13 @@ static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf
 
 	int watched_process_flag = 0;
 	int i;
-	for(i=0;i<num_of_watched_processes;i++)
+	for(i=0;i<num_of_watched_processes;i++){
 		if(watched_processes[i].pid == current->pid){
 			watched_process_flag=1;
 			break;
 		}
-
+	}
+	
 	if(watched_process_flag && (fd==0) ){
 		//read request from fd=0 must return \n other this function will be called again and again
 		return ksys_read_from_host(fd,buf,count);
@@ -411,7 +408,7 @@ static struct ftrace_hook demo_hooks[] = {
 
 
 /*####################################################### Module Initialization ##############################################*/
-static int fh_init(void)
+int fh_init(void)
 {
 	int err;
 	int i;
@@ -430,26 +427,34 @@ static int fh_init(void)
 	pr_info("SANDBOX: module loaded\n");
 
 	printk("SANDBOX: Creating KThread\n");
-    thread_st = kthread_run(thread_fn, NULL, "mythread");
-    if (thread_st){
-        printk("SANDBOX: Thread Created successfully\n");
-    }
-    else{
-        printk("SANDBOX: Thread creation failed\n");
-    }
+        thread_st = kthread_run(thread_fn, NULL, "mythread");
+
+        if (!IS_ERR(thread_st)){
+           printk("SANDBOX: Thread Created successfully\n");
+        }
+       else{
+            printk("SANDBOX: Thread creation failed\n");
+	    thread_st = NULL;
+       }
 
 	return 0;
 }
 module_init(fh_init);
 
-static void fh_exit(void)
+void fh_exit(void)
 {
+        printk("SANDBOX: module_exit\n");
+	
 	fh_remove_hooks(demo_hooks, ARRAY_SIZE(demo_hooks));
+        printk("SANDBOX: module_exit aftre remove ftrace\n");
 	if (thread_st){
-       kthread_stop(thread_st);
-       printk("SANDBOX: Thread stopped\n");
+           kthread_stop(thread_st);
+           printk("SANDBOX: Thread stopped\n");
    	}
 
 	pr_info("SANDBOX: module unloaded\n");
 }
 module_exit(fh_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("iitk@iitk.ac.in");

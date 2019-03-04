@@ -1,3 +1,3 @@
-/home/tushar/Desktop/6thsem/UGP/vm/test/vm_module.ko
-/home/tushar/Desktop/6thsem/UGP/vm/test/vm_module.o
+/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/test/vm_module.ko
+/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/test/vm_module.o
 

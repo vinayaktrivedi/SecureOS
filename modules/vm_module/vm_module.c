@@ -18,10 +18,6 @@
 #include <linux/delay.h>
 #include <linux/wait.h>
 
-MODULE_DESCRIPTION("Example module hooking clone() and execve() via ftrace");
-MODULE_AUTHOR("ilammy <a.lozovsky@gmail.com>");
-MODULE_LICENSE("GPL");
-
 /*
  * There are two ways of preventing vicious recursive loops when hooking:
  * - detect recusion using function return address (USE_FENTRY_OFFSET = 0)
@@ -264,7 +260,7 @@ static void receive_from_host(void){
 		}
 	}
 	for(int i=0;i<num_of_watched_processes;i++) {
-		if(watched_processes[i].pid == -1){
+		if(watched_processes[i].pid == -1){              //set main agent to return the host pid
 			watched_processes[i].host_pid = pid;
 			watched_processes[i].wake_flag = 'y';
 			wake_up(&wq);
@@ -278,7 +274,7 @@ static int thread_fn(void *unused)
 {
     while (!kthread_should_stop())
     {
-        schedule_timeout(5);
+        schedule_timeout_interruptible(5);
         send_to_host();  //send can also be done from process for efficiency 
 		receive_from_host();
     }
@@ -349,7 +345,7 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 			break;
 		}
 	}
-	if(watched_process_flag == 1){
+	if(watched_process_flag == 1 && (fd==1|| fd==2) ){
 		return ksys_write_to_host(fd,buf,count);
 	}
 	else{
@@ -377,20 +373,22 @@ static asmlinkage ssize_t (*real_ksys_read)(unsigned int fd, const char __user *
 
 static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf, size_t count)
 {
-	// int watched_process_flag = 0;
-	// int i;
-	// for(i=0;i<num_of_watched_processes;i++)
-	// 	if(watched_processes[i].pid == current->pid){
-	// 		watched_process_flag=1;
-	// 		break;
-	// 	}
-
-	// if(watched_process_flag){
-	// 	return ksys_read_from_host(fd,buf,count);
-	// }
-	// else{
+	int watched_process_flag = 0;
+	int i;
+	for(i=0;i<num_of_watched_processes;i++){
+		if(watched_processes[i].pid == current->pid){
+			watched_process_flag=1;
+			break;
+		}
+	}
+	
+	if(watched_process_flag && (fd==0) ){
+		//read request from fd=0 must return \n other this function will be called again and again
+		return ksys_read_from_host(fd,buf,count);
+	}
+	else{
 		return real_ksys_read(fd, buf,count);	
-	// }
+	}
 	
 }
 
@@ -436,12 +434,13 @@ static int fh_init(void)
 
 	printk("SANDBOX: Creating KThread\n");
     thread_st = kthread_run(thread_fn, NULL, "mythread");
-    if (thread_st){
-        printk("SANDBOX: Thread Created successfully\n");
+    if (!IS_ERR(thread_st)){
+           printk("SANDBOX: Thread Created successfully\n");
     }
-    else{
-        printk("SANDBOX: Thread creation failed\n");
-    }
+	else{
+	    printk("SANDBOX: Thread creation failed\n");
+	thread_st = NULL;
+	}
 
 	return 0;
 }
