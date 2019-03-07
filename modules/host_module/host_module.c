@@ -18,27 +18,16 @@
 #include <linux/delay.h>
 #include <linux/wait.h>
 
+MODULE_DESCRIPTION("Example module hooking clone() and execve() via ftrace");
+MODULE_AUTHOR("ilammy <a.lozovsky@gmail.com>");
+MODULE_LICENSE("GPL");
+
 /*
  * There are two ways of preventing vicious recursive loops when hooking:
  * - detect recusion using function return address (USE_FENTRY_OFFSET = 0)
  * - avoid recusion by jumping over the ftrace call (USE_FENTRY_OFFSET = 1)
  */
 #define USE_FENTRY_OFFSET 0
-static DEFINE_SPINLOCK(send_lock);
-
-#define OPEN_REQUEST 0
-#define WRITE_REQUEST 1
-#define READ_REQUEST 2
-#define MMAP_REQUEST 3
-#define CLOSE_REQUEST 4
-#define LSEEK_REQUEST 5
-#define FSTAT_REQUEST 6
-#define EXECVE_REQUEST 7 
-
-#define HOST_ADDR 524289
-#define max_msgs 50
-extern void __iomem *regs;
-static char* shared;
 
 /**
  * struct ftrace_hook - describes a single hook to install
@@ -216,26 +205,22 @@ void fh_remove_hooks(struct ftrace_hook *hooks, size_t count)
 
 static DECLARE_WAIT_QUEUE_HEAD(wq);
 static struct task_struct *thread_st;
+struct request{
+	int type;
+	int fd;
+	char * buffer;
+	int length;
+};
 struct response{
+	int type;
 	int length; //important in case of read/write 
 	char * buffer;
+	int errno;
 };
-
-struct msg_header
-{
-	u8 msg_status;
-	int pid;
-	u8 msg_type;
-	u16 msg_length;
-	int fd;
-	size_t count;
-	char msg[10000];
-} ;
-
-
 struct process_info{
 	int pid;
 	char wake_flag;
+	struct request req[1];
 	struct response res[1];
 };
 
@@ -245,102 +230,51 @@ static int current_num_of_childs=0;
 
 
 /*####################################################### KThread Functions  ######################################################## */
+static void send_to_host(void){
+	// int i;
+	// for(i=0;i<num_of_watched_processes;i++){
+	// 	if( (watched_processes[i]->pid !=-1) && (watched_processes[i]->req[0]->type != -1) ){
+	// 		if(watched_processes[i]->req[0]->type == 1){  //read request
+				
+	// 		}
+	// 		else if(watched_processes[i]->req[0]->type == 2){ //write request
 
-
-static void send_to_host(struct msg_header* header){
-
-	int flag = 0;
-	int i;
-	while(flag==0){
-		for(i=0;i<max_msgs;i++){
-			if(flag==0)
-				break;
-
-			u8* status = (u8*)shared[HOST_ADDR+sizeof(struct msg_header)*i];
-			if(*status == 0 || *status == 2){
-				spin_lock(&send_lock);
-
-				char* base = (char*)status;
-
-				int* pid = (int*)(base+sizeof(u8));
-				*pid = header->pid;
-				u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int));
-				*msg_type = header->msg_type;
-				u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(u8));
-				*msg_length = header->msg_length;
-				int* fd = (int*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16));
-				*fd = header->fd;
-				size_t* count = (size_t*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int));
-				*count = header->count;
-				char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
-				strcpy(msg,header->msg);
-				*status = header->msg_status;   // this should be done at last
-				flag=1;
-				kfree(header);
-				spin_unlock(&send_lock);
-			}
-		}	
-	}
-		
+	// 		}
+	// 		watched_processes[i]->req[0]->type= -1;
+	// 	}
+	// }
 	return;
 }
-
-
 static void receive_from_host(void){
-
 	int i;
-	for(i=0;i<max_msgs;i++){
-
-		u8* status = (u8*)shared[sizeof(struct msg_header)*i];
-		if(*status == 1){
-
-			char* base = (char*)status;
-
-			int* pid = (int*)(base+sizeof(u8));
-			int temp_pid = *pid;
-
-			u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int));
-			u8 temp_msg_type = *msg_type;			
-	
-			u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(u8));
-			u16 temp_msg_length = *msg_length;
-			
-			char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
-			
-			char* r = kmalloc(temp_msg_length*sizeof(char),GFP_KERNEL);
-			strncpy(r,msg,temp_msg_length);
-
-			int index=0;
-			if(temp_msg_type == EXECVE_REQUEST && temp_pid == 0 ){
-				index = 0;
+	for(i=0;i<num_of_watched_processes;i++){
+		if( (watched_processes[i].pid !=-1) && (watched_processes[i].req[0].type != -1) ){
+			if(watched_processes[i].req[0].type == 1){  //read request
+				char * buffer = kmalloc(32*sizeof(char),GFP_KERNEL);
+				strncpy(buffer,"tushargr@turing.cse.iitk.ac.in\n",31);
+				watched_processes[i].res[0].buffer = (char *) buffer;
+				watched_processes[i].res[0].length = 31;
+				watched_processes[i].res[0].errno = 0;
 			}
-			else{
-				int j;
-				for(j=0;j<num_of_watched_processes;j++){
-					if(watched_processes[j].pid == temp_pid){
-						index = j;
-						break;
-					}
-				}
+			else if(watched_processes[i].req[0].type == 2){ //write request
+				//printk("SANDBOX: thread found write request\n");
+				watched_processes[i].res[0].length = watched_processes[i].req[0].length;
+				watched_processes[i].res[0].errno = 0;
 			}
-			watched_processes[index].res[0].length = temp_msg_length;
-			watched_processes[index].res[0].buffer = r;
-			watched_processes[index].wake_flag = 'y';
+			watched_processes[i].req[0].type= -1;
+			watched_processes[i].wake_flag = 'y';
 			wake_up(&wq);
-			*status = 2;   // this should be done at last
-			
 		}
 	}
-
 	return;
-
 }
 
 static int thread_fn(void *unused)
 {
     while (!kthread_should_stop())
     {
-        schedule_timeout_interruptible(5); 
+        schedule_timeout(5);
+        send_to_host();  //send can also be done from process for efficiency 
 		receive_from_host();
     }
     printk("SANDBOX: Thread Stopping\n");
@@ -350,39 +284,40 @@ static int thread_fn(void *unused)
 /*####################################################### Read/Write Host Functions ################################################ */
 
 
-static int ksys_write_to_host(unsigned int fd, const char __user *buf, size_t count,int i)
+static int ksys_write_to_host(unsigned int fd, const char __user *buf, size_t count)
 {
-	
-	struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
-	header->pid = watched_processes[i].pid;
-	header->msg_status = 1;
-	header->msg_type = WRITE_REQUEST;
-	header->msg_length = strlen(buf);
-	header->fd = fd;
-	header->count = count;
-	strcpy(header->msg,buf);
-	send_to_host(header);
-
-	return count;
+	int i;
+	char * buffer = kmalloc(((int)count)*sizeof(char),GFP_KERNEL);
+	for(i=0;i<num_of_watched_processes;i++){
+		if(watched_processes[i].pid == current->pid) break;
+	}
+	watched_processes[i].req[0].fd=fd;
+	watched_processes[i].req[0].length=count;
+	copy_from_user((void *)buffer, (const void __user *) buf, (unsigned long) count);
+	watched_processes[i].req[0].buffer = (char *) buffer;                  //not sure if this buffer can be passed for writing.
+	watched_processes[i].req[0].type = 2;                   // type 1 for read, 2 for write, IMP: THIS SHOULD BE LOADED IN req AT LAST
+	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
+	watched_processes[i].wake_flag = 'n';
+	if(watched_processes[i].res[0].errno < 0)  //errorno is not yet set
+	 	return -1;
+	else 
+		return watched_processes[i].res[0].length;
 }
 
 
-static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user *buf, size_t count,int i)
+static int ksys_read_from_host(unsigned int fd, const char __user *buf, size_t count)
 {
-	
-	struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
-	header->pid = watched_processes[i].pid;
-	header->msg_status = 1;
-	header->msg_type = READ_REQUEST;
-	header->msg_length = 0;
-	header->fd = fd;
-	header->count = count;
-	send_to_host(header);
+	int i;
+	for(i=0;i<num_of_watched_processes;i++){
+		if(watched_processes[i].pid == current->pid) break;
+	}
+	watched_processes[i].req[0].fd=fd;
+	watched_processes[i].req[0].length=count;
+	watched_processes[i].req[0].type = 1;                                     // IMP:THIS SHOULD BE LOADED IN req AT LAST
 
 	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
 	watched_processes[i].wake_flag = 'n';
-
-	if(watched_processes[i].res[0].length < 0){  //errorno is not yet set
+	if(watched_processes[i].res[0].errno < 0){  //errorno is not yet set
 		return -1;
 	}
 	else{ 
@@ -395,66 +330,105 @@ static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user
 /*############################################################## Hooked Functions #################################################### */
 
 
-static asmlinkage ssize_t (*real_ksys_write)(unsigned int fd, const char __user *buf, size_t count);
+// static asmlinkage ssize_t (*real_ksys_write)(unsigned int fd, const char __user *buf, size_t count);
 
-static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *buf, size_t count)
-{
+// static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *buf, size_t count)
+// {
 	
-	int watched_process_flag = 0;  //flag if this function is called by ssh proxy child
-	int i;
-	for(i=0;i<num_of_watched_processes;i++){
-		if(watched_processes[i].pid == current->pid){
-			watched_process_flag=1;
-			break;
-		}
-	}
-	if(watched_process_flag == 1 && (fd==1|| fd==2) ){
-		return ksys_write_to_host(fd,buf,count,i);
+// 	int watched_process_flag = 0;  //flag if this function is called by ssh proxy child
+// 	int i;
+// 	for(i=0;i<num_of_watched_processes;i++){
+// 		if(watched_processes[i].pid == current->pid){
+// 			watched_process_flag=1;
+// 			break;
+// 		}
+// 	}
+// 	if(watched_process_flag == 1 && (fd == 1)){
+// 		return ksys_write_to_host(fd,buf,count);
+// 	}
+// 	else{
+// 		char buffer[30];
+// 		copy_from_user((void *)buffer, (const void __user *) buf, (unsigned long) 15);
+// 		if(strncmp(buffer, "user_exec_agent", 15) == 0){                                // user_exec_agent is created
+// 			watched_processes[0].pid = current->pid;                                   // watched process 0 is user_exec agent and remaining are its child
+// 			printk("SANDBOX: user_exec_agent created with pid = %d \n",current->pid);
+// 			return real_ksys_write(fd, buf,count);
+// 		}
+// 		else if(strncmp(buffer, "user_exec_child", 15) == 0){
+// 			current_num_of_childs+=1;
+// 			watched_processes[current_num_of_childs].pid = current->pid;
+// 			printk("SANDBOX: user_exec_agent child created with pid = %d \n",current->pid);
+// 			return real_ksys_write(fd, buf,count);
+// 		}
+// 		else{
+// 			return real_ksys_write(fd, buf,count);	
+// 		}
+// 	}
+	
+// }
+
+// static asmlinkage ssize_t (*real_ksys_read)(unsigned int fd, const char __user *buf, size_t count);
+
+// static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf, size_t count)
+// {
+
+// 	int watched_process_flag = 0;
+// 	int i;
+// 	for(i=0;i<num_of_watched_processes;i++)
+// 		if(watched_processes[i].pid == current->pid){
+// 			watched_process_flag=1;
+// 			break;
+// 		}
+
+// 	if(watched_process_flag && (fd==0) ){
+// 		//read request from fd=0 must return \n other this function will be called again and again
+// 		return ksys_read_from_host(fd,buf,count);
+// 	}
+// 	else{
+// 		return real_ksys_read(fd, buf,count);	
+// 	}
+	
+// }
+static asmlinkage void (*real_finalize_exec)(struct linux_binprm *bprm);
+
+
+
+static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
+{
+
+	if(strncmp(bprm->filename, "/usr/bin/ssh", 12) == 0){
+		printk("finalize execve() %s\n",bprm->filename);
+		printk("pid = %d, tgid= %d\n",current->pid,current->tgid);
+		real_finalize_exec(bprm);
+
+		//get argument of ssh
+		//lock l1
+		//set self in watched process other than 0 which is  -1 
+		//unlock l1
+
+		//lock l2
+		//check if watched_process[0] req!=-1 for argument has come
+		//if not add to new wq2 
+		//if yes set resp and set resp type appropriately so kthread knows res has come
+		//set watched_process[0] req type = -1
+		//unlock l2
+
+		//loop
+		//add to wq
+		//check req for watched process[self]
+		//fulfil req and set res
+		//set res type appropriately so kthread knows res has come
+		//set req type =-1
+		//loop  
 	}
 	else{
-		char buffer[16];
-		copy_from_user((void *)buffer, (const void __user *) buf, (unsigned long) 15);
-		if(strncmp(buffer, "user_exec_agent", 15) == 0){                                // user_exec_agent is created
-			watched_processes[0].pid = current->pid;                                   // watched process 0 is user_exec agent and remaining are its child
-			printk("SANDBOX: user_exec_agent created with pid = %d \n",current->pid);
-			return real_ksys_write(fd, buf,count);
-		}
-		else if(strncmp(buffer, "user_exec_child", 15) == 0){
-			current_num_of_childs+=1;
-			watched_processes[current_num_of_childs].pid = current->pid;
-			printk("SANDBOX: user_exec_agent child created with pid = %d \n",current->pid);
-			return real_ksys_write(fd, buf,count);
-		}
-		else{
-			return real_ksys_write(fd, buf,count);	
-		}
+		real_finalize_exec(bprm);	
 	}
 	
+
+
+	return;
 }
-
-static asmlinkage ssize_t (*real_ksys_read)(unsigned int fd, const char __user *buf, size_t count);
-
-static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf, size_t count)
-{
-	int watched_process_flag = 0;
-	int i;
-	for(i=0;i<num_of_watched_processes;i++){
-		if(watched_processes[i].pid == current->pid){
-			watched_process_flag=1;
-			break;
-		}
-	}
-	
-	if(watched_process_flag && (fd==0) ){
-		//read request from fd=0 must return \n other this function will be called again and again
-		return ksys_read_from_host(fd,buf,count,i);
-	}
-	else{
-		return real_ksys_read(fd, buf,count);	
-	}
-	
-}
-
 
 
 /*############################################################## HOOKS ####################################################### */
@@ -467,8 +441,7 @@ static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf
 	}
 
 static struct ftrace_hook demo_hooks[] = {
-	HOOK("ksys_write", fake_ksys_write, &real_ksys_write),
-	HOOK("ksys_read", fake_ksys_read, &real_ksys_read),	
+	HOOK("finalize_exec", fake_finalize_exec, &real_finalize_exec),
 };
 
 
@@ -479,29 +452,29 @@ static struct ftrace_hook demo_hooks[] = {
 static int fh_init(void)
 {
 	int err;
-	shared = (char*)regs;
+	int i;
+
 	err = fh_install_hooks(demo_hooks, ARRAY_SIZE(demo_hooks));
 	if (err)
 		return err;
 
-	int i;
 	for(i=0;i<num_of_watched_processes;i++){
 		watched_processes[i].pid = -1;
-		watched_processes[i].wake_flag = 'n';        //-1 implies no request yet
-		watched_processes[i].res[0].length = -1;
+		watched_processes[i].wake_flag = 'n';
+		watched_processes[i].req[0].type = -1;         //-1 implies no request yet
+		watched_processes[i].res[0].type = -1;		 // -1 implies no response yet
 	}
 
 	pr_info("SANDBOX: module loaded\n");
 
 	printk("SANDBOX: Creating KThread\n");
     thread_st = kthread_run(thread_fn, NULL, "mythread");
-    if (!IS_ERR(thread_st)){
-           printk("SANDBOX: Thread Created successfully\n");
+    if (thread_st){
+        printk("SANDBOX: Thread Created successfully\n");
     }
-	else{
-	    printk("SANDBOX: Thread creation failed\n");
-	thread_st = NULL;
-	}
+    else{
+        printk("SANDBOX: Thread creation failed\n");
+    }
 
 	return 0;
 }

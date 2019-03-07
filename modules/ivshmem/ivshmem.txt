@@ -15,4 +15,6 @@ sudo insmod uio_ivshmem.ko
 Then Use ioremap in uio_ivshmem.c to convert PCI address to virtual address
 Then read and write to it like a shared memory
 
+For without PCI pass through, and ssh to localhost port 5555, use
 
+-device e1000,netdev=net0 -netdev user,id=net0,hostfwd=tcp::5555-:22

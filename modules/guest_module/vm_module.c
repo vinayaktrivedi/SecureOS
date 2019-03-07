@@ -311,7 +311,7 @@ static void receive_from_host(void){
 			strncpy(r,msg,temp_msg_length);
 
 			int index=0;
-			if(temp_msg_type == EXECVE_REQUEST && temp_pid == 0 ){
+			if(msg_type == EXECVE_REQUEST && temp_pid == 0 ){
 				index = 0;
 			}
 			else{

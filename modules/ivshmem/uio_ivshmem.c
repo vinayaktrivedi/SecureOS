@@ -9,6 +9,7 @@
 #define IntrMask 0x00
 struct ivshmem_kern_client;
 char *shared;
+
 struct ivshmem_info {
         struct ivshmem_kern_client *client;
         struct pci_dev *dev;

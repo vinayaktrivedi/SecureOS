@@ -4,7 +4,7 @@
 # no need to list the source files explicitly.
 
 obj-m += uio_ivshmem.o 
-obj-m += ftrace_hook.o
+obj-m += vm_module.o
 
 # KDIR is the location of the kernel source.  The current standard is
 # to link to the associated source tree from the directory containing
