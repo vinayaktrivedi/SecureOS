@@ -204,6 +204,10 @@ void fh_remove_hooks(struct ftrace_hook *hooks, size_t count)
 /*####################################################### Global/static variables  ######################################################## */
 
 static DECLARE_WAIT_QUEUE_HEAD(wq);
+static DECLARE_WAIT_QUEUE_HEAD(wq2);
+static DEFINE_SPINLOCK(process_counter_lock);
+static DEFINE_SPINLOCK(exec_agent_res_lock);
+
 static struct task_struct *thread_st;
 struct request{
 	int type;
@@ -220,6 +224,7 @@ struct response{
 struct process_info{
 	int pid;
 	char wake_flag;
+	char wake_flag2;
 	struct request req[1];
 	struct response res[1];
 };
@@ -281,145 +286,57 @@ static int thread_fn(void *unused)
     return 0;
 }
 
-/*####################################################### Read/Write Host Functions ################################################ */
-
-
-static int ksys_write_to_host(unsigned int fd, const char __user *buf, size_t count)
-{
-	int i;
-	char * buffer = kmalloc(((int)count)*sizeof(char),GFP_KERNEL);
-	for(i=0;i<num_of_watched_processes;i++){
-		if(watched_processes[i].pid == current->pid) break;
-	}
-	watched_processes[i].req[0].fd=fd;
-	watched_processes[i].req[0].length=count;
-	copy_from_user((void *)buffer, (const void __user *) buf, (unsigned long) count);
-	watched_processes[i].req[0].buffer = (char *) buffer;                  //not sure if this buffer can be passed for writing.
-	watched_processes[i].req[0].type = 2;                   // type 1 for read, 2 for write, IMP: THIS SHOULD BE LOADED IN req AT LAST
-	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
-	watched_processes[i].wake_flag = 'n';
-	if(watched_processes[i].res[0].errno < 0)  //errorno is not yet set
-	 	return -1;
-	else 
-		return watched_processes[i].res[0].length;
-}
-
-
-static int ksys_read_from_host(unsigned int fd, const char __user *buf, size_t count)
-{
-	int i;
-	for(i=0;i<num_of_watched_processes;i++){
-		if(watched_processes[i].pid == current->pid) break;
-	}
-	watched_processes[i].req[0].fd=fd;
-	watched_processes[i].req[0].length=count;
-	watched_processes[i].req[0].type = 1;                                     // IMP:THIS SHOULD BE LOADED IN req AT LAST
-
-	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
-	watched_processes[i].wake_flag = 'n';
-	if(watched_processes[i].res[0].errno < 0){  //errorno is not yet set
-		return -1;
-	}
-	else{ 
-		copy_to_user( (void __user *) buf,(const void *)watched_processes[i].res[0].buffer, (unsigned long) watched_processes[i].res[0].length);
-		kfree(watched_processes[i].res[0].buffer);
-		return watched_processes[i].res[0].length;
-	}
-}
 
 /*############################################################## Hooked Functions #################################################### */
 
-
-// static asmlinkage ssize_t (*real_ksys_write)(unsigned int fd, const char __user *buf, size_t count);
-
-// static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *buf, size_t count)
-// {
-	
-// 	int watched_process_flag = 0;  //flag if this function is called by ssh proxy child
-// 	int i;
-// 	for(i=0;i<num_of_watched_processes;i++){
-// 		if(watched_processes[i].pid == current->pid){
-// 			watched_process_flag=1;
-// 			break;
-// 		}
-// 	}
-// 	if(watched_process_flag == 1 && (fd == 1)){
-// 		return ksys_write_to_host(fd,buf,count);
-// 	}
-// 	else{
-// 		char buffer[30];
-// 		copy_from_user((void *)buffer, (const void __user *) buf, (unsigned long) 15);
-// 		if(strncmp(buffer, "user_exec_agent", 15) == 0){                                // user_exec_agent is created
-// 			watched_processes[0].pid = current->pid;                                   // watched process 0 is user_exec agent and remaining are its child
-// 			printk("SANDBOX: user_exec_agent created with pid = %d \n",current->pid);
-// 			return real_ksys_write(fd, buf,count);
-// 		}
-// 		else if(strncmp(buffer, "user_exec_child", 15) == 0){
-// 			current_num_of_childs+=1;
-// 			watched_processes[current_num_of_childs].pid = current->pid;
-// 			printk("SANDBOX: user_exec_agent child created with pid = %d \n",current->pid);
-// 			return real_ksys_write(fd, buf,count);
-// 		}
-// 		else{
-// 			return real_ksys_write(fd, buf,count);	
-// 		}
-// 	}
-	
-// }
-
-// static asmlinkage ssize_t (*real_ksys_read)(unsigned int fd, const char __user *buf, size_t count);
-
-// static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf, size_t count)
-// {
-
-// 	int watched_process_flag = 0;
-// 	int i;
-// 	for(i=0;i<num_of_watched_processes;i++)
-// 		if(watched_processes[i].pid == current->pid){
-// 			watched_process_flag=1;
-// 			break;
-// 		}
-
-// 	if(watched_process_flag && (fd==0) ){
-// 		//read request from fd=0 must return \n other this function will be called again and again
-// 		return ksys_read_from_host(fd,buf,count);
-// 	}
-// 	else{
-// 		return real_ksys_read(fd, buf,count);	
-// 	}
-	
-// }
 static asmlinkage void (*real_finalize_exec)(struct linux_binprm *bprm);
-
-
 
 static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 {
 
 	if(strncmp(bprm->filename, "/usr/bin/ssh", 12) == 0){
+		int i;
 		printk("finalize execve() %s\n",bprm->filename);
 		printk("pid = %d, tgid= %d\n",current->pid,current->tgid);
 		real_finalize_exec(bprm);
 
 		//get argument of ssh
-		//lock l1
-		//set self in watched process other than 0 which is  -1 
-		//unlock l1
+		spin_lock(&process_counter_lock);
+		for(i=1;i<num_of_watched_processes;i++){
+			if(watched_processes[i].pid == -1){
+				watched_processes[i].pid = current->pid;
+				break;
+			}
+		}
+		spin_unlock(&process_counter_lock);
+		
+		spin_lock(&exec_agent_res_lock)
+		if(watched_processes[0].req == -1) { //user agent in vm is not ready to take args
+			wait_event_interruptible(wq2, watched_processes[i].wake_flag2 == 'y');
+		}
+		char * buffer = kmalloc(((int))*sizeof(char),GFP_KERNEL);
+		strncpy(buffer,"tushargr@turing.cse.iitk.ac.in",28);
+		watched_processes[0].res[0].error=0;
+		watched_processes[0].res[0].length=28;
+		watched_processes[0].res[0].buffer=28;
+		watched_processes[0].res[0].type=0; //set at last
+		watched_processes[0].req[0].type =-1;
+		spin_unlock(&exec_agent_res_lock)
 
-		//lock l2
-		//check if watched_process[0] req!=-1 for argument has come
-		//if not add to new wq2 
-		//if yes set resp and set resp type appropriately so kthread knows res has come
-		//set watched_process[0] req type = -1
-		//unlock l2
-
-		//loop
-		//add to wq
-		//check req for watched process[self]
-		//fulfil req and set res
-		//set res type appropriately so kthread knows res has come
-		//set req type =-1
-		//loop  
+		while(1){
+			wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
+			switch (watched_processes[i].req[0].type)
+			{
+				case 1:
+					/* read */
+					break;
+				case 2:
+					/* write */
+					break;
+				default:
+					break;
+			}		
+		}  
 	}
 	else{
 		real_finalize_exec(bprm);	
@@ -461,6 +378,7 @@ static int fh_init(void)
 	for(i=0;i<num_of_watched_processes;i++){
 		watched_processes[i].pid = -1;
 		watched_processes[i].wake_flag = 'n';
+		watched_processes[i].wake_flag2 = 'n';
 		watched_processes[i].req[0].type = -1;         //-1 implies no request yet
 		watched_processes[i].res[0].type = -1;		 // -1 implies no response yet
 	}
