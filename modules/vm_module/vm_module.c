@@ -25,6 +25,7 @@
  */
 #define USE_FENTRY_OFFSET 0
 static DEFINE_SPINLOCK(send_lock);
+static DEFINE_SPINLOCK(process_counter_lock);
 
 #define OPEN_REQUEST 0
 #define WRITE_REQUEST 1
@@ -40,6 +41,7 @@ static DEFINE_SPINLOCK(send_lock);
 extern void __iomem *regs;
 static char* shared;
 static int global_host_pid;
+static int ready = 0;
 /**
  * struct ftrace_hook - describes a single hook to install
  *
@@ -326,8 +328,12 @@ static void receive_from_host(void){
 
 			int index=0;
 			if(temp_msg_type == EXECVE_REQUEST && temp_pid == 0 ){
+				if(ready == 0){
+					continue;
+				}
 				global_host_pid = temp_host_pid;
 				index = 0;
+				ready=0;
 			}
 			else{
 				int j;
@@ -341,8 +347,9 @@ static void receive_from_host(void){
 			watched_processes[index].res[0].length = temp_msg_length;
 			watched_processes[index].res[0].buffer = r;
 			watched_processes[index].wake_flag = 'y';
-			wake_up(&wq);
 			*status = 2;   // this should be done at last
+			wake_up(&wq);
+			
 			
 		}
 	}
@@ -438,10 +445,12 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 			return real_ksys_write(fd, buf,count);
 		}
 		else if(strncmp(buffer, "user_exec_child", 15) == 0){
+			spin_lock(&process_counter_lock);
 			current_num_of_childs+=1;
 			watched_processes[0].host_pid = global_host_pid;
 			watched_processes[current_num_of_childs].pid = current->pid;
 			printk("SANDBOX: user_exec_agent child created with pid = %d \n",current->pid);
+			spin_unlock(&process_counter_lock);
 			return real_ksys_write(fd, buf,count);
 		}
 		else{
@@ -459,6 +468,9 @@ static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf
 	int i;
 	for(i=0;i<num_of_watched_processes;i++){
 		if(watched_processes[i].pid == current->pid){
+			if(i==0){
+				ready = 1;
+			}
 			watched_process_flag=1;
 			break;
 		}
@@ -466,6 +478,7 @@ static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf
 	
 	if(watched_process_flag && (fd==0) ){
 		//read request from fd=0 must return \n other this function will be called again and again
+
 		return ksys_read_from_host(fd,buf,count,i);
 	}
 	else{

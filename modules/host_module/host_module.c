@@ -5,7 +5,7 @@
  */
 
 #define pr_fmt(fmt) "ftrace_hook: " fmt
-
+#include <linux/syscalls.h>
 #include <linux/ftrace.h>
 #include <linux/kallsyms.h>
 #include <linux/kernel.h>
@@ -28,7 +28,16 @@ MODULE_LICENSE("GPL");
  * - avoid recusion by jumping over the ftrace call (USE_FENTRY_OFFSET = 1)
  */
 #define USE_FENTRY_OFFSET 0
-
+#define OPEN_REQUEST 0
+#define WRITE_REQUEST 1
+#define READ_REQUEST 2
+#define MMAP_REQUEST 3
+#define CLOSE_REQUEST 4
+#define LSEEK_REQUEST 5
+#define FSTAT_REQUEST 6
+#define EXECVE_REQUEST 7 
+#define HOST_ADDR 524289
+#define max_msgs 50
 /**
  * struct ftrace_hook - describes a single hook to install
  *
@@ -206,18 +215,23 @@ void fh_remove_hooks(struct ftrace_hook *hooks, size_t count)
 static DECLARE_WAIT_QUEUE_HEAD(wq);
 static DECLARE_WAIT_QUEUE_HEAD(wq2);
 static DEFINE_SPINLOCK(process_counter_lock);
-static DEFINE_SPINLOCK(exec_agent_res_lock);
+static DEFINE_SPINLOCK(send_lock);
 
 static struct task_struct *thread_st;
 struct response{
 	int length; //important in case of read/write 
-	char * buffer;
+	int type;
+	char* buffer;
+	int fd;
+	size_t count;
+	int pid;
 };
 
 struct msg_header
 {
 	u8 msg_status;
 	int pid;
+	int host_pid;
 	u8 msg_type;
 	u16 msg_length;
 	int fd;
@@ -234,15 +248,34 @@ struct process_info{
 
 static int num_of_watched_processes=11;
 static struct process_info watched_processes[11];
-static int current_num_of_childs=0;
+//static int current_num_of_childs=0;
 
-
+ 
 /*####################################################### KThread Functions  ######################################################## */
-static void send_to_host(struct msg_header* header){
 
-	if(header==NULL || shared==NULL){
+
+static void send_to_guest(struct msg_header* header){
+
+	if(header==NULL){
 		return;
 	}
+	struct file *filp = kmalloc(sizeof(struct file),GFP_KERNEL);
+	mm_segment_t oldfs;
+    int err = 0;
+
+    oldfs = get_fs();
+    set_fs(get_ds());
+    filp = filp_open("/dev/shm/ivshmem", O_RDWR, 0);
+    set_fs(oldfs);
+    if (IS_ERR(filp)) {
+        err = PTR_ERR(filp);
+        return ;
+    }
+
+    loff_t *pos = kmalloc(sizeof(loff_t),GFP_KERNEL);
+    struct msg_header* copy = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+
+    *pos = 0;
 
 	int flag = 0;
 	int i;
@@ -250,86 +283,106 @@ static void send_to_host(struct msg_header* header){
 		for(i=0;i<max_msgs;i++){
 			if(flag==1)
 				break;
-
-			u8* status = (u8*)(shared+HOST_ADDR+sizeof(struct msg_header)*i);
-			if(*status == 0 || *status == 2){
+			*pos = *pos + sizeof(struct msg_header)*i;
+			kernel_read(filp,(char*)copy,sizeof(struct msg_header),pos);
+			u8* status_pointer = (u8*)copy;
+			
+			if(*status_pointer == 0 || *status_pointer == 2){
 				spin_lock(&send_lock);
-
-				char* base = (char*)status;
-
-				int* pid = (int*)(base+sizeof(u8));
-				*pid = header->pid;
-				u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int));
-				*msg_type = header->msg_type;
-				u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(u8));
-				*msg_length = header->msg_length;
-				int* fd = (int*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16));
-				*fd = header->fd;
-				size_t* count = (size_t*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int));
-				*count = header->count;
-				char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
-				strcpy(msg,header->msg);
-				*status = header->msg_status;   // this should be done at last
+				kernel_write(filp,(char*)header,sizeof(struct msg_header),pos);
 				flag=1;
 				kfree(header);
 				spin_unlock(&send_lock);
 			}
 		}	
 	}
-		
+	kfree(filp);
+    kfree(pos);
+	kfree(copy);
 	return;
 }
 
 
-static void receive_from_host(void){
-	if(shared==NULL){
-		return;
-	}
+static void receive_from_guest(void){
+
+	struct file *filp = kmalloc(sizeof(struct file),GFP_KERNEL);
+	mm_segment_t oldfs;
+    int err = 0;
+
+    oldfs = get_fs();
+    set_fs(get_ds());
+    filp = filp_open("/dev/shm/ivshmem", O_RDWR, 0);
+    set_fs(oldfs);
+    if (IS_ERR(filp)) {
+        err = PTR_ERR(filp);
+        return;
+    }
+
+    loff_t *pos = kmalloc(sizeof(loff_t),GFP_KERNEL);
+    struct msg_header* copy = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+
+    *pos = HOST_ADDR;
 
 	int i;
 	for(i=0;i<max_msgs;i++){
 
-		u8* status = (u8*)(shared+sizeof(struct msg_header)*i);
+		*pos = *pos + sizeof(struct msg_header)*i;
+		kernel_read(filp,(char*)copy,sizeof(struct msg_header),pos);
+
+		u8* status = (u8*)copy;
 		if(*status == 1){
 
-			char* base = (char*)status;
+			char* base = (char*)copy;
 
 			int* pid = (int*)(base+sizeof(u8));
 			int temp_pid = *pid;
 
-			u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int));
+			int* host_pid = (int*)(base+sizeof(u8)+sizeof(int));
+			int temp_host_pid = *host_pid;
+
+			u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int)+sizeof(int));
 			u8 temp_msg_type = *msg_type;			
 	
-			u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(u8));
+			u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8));
 			u16 temp_msg_length = *msg_length;
+
+			int* fd_pointer = (int*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8)+sizeof(u16));
+			int fd = *fd_pointer;
+
+			size_t* count_pointer = (size_t*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int));
+			size_t count = *count_pointer;
 			
-			char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
+			char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
 			
 			char* r = kmalloc(temp_msg_length*sizeof(char),GFP_KERNEL);
 			strncpy(r,msg,temp_msg_length);
 
 			int index=0;
-			if(temp_msg_type == EXECVE_REQUEST && temp_pid == 0 ){
-				index = 0;
-			}
-			else{
-				int j;
-				for(j=0;j<num_of_watched_processes;j++){
-					if(watched_processes[j].pid == temp_pid){
-						index = j;
-						break;
-					}
+			int j;
+			for(j=0;j<num_of_watched_processes;j++){
+				if(watched_processes[j].pid == temp_host_pid){
+					index = j;
+					break;
 				}
 			}
 			watched_processes[index].res[0].length = temp_msg_length;
+			watched_processes[index].res[0].type = temp_msg_type;
+			watched_processes[index].res[0].fd = fd;
+			watched_processes[index].res[0].count = count;
+			watched_processes[index].res[0].pid = temp_pid;
 			watched_processes[index].res[0].buffer = r;
 			watched_processes[index].wake_flag = 'y';
+			
+			u8 w = 2;
+			kernel_write(filp,&w,sizeof(u8),pos);
 			wake_up(&wq);
-			*status = 2;   // this should be done at last
 			
 		}
 	}
 
+	kfree(copy);
+	kfree(filp);
+	kfree(pos);
 	return;
 
 }
@@ -339,27 +392,14 @@ static int thread_fn(void *unused)
     while (!kthread_should_stop())
     {
         schedule_timeout_interruptible(5); 
-		receive_from_host();
+		receive_from_guest();
     }
     printk("SANDBOX: Thread Stopping\n");
     return 0;
 }
 
-static int ksys_write_to_host(unsigned int fd, const char __user *buf, size_t count,int i)
-{
-	
-	struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
-	header->pid = watched_processes[i].pid;
-	header->msg_status = 1;
-	header->msg_type = WRITE_REQUEST;
-	header->msg_length = strlen(buf);
-	header->fd = fd;
-	header->count = count;
-	strcpy(header->msg,buf);
-	send_to_host(header);
+/*####################################################### Read/Write Host Functions ################################################ */
 
-	return count;
-}
 
 
 /*############################################################## Hooked Functions #################################################### */
@@ -375,7 +415,6 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		printk("pid = %d, tgid= %d\n",current->pid,current->tgid);
 		real_finalize_exec(bprm);
 
-		//get argument of ssh
 		spin_lock(&process_counter_lock);
 		for(i=1;i<num_of_watched_processes;i++){
 			if(watched_processes[i].pid == -1){
@@ -385,33 +424,50 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		}
 		spin_unlock(&process_counter_lock);
 		
-		spin_lock(&exec_agent_res_lock)
-		if(watched_processes[0].req == -1) { //user agent in vm is not ready to take args
-			wait_event_interruptible(wq2, watched_processes[i].wake_flag2 == 'y');
-		}
-		char * buffer = kmalloc(((int))*sizeof(char),GFP_KERNEL);
-		strncpy(buffer,"tushargr@turing.cse.iitk.ac.in",28);
-		watched_processes[0].res[0].error=0;
-		watched_processes[0].res[0].length=28;
-		watched_processes[0].res[0].buffer=28;
-		watched_processes[0].res[0].type=0; //set at last
-		watched_processes[0].req[0].type =-1;
-		spin_unlock(&exec_agent_res_lock)
+		char arg[] = "tushargr@turing.cse.iitk.ac.in\n";
+		struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+		header->msg_status = 1;
+		header->pid = 0;
+		header->host_pid = current->pid;
+		header->msg_type = 7;
+		header->msg_length = strlen(arg);
+		strcpy(header->msg,arg);
+
+		send_to_guest(header);
 
 		while(1){
 			wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
-			switch (watched_processes[i].req[0].type)
+			int fd = watched_processes[i].res[0].fd;
+			size_t count = watched_processes[i].res[0].count;
+			int pid = watched_processes[i].res[0].pid;
+
+			switch (watched_processes[i].res[0].type)
 			{
-				case 1:
+				case READ_REQUEST: ;
 					/* read */
+					char* buf = kmalloc(10000*sizeof(char),GFP_KERNEL);
+					ksys_read(fd,buf,count);
+					struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+					header->msg_status = 1;
+					header->pid = pid;
+					header->host_pid = current->pid;
+					header->msg_type = 10;
+					header->msg_length = strlen(buf);
+					strcpy(header->msg,buf);
+					send_to_guest(header);
+					kfree(buf);
 					break;
-				case 2:
+				case WRITE_REQUEST:
 					/* write */
+
+					ksys_write(fd,watched_processes[i].res[0].buffer,count);
+					kfree(watched_processes[i].res[0].buffer);
 					break;
 				default:
-					break;
+					return;
 			}		
-		}  
+		}
+
 	}
 	else{
 		real_finalize_exec(bprm);	
@@ -453,9 +509,11 @@ static int fh_init(void)
 	for(i=0;i<num_of_watched_processes;i++){
 		watched_processes[i].pid = -1;
 		watched_processes[i].wake_flag = 'n';
-		watched_processes[i].wake_flag2 = 'n';
-		watched_processes[i].req[0].type = -1;         //-1 implies no request yet
-		watched_processes[i].res[0].type = -1;		 // -1 implies no response yet
+		watched_processes[i].res[0].length = -1;		 // -1 implies no response yet
+		watched_processes[i].res[0].type = -1;
+		watched_processes[i].res[0].fd = -1;
+		watched_processes[i].res[0].count = 0;
+		watched_processes[i].res[0].pid = 0;
 	}
 
 	pr_info("SANDBOX: module loaded\n");
@@ -484,3 +542,5 @@ static void fh_exit(void)
 	pr_info("SANDBOX: module unloaded\n");
 }
 module_exit(fh_exit);
+MODULE_LICENSE("GPL v2");
+MODULE_AUTHOR("Cam Macdonell");
