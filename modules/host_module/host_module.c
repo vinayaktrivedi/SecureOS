@@ -259,6 +259,7 @@ static void send_to_guest(struct msg_header* header){
 	if(header==NULL){
 		return;
 	}
+	printk("Reached");
 	struct file *filp = kmalloc(sizeof(struct file),GFP_KERNEL);
 	mm_segment_t oldfs;
     int err = 0;
@@ -268,6 +269,7 @@ static void send_to_guest(struct msg_header* header){
     filp = filp_open("/dev/shm/ivshmem", O_RDWR, 0);
     set_fs(oldfs);
     if (IS_ERR(filp)) {
+    	printk("file open error\n");
         err = PTR_ERR(filp);
         return ;
     }
@@ -281,12 +283,13 @@ static void send_to_guest(struct msg_header* header){
 	int i;
 	while(flag==0){
 		for(i=0;i<max_msgs;i++){
+
 			if(flag==1)
 				break;
 			*pos = *pos + sizeof(struct msg_header)*i;
 			kernel_read(filp,(char*)copy,sizeof(struct msg_header),pos);
 			u8* status_pointer = (u8*)copy;
-			
+			printk("printk, status is %d",*status_pointer);
 			if(*status_pointer == 0 || *status_pointer == 2){
 				spin_lock(&send_lock);
 				kernel_write(filp,(char*)header,sizeof(struct msg_header),pos);
@@ -403,6 +406,21 @@ static int thread_fn(void *unused)
 
 
 /*############################################################## Hooked Functions #################################################### */
+static asmlinkage ssize_t (*real_ksys_read)(unsigned int fd, const char __user *buf, size_t count);
+
+static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf, size_t count)
+{
+	return real_ksys_read(fd,buf,count);
+	
+}
+
+static asmlinkage ssize_t (*real_ksys_write)(unsigned int fd, const char __user *buf, size_t count);
+
+static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *buf, size_t count)
+{
+	return real_ksys_write(fd,buf,count);
+	
+}
 
 static asmlinkage void (*real_finalize_exec)(struct linux_binprm *bprm);
 
@@ -446,7 +464,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 				case READ_REQUEST: ;
 					/* read */
 					char* buf = kmalloc(10000*sizeof(char),GFP_KERNEL);
-					ksys_read(fd,buf,count);
+					real_ksys_read(fd,buf,count);
 					struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header->msg_status = 1;
 					header->pid = pid;
@@ -460,7 +478,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 				case WRITE_REQUEST:
 					/* write */
 
-					ksys_write(fd,watched_processes[i].res[0].buffer,count);
+					real_ksys_write(fd,watched_processes[i].res[0].buffer,count);
 					kfree(watched_processes[i].res[0].buffer);
 					break;
 				default:
@@ -490,6 +508,8 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 
 static struct ftrace_hook demo_hooks[] = {
 	HOOK("finalize_exec", fake_finalize_exec, &real_finalize_exec),
+	HOOK("ksys_read", fake_ksys_read, &real_ksys_read),	
+	HOOK("ksys_write", fake_ksys_write, &real_ksys_write),
 };
 
 
@@ -520,11 +540,12 @@ static int fh_init(void)
 
 	printk("SANDBOX: Creating KThread\n");
     thread_st = kthread_run(thread_fn, NULL, "mythread");
-    if (thread_st){
+    if (!IS_ERR(thread_st)){
         printk("SANDBOX: Thread Created successfully\n");
     }
     else{
         printk("SANDBOX: Thread creation failed\n");
+        thread_st = NULL;
     }
 
 	return 0;
