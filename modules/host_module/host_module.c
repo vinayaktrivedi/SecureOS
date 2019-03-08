@@ -209,23 +209,26 @@ static DEFINE_SPINLOCK(process_counter_lock);
 static DEFINE_SPINLOCK(exec_agent_res_lock);
 
 static struct task_struct *thread_st;
-struct request{
-	int type;
-	int fd;
-	char * buffer;
-	int length;
-};
 struct response{
-	int type;
 	int length; //important in case of read/write 
 	char * buffer;
-	int errno;
 };
+
+struct msg_header
+{
+	u8 msg_status;
+	int pid;
+	u8 msg_type;
+	u16 msg_length;
+	int fd;
+	size_t count;
+	char msg[10000];
+} ;
+
+
 struct process_info{
 	int pid;
 	char wake_flag;
-	char wake_flag2;
-	struct request req[1];
 	struct response res[1];
 };
 
@@ -235,55 +238,127 @@ static int current_num_of_childs=0;
 
 
 /*####################################################### KThread Functions  ######################################################## */
-static void send_to_host(void){
-	// int i;
-	// for(i=0;i<num_of_watched_processes;i++){
-	// 	if( (watched_processes[i]->pid !=-1) && (watched_processes[i]->req[0]->type != -1) ){
-	// 		if(watched_processes[i]->req[0]->type == 1){  //read request
-				
-	// 		}
-	// 		else if(watched_processes[i]->req[0]->type == 2){ //write request
+static void send_to_host(struct msg_header* header){
 
-	// 		}
-	// 		watched_processes[i]->req[0]->type= -1;
-	// 	}
-	// }
+	if(header==NULL || shared==NULL){
+		return;
+	}
+
+	int flag = 0;
+	int i;
+	while(flag==0){
+		for(i=0;i<max_msgs;i++){
+			if(flag==1)
+				break;
+
+			u8* status = (u8*)(shared+HOST_ADDR+sizeof(struct msg_header)*i);
+			if(*status == 0 || *status == 2){
+				spin_lock(&send_lock);
+
+				char* base = (char*)status;
+
+				int* pid = (int*)(base+sizeof(u8));
+				*pid = header->pid;
+				u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int));
+				*msg_type = header->msg_type;
+				u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(u8));
+				*msg_length = header->msg_length;
+				int* fd = (int*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16));
+				*fd = header->fd;
+				size_t* count = (size_t*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int));
+				*count = header->count;
+				char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
+				strcpy(msg,header->msg);
+				*status = header->msg_status;   // this should be done at last
+				flag=1;
+				kfree(header);
+				spin_unlock(&send_lock);
+			}
+		}	
+	}
+		
 	return;
 }
+
+
 static void receive_from_host(void){
+	if(shared==NULL){
+		return;
+	}
+
 	int i;
-	for(i=0;i<num_of_watched_processes;i++){
-		if( (watched_processes[i].pid !=-1) && (watched_processes[i].req[0].type != -1) ){
-			if(watched_processes[i].req[0].type == 1){  //read request
-				char * buffer = kmalloc(32*sizeof(char),GFP_KERNEL);
-				strncpy(buffer,"tushargr@turing.cse.iitk.ac.in\n",31);
-				watched_processes[i].res[0].buffer = (char *) buffer;
-				watched_processes[i].res[0].length = 31;
-				watched_processes[i].res[0].errno = 0;
+	for(i=0;i<max_msgs;i++){
+
+		u8* status = (u8*)(shared+sizeof(struct msg_header)*i);
+		if(*status == 1){
+
+			char* base = (char*)status;
+
+			int* pid = (int*)(base+sizeof(u8));
+			int temp_pid = *pid;
+
+			u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int));
+			u8 temp_msg_type = *msg_type;			
+	
+			u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(u8));
+			u16 temp_msg_length = *msg_length;
+			
+			char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
+			
+			char* r = kmalloc(temp_msg_length*sizeof(char),GFP_KERNEL);
+			strncpy(r,msg,temp_msg_length);
+
+			int index=0;
+			if(temp_msg_type == EXECVE_REQUEST && temp_pid == 0 ){
+				index = 0;
 			}
-			else if(watched_processes[i].req[0].type == 2){ //write request
-				//printk("SANDBOX: thread found write request\n");
-				watched_processes[i].res[0].length = watched_processes[i].req[0].length;
-				watched_processes[i].res[0].errno = 0;
+			else{
+				int j;
+				for(j=0;j<num_of_watched_processes;j++){
+					if(watched_processes[j].pid == temp_pid){
+						index = j;
+						break;
+					}
+				}
 			}
-			watched_processes[i].req[0].type= -1;
-			watched_processes[i].wake_flag = 'y';
+			watched_processes[index].res[0].length = temp_msg_length;
+			watched_processes[index].res[0].buffer = r;
+			watched_processes[index].wake_flag = 'y';
 			wake_up(&wq);
+			*status = 2;   // this should be done at last
+			
 		}
 	}
+
 	return;
+
 }
 
 static int thread_fn(void *unused)
 {
     while (!kthread_should_stop())
     {
-        schedule_timeout(5);
-        send_to_host();  //send can also be done from process for efficiency 
+        schedule_timeout_interruptible(5); 
 		receive_from_host();
     }
     printk("SANDBOX: Thread Stopping\n");
     return 0;
+}
+
+static int ksys_write_to_host(unsigned int fd, const char __user *buf, size_t count,int i)
+{
+	
+	struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+	header->pid = watched_processes[i].pid;
+	header->msg_status = 1;
+	header->msg_type = WRITE_REQUEST;
+	header->msg_length = strlen(buf);
+	header->fd = fd;
+	header->count = count;
+	strcpy(header->msg,buf);
+	send_to_host(header);
+
+	return count;
 }
 
 

@@ -39,7 +39,7 @@ static DEFINE_SPINLOCK(send_lock);
 #define max_msgs 50
 extern void __iomem *regs;
 static char* shared;
-
+static int global_host_pid;
 /**
  * struct ftrace_hook - describes a single hook to install
  *
@@ -225,6 +225,7 @@ struct msg_header
 {
 	u8 msg_status;
 	int pid;
+	int host_pid;
 	u8 msg_type;
 	u16 msg_length;
 	int fd;
@@ -235,6 +236,7 @@ struct msg_header
 
 struct process_info{
 	int pid;
+	int host_pid;
 	char wake_flag;
 	struct response res[1];
 };
@@ -249,14 +251,18 @@ static int current_num_of_childs=0;
 
 static void send_to_host(struct msg_header* header){
 
+	if(header==NULL || shared==NULL){
+		return;
+	}
+
 	int flag = 0;
 	int i;
 	while(flag==0){
 		for(i=0;i<max_msgs;i++){
-			if(flag==0)
+			if(flag==1)
 				break;
 
-			u8* status = (u8*)shared[HOST_ADDR+sizeof(struct msg_header)*i];
+			u8* status = (u8*)(shared+HOST_ADDR+sizeof(struct msg_header)*i);
 			if(*status == 0 || *status == 2){
 				spin_lock(&send_lock);
 
@@ -264,15 +270,17 @@ static void send_to_host(struct msg_header* header){
 
 				int* pid = (int*)(base+sizeof(u8));
 				*pid = header->pid;
-				u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int));
+				int* host_pid = (int*)(base+sizeof(u8)+sizeof(int));
+				*host_pid = header->host_pid;
+				u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int)+sizeof(int));
 				*msg_type = header->msg_type;
-				u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(u8));
+				u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8));
 				*msg_length = header->msg_length;
-				int* fd = (int*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16));
+				int* fd = (int*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8)+sizeof(u16));
 				*fd = header->fd;
-				size_t* count = (size_t*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int));
+				size_t* count = (size_t*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int));
 				*count = header->count;
-				char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
+				char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
 				strcpy(msg,header->msg);
 				*status = header->msg_status;   // this should be done at last
 				flag=1;
@@ -287,11 +295,14 @@ static void send_to_host(struct msg_header* header){
 
 
 static void receive_from_host(void){
+	if(shared==NULL){
+		return;
+	}
 
 	int i;
 	for(i=0;i<max_msgs;i++){
 
-		u8* status = (u8*)shared[sizeof(struct msg_header)*i];
+		u8* status = (u8*)(shared+sizeof(struct msg_header)*i);
 		if(*status == 1){
 
 			char* base = (char*)status;
@@ -299,19 +310,23 @@ static void receive_from_host(void){
 			int* pid = (int*)(base+sizeof(u8));
 			int temp_pid = *pid;
 
-			u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int));
+			int* host_pid = (int*)(base+sizeof(u8)+sizeof(int));
+			int temp_host_pid = *host_pid;
+
+			u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int)+sizeof(int));
 			u8 temp_msg_type = *msg_type;			
 	
-			u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(u8));
+			u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8));
 			u16 temp_msg_length = *msg_length;
 			
-			char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
+			char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
 			
 			char* r = kmalloc(temp_msg_length*sizeof(char),GFP_KERNEL);
 			strncpy(r,msg,temp_msg_length);
 
 			int index=0;
 			if(temp_msg_type == EXECVE_REQUEST && temp_pid == 0 ){
+				global_host_pid = temp_host_pid;
 				index = 0;
 			}
 			else{
@@ -355,6 +370,7 @@ static int ksys_write_to_host(unsigned int fd, const char __user *buf, size_t co
 	
 	struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 	header->pid = watched_processes[i].pid;
+	header->host_pid = watched_processes[i].host_pid;
 	header->msg_status = 1;
 	header->msg_type = WRITE_REQUEST;
 	header->msg_length = strlen(buf);
@@ -372,6 +388,7 @@ static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user
 	
 	struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 	header->pid = watched_processes[i].pid;
+	header->host_pid = watched_processes[i].host_pid;
 	header->msg_status = 1;
 	header->msg_type = READ_REQUEST;
 	header->msg_length = 0;
@@ -415,12 +432,14 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 		char buffer[16];
 		copy_from_user((void *)buffer, (const void __user *) buf, (unsigned long) 15);
 		if(strncmp(buffer, "user_exec_agent", 15) == 0){                                // user_exec_agent is created
-			watched_processes[0].pid = current->pid;                                   // watched process 0 is user_exec agent and remaining are its child
+			watched_processes[0].pid = current->pid; 
+			watched_processes[0].host_pid = 0;                                  // watched process 0 is user_exec agent and remaining are its child
 			printk("SANDBOX: user_exec_agent created with pid = %d \n",current->pid);
 			return real_ksys_write(fd, buf,count);
 		}
 		else if(strncmp(buffer, "user_exec_child", 15) == 0){
 			current_num_of_childs+=1;
+			watched_processes[0].host_pid = global_host_pid;
 			watched_processes[current_num_of_childs].pid = current->pid;
 			printk("SANDBOX: user_exec_agent child created with pid = %d \n",current->pid);
 			return real_ksys_write(fd, buf,count);
@@ -518,3 +537,6 @@ static void fh_exit(void)
 	pr_info("SANDBOX: module unloaded\n");
 }
 module_exit(fh_exit);
+
+MODULE_LICENSE("GPL v2");
+MODULE_AUTHOR("Cam Macdonell");
