@@ -38,6 +38,13 @@ MODULE_LICENSE("GPL");
 #define EXECVE_REQUEST 7 
 #define HOST_ADDR 524289
 #define max_msgs 50
+
+enum msg_type_t{
+                   FREE=0, 
+                   USED,  /*Yet to be read*/
+                   CONSUMED,
+                   MAX_MSG_TYPE
+};
 /**
  * struct ftrace_hook - describes a single hook to install
  *
@@ -227,6 +234,7 @@ struct response{
 	int pid;
 };
 
+
 struct msg_header
 {
 	u8 msg_status;
@@ -252,17 +260,27 @@ static struct process_info watched_processes[11];
 
  
 /*####################################################### KThread Functions  ######################################################## */
-
+static copy_bytes(char* dest, char* source, size_t length){
+	int i;
+	for ( i = 0; i <length ; ++i)
+	{
+		dest[i] = source[i];
+	}
+}
 
 static void send_to_guest(struct msg_header* header){
+ 
+    loff_t pos = 0, lpos = 0;
+    struct msg_header* msg = kmalloc(sizeof(struct msg_header),GFP_KERNEL);\
+	int i, err = 0;
 
 	if(header==NULL){
 		return;
 	}
-	printk("Reached");
+	//printk("Reached");
 	struct file *filp = kmalloc(sizeof(struct file),GFP_KERNEL);
 	mm_segment_t oldfs;
-    int err = 0;
+   
 
     oldfs = get_fs();
     set_fs(get_ds());
@@ -274,34 +292,38 @@ static void send_to_guest(struct msg_header* header){
         return ;
     }
 
-    loff_t *pos = kmalloc(sizeof(loff_t),GFP_KERNEL);
-    struct msg_header* copy = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
-
-    *pos = 0;
-
-	int flag = 0;
-	int i;
-	while(flag==0){
-		for(i=0;i<max_msgs;i++){
-
-			if(flag==1)
-				break;
-			*pos = *pos + sizeof(struct msg_header)*i;
-			kernel_read(filp,(char*)copy,sizeof(struct msg_header),pos);
-			u8* status_pointer = (u8*)copy;
-			printk("printk, status is %d",*status_pointer);
-			if(*status_pointer == 0 || *status_pointer == 2){
+    
+	printk(KERN_INFO "Writing msg [status = %d] [length = %d]", header->msg_status, header->msg_length);
+	
+retry:
+	for(i=0;i<max_msgs;i++){
+     		lpos = i*sizeof(struct msg_header);
+			pos = lpos;
+			WARN_ON(kernel_read(filp,(char*)msg,sizeof(struct msg_header),&pos) <= 0);
+            printk("printk, status is %d pos = %ld\n",msg->msg_status, pos);
+			if(msg->msg_status == FREE || msg->msg_status == CONSUMED){
+				printk(KERN_INFO "Found a free slot @%ld\n", lpos);
 				spin_lock(&send_lock);
-				kernel_write(filp,(char*)header,sizeof(struct msg_header),pos);
-				flag=1;
-				kfree(header);
+				pos = lpos;
+				WARN_ON(kernel_write(filp,(char*)header,sizeof(struct msg_header), &pos) <= 0);
+				printk("Wrote now pos = %ld\n", pos);
+				kfree(header);	
 				spin_unlock(&send_lock);
+				pos = lpos;
+				kernel_read(filp,(char*)msg,sizeof(struct msg_header), &pos);
+				printk("Now status is %d length = %d pos = %d\n",msg->msg_status, msg->msg_length, pos);
+				goto done;
 			}
-		}	
-	}
+	}	
+if(unlikely(i == max_msgs)){
+	     schedule_timeout_interruptible(5);
+         goto retry;		
+}
+	
+done:
+
 	kfree(filp);
-    kfree(pos);
-	kfree(copy);
+	kfree(msg);
 	return;
 }
 
@@ -325,59 +347,37 @@ static void receive_from_guest(void){
     struct msg_header* copy = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 
     *pos = HOST_ADDR;
+    loff_t lastpos = *pos;
 
 	int i;
 	for(i=0;i<max_msgs;i++){
 
-		*pos = *pos + sizeof(struct msg_header)*i;
+		lastpos = *pos;
 		kernel_read(filp,(char*)copy,sizeof(struct msg_header),pos);
 
-		u8* status = (u8*)copy;
-		if(*status == 1){
-
-			char* base = (char*)copy;
-
-			int* pid = (int*)(base+sizeof(u8));
-			int temp_pid = *pid;
-
-			int* host_pid = (int*)(base+sizeof(u8)+sizeof(int));
-			int temp_host_pid = *host_pid;
-
-			u8* msg_type = (u8*)(base+sizeof(u8)+sizeof(int)+sizeof(int));
-			u8 temp_msg_type = *msg_type;			
-	
-			u16* msg_length = (u16*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8));
-			u16 temp_msg_length = *msg_length;
-
-			int* fd_pointer = (int*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8)+sizeof(u16));
-			int fd = *fd_pointer;
-
-			size_t* count_pointer = (size_t*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int));
-			size_t count = *count_pointer;
+		if(copy->msg_status == 1){
 			
-			char* msg = (char*)(base+sizeof(u8)+sizeof(int)+sizeof(int)+sizeof(u8)+sizeof(u16)+sizeof(int)+sizeof(size_t));
-			
-			char* r = kmalloc(temp_msg_length*sizeof(char),GFP_KERNEL);
-			strncpy(r,msg,temp_msg_length);
+			char* r = kmalloc(copy->msg_length*sizeof(char),GFP_KERNEL);
+			copy_bytes(r,copy->msg,copy->msg_length);
 
 			int index=0;
 			int j;
 			for(j=0;j<num_of_watched_processes;j++){
-				if(watched_processes[j].pid == temp_host_pid){
+				if(watched_processes[j].pid == copy->host_pid ){
 					index = j;
 					break;
 				}
 			}
-			watched_processes[index].res[0].length = temp_msg_length;
-			watched_processes[index].res[0].type = temp_msg_type;
-			watched_processes[index].res[0].fd = fd;
-			watched_processes[index].res[0].count = count;
-			watched_processes[index].res[0].pid = temp_pid;
+			watched_processes[index].res[0].length = copy->msg_length;
+			watched_processes[index].res[0].type = copy->msg_type;
+			watched_processes[index].res[0].fd = copy->fd;
+			watched_processes[index].res[0].count = copy->count;
+			watched_processes[index].res[0].pid = copy->pid;
 			watched_processes[index].res[0].buffer = r;
 			watched_processes[index].wake_flag = 'y';
 			
 			u8 w = 2;
-			kernel_write(filp,&w,sizeof(u8),pos);
+			kernel_write(filp,&w,sizeof(u8),&lastpos);
 			wake_up(&wq);
 			
 		}
@@ -442,9 +442,9 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		}
 		spin_unlock(&process_counter_lock);
 		
-		char arg[] = "tushargr@turing.cse.iitk.ac.in\n";
+		char arg[] = "vinayakt@turing.cse.iitk.ac.in\n";
 		struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
-		header->msg_status = 1;
+		header->msg_status = USED;
 		header->pid = 0;
 		header->host_pid = current->pid;
 		header->msg_type = 7;
