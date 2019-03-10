@@ -223,6 +223,8 @@ static DECLARE_WAIT_QUEUE_HEAD(wq);
 static DECLARE_WAIT_QUEUE_HEAD(wq2);
 static DEFINE_SPINLOCK(process_counter_lock);
 static DEFINE_SPINLOCK(send_lock);
+static DEFINE_SPINLOCK(copy_lock);
+
 
 static struct task_struct *thread_st;
 struct response{
@@ -370,10 +372,14 @@ static void receive_from_guest(void){
 				}
 			}
  
-			printk("Index is %d\n",index);
-			int delivered = 0;
-			while(delivered == 0){
-				if(watched_processes[index].ready == 1){
+			//printk("Index is %d\n",index);
+			int start = 0;
+			while(start == 0){
+				if(watched_processes[index].pid == -1){
+					break;
+				}	
+				else if(watched_processes[index].ready == 1){
+					spin_lock(&copy_lock);
 					watched_processes[index].res[0].length = copy->msg_length;
 					watched_processes[index].res[0].type = copy->msg_type;
 					watched_processes[index].res[0].fd = copy->fd;
@@ -381,17 +387,22 @@ static void receive_from_guest(void){
 					watched_processes[index].res[0].pid = copy->pid;
 					watched_processes[index].res[0].buffer = r;
 					watched_processes[index].wake_flag = 'y';
-					//printk("Got message with index %d, msg_type %d, fd %d, length as %d and string as %s\n",i,watched_processes[i].res[0].type,watched_processes[i].res[0].fd,watched_processes[i].res[0].length,watched_processes[i].res[0].buffer);
+					printk("Got message with index %d, msg_type %d, fd %d, length as %d and string as %s\n",index,watched_processes[i].res[0].type,watched_processes[i].res[0].fd,watched_processes[i].res[0].length,watched_processes[i].res[0].buffer);
 					printk("Count is %d\n",copy->count);
 					u8 w = 2;
 					kernel_write(filp,&w,sizeof(u8),&lastpos);
-					delivered = 1;
-					wake_up(&wq);	
+					wake_up(&wq);
+					watched_processes[index].ready = 0;
+					start = 1;
+					spin_unlock(&copy_lock);
 				}
-				//schedule_timeout_interruptible(5);				
+				else{
+					//printk("Got message with index %d, ready %d",index,watched_processes[index].ready);
+					break;
+				}
+
 			}
-			
-			
+						
 			
 		}
 	}
@@ -450,7 +461,6 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		for(i=1;i<num_of_watched_processes;i++){
 			if(watched_processes[i].pid == -1){
 				watched_processes[i].pid = current->pid;
-				watched_processes[i].ready = 1;
 				break;
 			}
 		}
@@ -489,11 +499,12 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 			if(wait_event_timeout(wq, watched_processes[i].wake_flag == 'y',10000000) != 0){
 				printk("problem\n");
 			}
+			spin_lock(&copy_lock);
 			watched_processes[i].wake_flag = 'n';
 			int fd = watched_processes[i].res[0].fd;
 			size_t count = watched_processes[i].res[0].length;
 			int pid = watched_processes[i].res[0].pid;
-			printk("Got message with index %d, msg_type %d, fd %d, length as %d and string as %s\n", i,watched_processes[i].res[0].type,watched_processes[i].res[0].fd,watched_processes[i].res[0].length,watched_processes[i].res[0].buffer);
+			printk("loop Got message with index %d, msg_type %d, fd %d, length as %d and string as %s\n", i,watched_processes[i].res[0].type,watched_processes[i].res[0].fd,watched_processes[i].res[0].length,watched_processes[i].res[0].buffer);
 			switch (watched_processes[i].res[0].type)
 			{
 				case READ_REQUEST: ;
@@ -518,15 +529,15 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					}
 					printk("in writing mode\n");
 					//real_ksys_write(fd,,count);
-					kernel_write(filp,watched_processes[i].res[0].buffer,count,&pos);
+					kernel_write(filp,watched_processes[i].res[0].buffer,strlen(watched_processes[i].res[0].buffer),&pos);
 					pos = 0;
 					kfree(watched_processes[i].res[0].buffer);
 					break;
-				default:
-					return;
+				default: ;
 			}	
 			printk("reached end\n");
 			watched_processes[i].ready = 1;	
+			spin_unlock(&copy_lock);
 		}
 
 	}
@@ -571,7 +582,7 @@ static int fh_init(void)
 
 	for(i=0;i<num_of_watched_processes;i++){
 		watched_processes[i].pid = -1;
-		watched_processes[i].ready = 0;
+		watched_processes[i].ready = 1;
 		watched_processes[i].wake_flag = 'n';
 		watched_processes[i].res[0].length = -1;		 // -1 implies no response yet
 		watched_processes[i].res[0].type = -1;
@@ -579,6 +590,7 @@ static int fh_init(void)
 		watched_processes[i].res[0].count = 0;
 		watched_processes[i].res[0].pid = 0;
 	}
+	watched_processes[0].ready = 1;
 
 	pr_info("SANDBOX: module loaded\n");
 
