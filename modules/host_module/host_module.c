@@ -252,6 +252,7 @@ struct process_info{
 	int pid;
 	char wake_flag;
 	struct response res[1];
+	int ready;
 };
 
 static int num_of_watched_processes=11;
@@ -368,17 +369,29 @@ static void receive_from_guest(void){
 					break;
 				}
 			}
-			watched_processes[index].res[0].length = copy->msg_length;
-			watched_processes[index].res[0].type = copy->msg_type;
-			watched_processes[index].res[0].fd = copy->fd;
-			watched_processes[index].res[0].count = copy->count;
-			watched_processes[index].res[0].pid = copy->pid;
-			watched_processes[index].res[0].buffer = r;
-			watched_processes[index].wake_flag = 'y';
+ 
+			printk("Index is %d\n",index);
+			int delivered = 0;
+			while(delivered == 0){
+				if(watched_processes[index].ready == 1){
+					watched_processes[index].res[0].length = copy->msg_length;
+					watched_processes[index].res[0].type = copy->msg_type;
+					watched_processes[index].res[0].fd = copy->fd;
+					watched_processes[index].res[0].count = copy->count;
+					watched_processes[index].res[0].pid = copy->pid;
+					watched_processes[index].res[0].buffer = r;
+					watched_processes[index].wake_flag = 'y';
+					//printk("Got message with index %d, msg_type %d, fd %d, length as %d and string as %s\n",i,watched_processes[i].res[0].type,watched_processes[i].res[0].fd,watched_processes[i].res[0].length,watched_processes[i].res[0].buffer);
+					printk("Count is %d\n",copy->count);
+					u8 w = 2;
+					kernel_write(filp,&w,sizeof(u8),&lastpos);
+					delivered = 1;
+					wake_up(&wq);	
+				}
+				//schedule_timeout_interruptible(5);				
+			}
 			
-			u8 w = 2;
-			kernel_write(filp,&w,sizeof(u8),&lastpos);
-			wake_up(&wq);
+			
 			
 		}
 	}
@@ -437,6 +450,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		for(i=1;i<num_of_watched_processes;i++){
 			if(watched_processes[i].pid == -1){
 				watched_processes[i].pid = current->pid;
+				watched_processes[i].ready = 1;
 				break;
 			}
 		}
@@ -452,13 +466,34 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		strcpy(header->msg,arg);
 
 		send_to_guest(header);
+		loff_t pos = 0;
+	    
+		int err = 0;
+
+		struct file *filp = kmalloc(sizeof(struct file),GFP_KERNEL);
+		mm_segment_t oldfs;
+	    oldfs = get_fs();
+	    set_fs(get_ds());
+	    filp = filp_open("/dev/stdout", O_RDWR, 0);
+	    set_fs(oldfs);
+
+	    if (IS_ERR(filp)) {
+	    	printk("file open error\n");
+	        err = PTR_ERR(filp); 
+	        return ;
+	    }
 
 		while(1){
-			wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
+		
+			printk("reached here with flag as %c\n",watched_processes[i].wake_flag);
+			if(wait_event_timeout(wq, watched_processes[i].wake_flag == 'y',10000000) != 0){
+				printk("problem\n");
+			}
+			watched_processes[i].wake_flag = 'n';
 			int fd = watched_processes[i].res[0].fd;
-			size_t count = watched_processes[i].res[0].count;
+			size_t count = watched_processes[i].res[0].length;
 			int pid = watched_processes[i].res[0].pid;
-
+			printk("Got message with index %d, msg_type %d, fd %d, length as %d and string as %s\n", i,watched_processes[i].res[0].type,watched_processes[i].res[0].fd,watched_processes[i].res[0].length,watched_processes[i].res[0].buffer);
 			switch (watched_processes[i].res[0].type)
 			{
 				case READ_REQUEST: ;
@@ -477,13 +512,21 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					break;
 				case WRITE_REQUEST:
 					/* write */
-
-					real_ksys_write(fd,watched_processes[i].res[0].buffer,count);
+					if(watched_processes[i].res[0].buffer == NULL){
+						printk("response error\n");
+						break;
+					}
+					printk("in writing mode\n");
+					//real_ksys_write(fd,,count);
+					kernel_write(filp,watched_processes[i].res[0].buffer,count,&pos);
+					pos = 0;
 					kfree(watched_processes[i].res[0].buffer);
 					break;
 				default:
 					return;
-			}		
+			}	
+			printk("reached end\n");
+			watched_processes[i].ready = 1;	
 		}
 
 	}
@@ -528,6 +571,7 @@ static int fh_init(void)
 
 	for(i=0;i<num_of_watched_processes;i++){
 		watched_processes[i].pid = -1;
+		watched_processes[i].ready = 0;
 		watched_processes[i].wake_flag = 'n';
 		watched_processes[i].res[0].length = -1;		 // -1 implies no response yet
 		watched_processes[i].res[0].type = -1;

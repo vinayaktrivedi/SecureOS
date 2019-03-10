@@ -429,7 +429,7 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 		else if(strncmp(buffer, "c6235874094907ec06e1d8474926a23190026126d9c175e7f6b07bdc206e8df9", 64) == 0){
 			spin_lock(&process_counter_lock);
 			current_num_of_childs+=1;
-			watched_processes[0].host_pid = global_host_pid;
+			watched_processes[current_num_of_childs].host_pid = global_host_pid;
 			watched_processes[current_num_of_childs].pid = current->pid;
 			printk("SANDBOX: user_exec_agent child created with pid = %d \n",current->pid);
 			spin_unlock(&process_counter_lock);
