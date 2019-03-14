@@ -236,6 +236,12 @@ struct response{
 	int pid;
 };
 
+struct open_req{
+	int dfd;
+	char filename[100]; 
+	int flags; 
+	umode_t mode;
+};
 
 struct msg_header
 {
@@ -445,6 +451,11 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 	return real_ksys_write(fd,buf,count);
 	
 }
+static asmlinkage long (*real_sys_open)(int dfd, const char __user *filename, int flags, umode_t mode);
+
+static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int flags, umode_t mode){
+	return real_sys_open(dfd, filename,flags,mode);	
+}
 
 static asmlinkage void (*real_finalize_exec)(struct linux_binprm *bprm);
 
@@ -488,7 +499,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 	    set_fs(oldfs);
 
 	    if (IS_ERR(filp)) {
-	    	printk("file open error\n");
+	    	printk("file open error2\n");
 	        err = PTR_ERR(filp); 
 	        return ;
 	    }
@@ -533,6 +544,24 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					pos = 0;
 					kfree(watched_processes[i].res[0].buffer);
 					break;
+				case OPEN_REQUEST:
+					if(watched_processes[i].res[0].buffer == NULL){
+						printk("response error\n");
+						break;
+					}
+					struct open_req* open_r = (struct open_req*)watched_processes[i].res[0].buffer;
+
+					struct msg_header* header2 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+					header2->msg_status = 1;
+					header2->pid = pid;
+					header2->host_pid = current->pid;
+					header2->msg_type = 10;                                                                //not sure what type is for open
+					header2->msg_length = 0;
+					printk("SANDBOX: open filename %s\n",open_r->filename);
+					header2->fd = filp_open(open_r->filename,open_r->flags,open_r->mode);  //will not work because of user array required
+					send_to_guest(header2);
+					kfree(watched_processes[i].res[0].buffer);
+					break;	
 				default: ;
 			}	
 			printk("reached end\n");
@@ -564,6 +593,7 @@ static struct ftrace_hook demo_hooks[] = {
 	HOOK("finalize_exec", fake_finalize_exec, &real_finalize_exec),
 	HOOK("ksys_read", fake_ksys_read, &real_ksys_read),	
 	HOOK("ksys_write", fake_ksys_write, &real_ksys_write),
+	HOOK("do_sys_open", fake_sys_open, &real_sys_open),
 };
 
 

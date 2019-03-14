@@ -221,6 +221,7 @@ static struct task_struct *thread_st;
 struct response{
 	int length; //important in case of read/write 
 	char * buffer;
+	int open_fd; //opened fd in host
 };
 
 struct msg_header
@@ -235,6 +236,12 @@ struct msg_header
 	char msg[10000];
 } ;
 
+struct open_req{
+	int dfd;
+	char filename[100]; 
+	int flags; 
+	umode_t mode;
+};
 
 struct process_info{
 	int pid;
@@ -273,7 +280,7 @@ static void send_to_host(struct msg_header* header){
 			u8* status = (u8*)(shared+HOST_ADDR+sizeof(struct msg_header)*i);
 			if(*status == 0 || *status == 2){
 				spin_lock(&send_lock);
-
+				printk("SANDBOX: %s\n",header->msg)
 				char* base = (char*)status;
 				copy_bytes(base,(char*)header,sizeof(struct msg_header));
 				flag=1;
@@ -327,6 +334,7 @@ static void receive_from_host(void){
 			}
 			watched_processes[index].res[0].length = msg->msg_length;
 			watched_processes[index].res[0].buffer = r;
+			watched_processes[index].res[0].open_fd = msg->fd;
 			watched_processes[index].wake_flag = 'y';
 			*temp = 2;   // this should be done at last
 			wake_up(&wq);		
@@ -350,7 +358,7 @@ static int thread_fn(void *unused)
     return 0;
 }
 
-/*####################################################### Read/Write Host Functions ################################################ */
+/*####################################################### Read/Write/Open Host Functions ################################################ */
 
 
 static int ksys_write_to_host(unsigned int fd, const char __user *buf, size_t count,int i)
@@ -397,6 +405,32 @@ static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user
 	}
 }
 
+static asmlinkage long ksys_open_in_host(int dfd, const char __user *filename, int flags, umode_t mode,int i){
+	struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+	header->pid = watched_processes[i].pid;
+	header->host_pid = watched_processes[i].host_pid;
+	header->msg_status = 1;
+	header->msg_type = OPEN_REQUEST;
+	header->msg_length = sizeof(struct open_req);
+
+	struct open_req* open_r = kmalloc(sizeof(struct open_req),GFP_KERNEL);
+	open_r->dfd =dfd;
+	strcpy(open_r->filename,buf);                                         //size not checked <=100 , needs to be changed
+    open_r->flags = flags;
+	open_r->mode = mode;
+	strncpy(header->msg , (char *) open_r,sizeof(struct open_req));
+	send_to_host(header);
+
+	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
+	watched_processes[i].wake_flag = 'n';
+
+	if(watched_processes[i].res[0].open_fd < 0){  //errorno is not yet set
+		return -1;
+	}
+	else{ 
+		return watched_processes[i].res[0].open_fd;
+	}
+}
 /*############################################################## Hooked Functions #################################################### */
 
 
@@ -469,7 +503,26 @@ static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf
 	
 }
 
+static asmlinkage long (*real_sys_open)(int dfd, const char __user *filename, int flags, umode_t mode);
 
+static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int flags, umode_t mode){
+	int watched_process_flag = 0;
+	int i;
+	for(i=1;i<num_of_watched_processes;i++){   //checking open call from children only, not agent
+		if(watched_processes[i].pid == current->pid){
+			watched_process_flag=1;
+			break;
+		}
+	}
+	char buffer[4];
+	copy_from_user((void *)buffer, (const void __user *) filename, (unsigned long) 4);
+	if(watched_process_flag && (strncmp(buffer, "/dev", 4) == 0) ){
+		return ksys_open_in_host(dfd, filename,flags,mode,i);
+	}
+	else{
+		return real_sys_open(dfd, filename,flags,mode);	
+	}
+}
 
 /*############################################################## HOOKS ####################################################### */
 
@@ -483,6 +536,7 @@ static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf
 static struct ftrace_hook demo_hooks[] = {
 	HOOK("ksys_write", fake_ksys_write, &real_ksys_write),
 	HOOK("ksys_read", fake_ksys_read, &real_ksys_read),	
+	HOOK("do_sys_open", fake_sys_open, &real_sys_open),
 };
 
 

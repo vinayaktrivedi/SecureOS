@@ -8,7 +8,7 @@ obj-m += host_module.o
 # KDIR is the location of the kernel source.  The current standard is
 # to link to the associated source tree from the directory containing
 # the compiled modules.
-KDIR  := /lib/modules/$(shell uname -r)/build
+KDIR  := /home/tushar/Desktop/6thsem/UGP/SecureOS/src/kernel/host/linux-4.20.6
 
 # PWD is the current working directory and the location of our module
 # source files.
@@ -19,8 +19,8 @@ PWD   := $(shell pwd)
 # source and compile only the modules in the PWD (local) directory.
 EXTRA_CFLAGS += -O2
 all:
-	$(MAKE) -C /lib/modules/`uname -r`/build M=$(PWD) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
 
 clean:
-	$(MAKE) -C /lib/modules/`uname -r`/build M=$(PWD) clean
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
 	$(RM) Module.markers modules.order
