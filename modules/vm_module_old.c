@@ -280,7 +280,7 @@ static void send_to_host(struct msg_header* header){
 			u8* status = (u8*)(shared+HOST_ADDR+sizeof(struct msg_header)*i);
 			if(*status == 0 || *status == 2){
 				spin_lock(&send_lock);
-                                printk("SANDBOX: %s\n",header->msg);
+				printk("SANDBOX: %s\n",header->msg)
 				char* base = (char*)status;
 				copy_bytes(base,(char*)header,sizeof(struct msg_header));
 				flag=1;
@@ -415,7 +415,7 @@ static asmlinkage long ksys_open_in_host(int dfd, const char __user *filename, i
 
 	struct open_req* open_r = kmalloc(sizeof(struct open_req),GFP_KERNEL);
 	open_r->dfd =dfd;
-	strcpy(open_r->filename,filename);                                         //size not checked <=100 , needs to be changed
+	strcpy(open_r->filename,buf);                                         //size not checked <=100 , needs to be changed
     open_r->flags = flags;
 	open_r->mode = mode;
 	strncpy(header->msg , (char *) open_r,sizeof(struct open_req));
