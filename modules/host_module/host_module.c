@@ -255,14 +255,18 @@ struct msg_header
 	char msg[10000];
 } ;
 
+struct open_file{
+	int fd;
+	struct file * filp;
+};
 
 struct process_info{
 	int pid;
 	char wake_flag;
 	struct response res[1];
+	struct open_file open_files[50];
 	int ready;
 };
-
 static int num_of_watched_processes=11;
 static struct process_info watched_processes[11];
 //static int current_num_of_childs=0;
@@ -477,7 +481,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		}
 		spin_unlock(&process_counter_lock);
 		
-		char arg[] = "vinayakt@turing.cse.iitk.ac.in\n";
+		char arg[] = "tushargr@turing.cse.iitk.ac.in\n";
 		struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 		header->msg_status = USED;
 		header->pid = 0;
@@ -490,25 +494,44 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		loff_t pos = 0;
 	    
 		int err = 0;
-
-		struct file *filp = kmalloc(sizeof(struct file),GFP_KERNEL);
+	    //opening stdout
+		struct file *filp_stdout = kmalloc(sizeof(struct file),GFP_KERNEL);
 		mm_segment_t oldfs;
 	    oldfs = get_fs();
 	    set_fs(get_ds());
-	    filp = filp_open("/dev/stdout", O_RDWR, 0);
+	    filp_stdout = filp_open("/dev/stdout", O_RDWR, 0);
 	    set_fs(oldfs);
-
-	    if (IS_ERR(filp)) {
-	    	printk("file open error2\n");
-	        err = PTR_ERR(filp); 
+	    if (IS_ERR(filp_stdout)) {
+	    	printk("open error stdout\n");
+	        err = PTR_ERR(filp_stdout); 
 	        return ;
 	    }
+		watched_processes[i].open_files[1].fd = 1;
+		watched_processes[i].open_files[1].filp=filp_stdout;
+
+		//opening stdin
+		struct file *filp_stdin = kmalloc(sizeof(struct file),GFP_KERNEL);
+	    oldfs = get_fs();
+	    set_fs(get_ds());
+	    filp_stdin = filp_open("/dev/stdin", O_RDWR, 0);
+	    set_fs(oldfs);
+	    if (IS_ERR(filp_stdin)) {
+	    	printk("open error stdin\n");
+	        err = PTR_ERR(filp_stdin); 
+	        return ;
+	    }
+		watched_processes[i].open_files[0].fd = 0;
+		watched_processes[i].open_files[0].filp=filp_stdin;
+
+
 
 		while(1){
-		
+			int j;
+			int ret;
+			loff_t offset =0;
 			printk("reached here with flag as %c\n",watched_processes[i].wake_flag);
 			if(wait_event_timeout(wq, watched_processes[i].wake_flag == 'y',10000000) != 0){
-				printk("problem\n");
+				printk("not problem\n");
 			}
 			spin_lock(&copy_lock);
 			watched_processes[i].wake_flag = 'n';
@@ -521,7 +544,12 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 				case READ_REQUEST: ;
 					/* read */
 					char* buf = kmalloc(10000*sizeof(char),GFP_KERNEL);
-					real_ksys_read(fd,buf,count);
+					for(j=0;j<50;j++){
+						if(watched_processes[i].open_files[j].fd == fd)break;
+					}
+					offset =0;
+					ret = kernel_read(filp_stdin, buf, 1024, &offset);
+					printk("TUSHAR:pass=%s len=%d\n",buf,strlen(buf));
 					struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header->msg_status = 1;
 					header->pid = pid;
@@ -533,15 +561,19 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					kfree(buf);
 					break;
 				case WRITE_REQUEST:
-					/* write */
 					if(watched_processes[i].res[0].buffer == NULL){
 						printk("response error\n");
 						break;
 					}
-					printk("in writing mode\n");
-					//real_ksys_write(fd,,count);
-					kernel_write(filp,watched_processes[i].res[0].buffer,strlen(watched_processes[i].res[0].buffer),&pos);
-					pos = 0;
+					for(j=0;j<50;j++){
+						if(watched_processes[i].open_files[j].fd == fd)break;
+					}
+					printk("SANDBOX: process %d",j);
+					offset=0;
+					ret = kernel_write(filp_stdout, watched_processes[i].res[0].buffer, count, &offset);
+					offset=0;
+					// kernel_write(filp,watched_processes[i].res[0].buffer,strlen(watched_processes[i].res[0].buffer),&pos);
+					// pos = 0;
 					kfree(watched_processes[i].res[0].buffer);
 					break;
 				case OPEN_REQUEST:
@@ -550,15 +582,30 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 						break;
 					}
 					struct open_req* open_r = (struct open_req*)watched_processes[i].res[0].buffer;
-
 					struct msg_header* header2 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header2->msg_status = 1;
 					header2->pid = pid;
 					header2->host_pid = current->pid;
 					header2->msg_type = 10;                                                                //not sure what type is for open
 					header2->msg_length = 0;
-					printk("SANDBOX: open filename %s\n",open_r->filename);
-					header2->fd = filp_open(open_r->filename,open_r->flags,open_r->mode);  //will not work because of user array required
+					struct file *filp_temp = kmalloc(sizeof(struct file),GFP_KERNEL);
+					oldfs = get_fs();
+					set_fs(get_ds());
+					filp_temp = filp_open(open_r->filename, open_r->flags, open_r->mode);
+					set_fs(oldfs);
+
+					if (IS_ERR(filp_temp)) {
+						printk("file open error\n");
+						err = PTR_ERR(filp_temp); 
+						return ;
+					}
+					
+					// for(j=4;j<50;j++){
+					// 	if(watched_processes[i].open_files[j].fd == -1)break;
+					// }
+					watched_processes[i].open_files[49].fd = 49;
+					watched_processes[i].open_files[49].filp=filp_temp;
+					header2->fd = 49;
 					send_to_guest(header2);
 					kfree(watched_processes[i].res[0].buffer);
 					break;	
@@ -619,6 +666,10 @@ static int fh_init(void)
 		watched_processes[i].res[0].fd = -1;
 		watched_processes[i].res[0].count = 0;
 		watched_processes[i].res[0].pid = 0;
+		int j;
+		for(j=0;j<50;j++){
+			watched_processes[i].open_files[j].fd=-1;
+		}
 	}
 	watched_processes[0].ready = 1;
 

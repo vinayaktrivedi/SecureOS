@@ -313,7 +313,7 @@ static void receive_from_host(void){
 			char* r = kmalloc(msg->msg_length*sizeof(char),GFP_KERNEL);
 			strncpy(r,msg->msg,msg->msg_length);
 
-			printk("Got mesage as pid %d , length as %d and type as %d\n",msg->pid,msg->msg_length,msg->msg_type);
+			printk("Got mesage as pid %d , length as %d and type as %d and host fd=%d\n",msg->pid,msg->msg_length,msg->msg_type,msg->fd);
 			int index=0;
 			if(msg->msg_type == EXECVE_REQUEST && msg->pid == 0 ){
 				if(ready == 0){
@@ -398,7 +398,8 @@ static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user
 	if(watched_processes[i].res[0].length < 0){  //errorno is not yet set
 		return -1;
 	}
-	else{ 
+	else{
+	       printk("TUSHAR: got from host string %s %d\n",watched_processes[i].res[0].buffer,watched_processes[i].res[0].length);	
 		copy_to_user( (void __user *) buf,(const void *)watched_processes[i].res[0].buffer, (unsigned long) watched_processes[i].res[0].length);
 		kfree(watched_processes[i].res[0].buffer);
 		return watched_processes[i].res[0].length;
@@ -447,7 +448,7 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 			break;
 		}
 	}
-	if(watched_process_flag == 1 && (fd==1|| fd==2) ){
+	if(watched_process_flag == 1 && (fd==1|| fd==2 || fd ==49) ){
 		return ksys_write_to_host(fd,buf,count,i);
 	}
 	else{
@@ -492,9 +493,9 @@ static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf
 		}
 	}
 	
-	if(watched_process_flag && (fd==0) ){
+	if(watched_process_flag && (fd==0 || fd==49) ){
 		//read request from fd=0 must return \n other this function will be called again and again
-
+		printk("TUH: %d\n",count);
 		return ksys_read_from_host(fd,buf,count,i);
 	}
 	else{
@@ -514,9 +515,9 @@ static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int f
 			break;
 		}
 	}
-	char buffer[4];
-	copy_from_user((void *)buffer, (const void __user *) filename, (unsigned long) 4);
-	if(watched_process_flag && (strncmp(buffer, "/dev", 4) == 0) ){
+	char buffer[10];
+	copy_from_user((void *)buffer, (const void __user *) filename, (unsigned long) 8);
+	if(watched_process_flag && (strncmp(buffer, "/dev/tty", 8) == 0) ){
 		return ksys_open_in_host(dfd, filename,flags,mode,i);
 	}
 	else{
