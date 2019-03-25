@@ -36,6 +36,7 @@ MODULE_LICENSE("GPL");
 #define LSEEK_REQUEST 5
 #define FSTAT_REQUEST 6
 #define EXECVE_REQUEST 7 
+#define IOCTL_REQUEST 8
 #define HOST_ADDR 524289
 #define max_msgs 50
 
@@ -241,6 +242,12 @@ struct open_req{
 	char filename[100]; 
 	int flags; 
 	umode_t mode;
+};
+
+struct ioctl_req{
+	unsigned int fd;
+	unsigned int cmd;
+	unsigned long arg;
 };
 
 struct msg_header
@@ -481,7 +488,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		}
 		spin_unlock(&process_counter_lock);
 		
-		char arg[] = "tushargr@turing.cse.iitk.ac.in\n";
+		char arg[] = "badguy@localhost\n";
 		struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 		header->msg_status = USED;
 		header->pid = 0;
@@ -529,9 +536,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 			int j;
 			int ret;
 			loff_t offset =0;
-			printk("reached here with flag as %c\n",watched_processes[i].wake_flag);
 			if(wait_event_timeout(wq, watched_processes[i].wake_flag == 'y',10000000) != 0){
-				printk("not problem\n");
 			}
 			spin_lock(&copy_lock);
 			watched_processes[i].wake_flag = 'n';
@@ -548,15 +553,14 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 						if(watched_processes[i].open_files[j].fd == fd)break;
 					}
 					offset =0;
-					ret = kernel_read(filp_stdin, buf, 1024, &offset);
-					printk("TUSHAR:pass=%s len=%d\n",buf,strlen(buf));
+					ret = kernel_read(watched_processes[i].open_files[j].filp, buf, 1024, &offset);
 					struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header->msg_status = 1;
 					header->pid = pid;
 					header->host_pid = current->pid;
 					header->msg_type = 10;
 					header->msg_length = strlen(buf);
-					strcpy(header->msg,buf);
+					strncpy(header->msg,buf,strlen(buf));
 					send_to_guest(header);
 					kfree(buf);
 					break;
@@ -570,10 +574,8 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					}
 					printk("SANDBOX: process %d",j);
 					offset=0;
-					ret = kernel_write(filp_stdout, watched_processes[i].res[0].buffer, count, &offset);
+					ret = kernel_write(watched_processes[i].open_files[j].filp, watched_processes[i].res[0].buffer, count, &offset);
 					offset=0;
-					// kernel_write(filp,watched_processes[i].res[0].buffer,strlen(watched_processes[i].res[0].buffer),&pos);
-					// pos = 0;
 					kfree(watched_processes[i].res[0].buffer);
 					break;
 				case OPEN_REQUEST:
@@ -599,16 +601,61 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 						err = PTR_ERR(filp_temp); 
 						return ;
 					}
-					
-					// for(j=4;j<50;j++){
-					// 	if(watched_processes[i].open_files[j].fd == -1)break;
-					// }
-					watched_processes[i].open_files[49].fd = 49;
-					watched_processes[i].open_files[49].filp=filp_temp;
-					header2->fd = 49;
+					//guest may be already using fd's from 0 to 39 , therefore fake fd is given to guest starting from 40 for now
+					for(j=40;j<50;j++){
+						if(watched_processes[i].open_files[j].fd == -1)break;
+					}
+					watched_processes[i].open_files[j].fd = j;
+					watched_processes[i].open_files[j].filp=filp_temp;
+					header2->fd = j;
 					send_to_guest(header2);
 					kfree(watched_processes[i].res[0].buffer);
 					break;	
+				case CLOSE_REQUEST:
+					if(watched_processes[i].res[0].buffer == NULL){
+						printk("response error\n");
+						break;
+					}
+					for(j=0;j<50;j++){
+						if(watched_processes[i].open_files[j].fd == fd)break;
+					}
+					printk("SANDBOX: process %d",j);
+					oldfs = get_fs();
+					set_fs(get_ds());
+					ret = filp_close(watched_processes[i].open_files[j].filp, NULL);
+					set_fs(oldfs);
+					struct msg_header* header3 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+					header3->msg_status = 1;
+					header3->pid = pid;
+					header3->host_pid = current->pid;
+					header3->msg_type = 10;
+					header3->msg_length = 0;
+					header3->fd=ret; // fd here is used as checking if close done properly or not
+					send_to_guest(header3);
+					break;
+				case IOCTL_REQUEST:
+					if(watched_processes[i].res[0].buffer == NULL){
+						printk("response error\n");
+						break;
+					}
+					struct ioctl_req* ioctl_r = (struct ioctl_req*)watched_processes[i].res[0].buffer;
+					for(j=0;j<50;j++){
+						if(watched_processes[i].open_files[j].fd == ioctl_r->fd)break;
+					}
+					printk("SANDBOX: process %d",j);
+					oldfs = get_fs();
+					set_fs(get_ds());
+					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, ioctl_r->arg);
+					set_fs(oldfs);
+					struct msg_header* header4 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+					header4->msg_status = 1;
+					header4->pid = pid;
+					header4->host_pid = current->pid;
+					header4->msg_type = 10;
+					header4->msg_length = 0;
+					header4->fd=ret; // fd here is used as checking if ioctl done properly or not
+					send_to_guest(header4);
+					break;
 				default: ;
 			}	
 			printk("reached end\n");
