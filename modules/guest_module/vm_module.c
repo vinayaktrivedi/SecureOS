@@ -35,6 +35,7 @@ static DEFINE_SPINLOCK(process_counter_lock);
 #define LSEEK_REQUEST 5
 #define FSTAT_REQUEST 6
 #define EXECVE_REQUEST 7 
+#define IOCTL_REQUEST 8
 
 #define HOST_ADDR 524289
 #define max_msgs 50
@@ -243,11 +244,18 @@ struct open_req{
 	umode_t mode;
 };
 
+struct ioctl_req{
+	unsigned int fd;
+	unsigned int cmd;
+	unsigned long arg;
+};
+
 struct process_info{
 	int pid;
 	int host_pid;
 	char wake_flag;
 	struct response res[1];
+	int fds_open_in_host[10]; //opened fds are noted to direct more request to host on these fds, 0,1,2 fds are not noted
 };
 
 static int num_of_watched_processes=11;
@@ -399,7 +407,7 @@ static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user
 		return -1;
 	}
 	else{
-	       printk("TUSHAR: got from host string %s %d\n",watched_processes[i].res[0].buffer,watched_processes[i].res[0].length);	
+	    printk("TUSHAR: got from host string %s %d\n",watched_processes[i].res[0].buffer,watched_processes[i].res[0].length);	
 		copy_to_user( (void __user *) buf,(const void *)watched_processes[i].res[0].buffer, (unsigned long) watched_processes[i].res[0].length);
 		kfree(watched_processes[i].res[0].buffer);
 		return watched_processes[i].res[0].length;
@@ -424,13 +432,52 @@ static asmlinkage long ksys_open_in_host(int dfd, const char __user *filename, i
 
 	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
 	watched_processes[i].wake_flag = 'n';
+	int j;
 
+	for(i=0;j<10;j++){
+		if(watched_processes[i].fds_open_in_host[j]==-1)
+			watched_processes[i].fds_open_in_host[j]=watched_processes[i].res[0].open_fd;
+	}
 	if(watched_processes[i].res[0].open_fd < 0){  //errorno is not yet set
 		return -1;
 	}
 	else{ 
 		return watched_processes[i].res[0].open_fd;
 	}
+}
+
+static asmlinkage int ksys_close_in_host(int fd, int i){
+	struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+	header->pid = watched_processes[i].pid;
+	header->host_pid = watched_processes[i].host_pid;
+	header->msg_status = 1;
+	header->msg_type = CLOSE_REQUEST;
+	header->msg_length = 0;
+	header->fd = fd;
+	send_to_host(header);
+	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
+	watched_processes[i].wake_flag = 'n';
+
+	return watched_processes[i].res[0].open_fd; //open_fd is used for checking if file closed in host properly or not
+}
+
+static asmlinkage int ioctl_in_host(unsigned int fd, unsigned int cmd, unsigned long arg, int i){
+	struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+	header->pid = watched_processes[i].pid;
+	header->host_pid = watched_processes[i].host_pid;
+	header->msg_status = 1;
+	header->msg_type = IOCTL_REQUEST;
+	struct ioctl_req* ioctl_r = kmalloc(sizeof(struct ioctl_req),GFP_KERNEL);
+	ioctl_r->fd =fd;
+	ioctl_r->arg=arg;
+	ioctl_r->cmd = cmd;
+	strncpy(header->msg , (char *) ioctl_r,sizeof(struct ioctl_req));
+	header->msg_length = sizeof(struct ioctl_req);
+	send_to_host(header);
+	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
+	watched_processes[i].wake_flag = 'n';
+
+	return watched_processes[i].res[0].open_fd; //open_fd is used for checking if file ioctl in host properly or not
 }
 /*############################################################## Hooked Functions #################################################### */
 
@@ -448,8 +495,15 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 			break;
 		}
 	}
-	if(watched_process_flag == 1 && (fd==1|| fd==2 || fd ==49) ){
-		return ksys_write_to_host(fd,buf,count,i);
+	if(watched_process_flag){
+		if(fd==1|| fd==2)
+			return ksys_write_to_host(fd,buf,count,i);
+		int j;
+		for(j=0;j<10;j++){
+			if(watched_processes[i].fds_open_in_host[j]==fd)
+				return ksys_write_to_host(fd,buf,count,i);
+		}
+		return real_ksys_write(fd, buf,count);
 	}
 	else{
 		char buffer[65];
@@ -493,10 +547,16 @@ static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf
 		}
 	}
 	
-	if(watched_process_flag && (fd==0 || fd==49) ){
+	if(watched_process_flag){
 		//read request from fd=0 must return \n other this function will be called again and again
-		printk("TUH: %d\n",count);
-		return ksys_read_from_host(fd,buf,count,i);
+		if(fd==0)
+			return ksys_read_from_host(fd,buf,count,i);
+		int j;
+		for(j=0;j<10;j++){
+			if(watched_processes[i].fds_open_in_host[j]==fd)
+				return ksys_read_from_host(fd,buf,count,i);
+		}
+		return real_ksys_read(fd,buf,count);
 	}
 	else{
 		return real_ksys_read(fd, buf,count);	
@@ -525,6 +585,55 @@ static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int f
 	}
 }
 
+
+static asmlinkage int (*real_close)(struct files_struct *files, unsigned fd);
+static asmlinkage int fake_close(struct files_struct *files, unsigned fd){
+	int watched_process_flag = 0;
+	int i;
+	for(i=1;i<num_of_watched_processes;i++){  
+		if(watched_processes[i].pid == current->pid){
+			watched_process_flag=1;
+			break;
+		}
+	}
+	if(watched_process_flag){
+		int j;
+		for(j=0;j<10;j++){
+			if(watched_processes[i].fds_open_in_host[j]==fd)
+				return ksys_close_in_host(fd,i);
+		}
+		return real_close(files,fd);
+	}
+	else{
+		return real_close(files,fd);	
+	}
+}
+
+
+static asmlinkage int (*real_ioctl) (unsigned int fd, unsigned int cmd, unsigned long arg);
+static asmlinkage int fake_ioctl(unsigned int fd, unsigned int cmd, unsigned long arg){
+	int watched_process_flag = 0;
+	int i;
+	for(i=1;i<num_of_watched_processes;i++){  
+		if(watched_processes[i].pid == current->pid){
+			watched_process_flag=1;
+			break;
+		}
+	}
+	if(watched_process_flag){
+		int j;
+		for(j=0;j<10;j++){
+			if(watched_processes[i].fds_open_in_host[j]==fd)
+				return ioctl_in_host(fd,cmd,arg,i);
+		}
+		return real_ioctl(fd,cmd,arg);
+	}
+	else{
+		return real_ioctl(fd,cmd,arg);	
+	}
+}
+
+
 /*############################################################## HOOKS ####################################################### */
 
 #define HOOK(_name, _function, _original)	\
@@ -538,6 +647,8 @@ static struct ftrace_hook demo_hooks[] = {
 	HOOK("ksys_write", fake_ksys_write, &real_ksys_write),
 	HOOK("ksys_read", fake_ksys_read, &real_ksys_read),	
 	HOOK("do_sys_open", fake_sys_open, &real_sys_open),
+	HOOK("__close_fd",fake_close,&real_close),
+	HOOK("ksys_ioctl",fake_ioctl,&real_ioctl),
 };
 
 
@@ -558,6 +669,10 @@ static int fh_init(void)
 		watched_processes[i].pid = -1;
 		watched_processes[i].wake_flag = 'n';        //-1 implies no request yet
 		watched_processes[i].res[0].length = -1;
+		int j;
+		for(j=0;j<10;j++){
+			watched_processes[i].fds_open_in_host[j]=-1;
+		}
 	}
 
 	pr_info("SANDBOX: module loaded\n");
