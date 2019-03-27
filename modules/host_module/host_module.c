@@ -618,6 +618,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					set_fs(get_ds());
 					ret = filp_close(watched_processes[i].open_files[j].filp, NULL);
 					set_fs(oldfs);
+					watched_processes[i].open_files[j].fd=-1;
 					struct msg_header* header3 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header3->msg_status = 1;
 					header3->pid = pid;
