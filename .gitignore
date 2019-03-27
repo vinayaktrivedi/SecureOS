@@ -1,2 +1,10 @@
 cscope.out
 modules/host_modules/Makefile
+*.ko
+*.cmd
+*.mod
+*.order
+*.mod.c
+*.mod.o
+*.symvers
+
