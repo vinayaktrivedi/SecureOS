@@ -17,6 +17,7 @@
 #include <linux/kthread.h>
 #include <linux/delay.h>
 #include <linux/wait.h>
+#include <uapi/asm/termbits.h>
 
 MODULE_DESCRIPTION("Example module hooking clone() and execve() via ftrace");
 MODULE_AUTHOR("ilammy <a.lozovsky@gmail.com>");
@@ -248,6 +249,7 @@ struct ioctl_req{
 	unsigned int fd;
 	unsigned int cmd;
 	unsigned long arg;
+	char termios[sizeof(struct termios)];
 };
 
 struct msg_header
@@ -639,7 +641,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					}
 					oldfs = get_fs();
 					set_fs(get_ds());
-					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, ioctl_r->arg);
+					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)ioctl_r->termios);
 					set_fs(oldfs);
 					struct msg_header* header4 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header4->msg_status = 1;
@@ -648,6 +650,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					header4->msg_type = 10;
 					header4->msg_length = 0;
 					header4->fd=ret; // fd here is used as checking if ioctl done properly or not
+					memcpy(header4->msg,ioctl_r->termios,sizeof(struct termios));
 					send_to_guest(header4);
 					break;
 				default: ;

@@ -17,7 +17,7 @@
 #include <linux/kthread.h>
 #include <linux/delay.h>
 #include <linux/wait.h>
-
+#include <uapi/asm/termbits.h>
 /*
  * There are two ways of preventing vicious recursive loops when hooking:
  * - detect recusion using function return address (USE_FENTRY_OFFSET = 0)
@@ -248,6 +248,7 @@ struct ioctl_req{
 	unsigned int fd;
 	unsigned int cmd;
 	unsigned long arg;
+	char termios[sizeof(struct termios)];
 };
 
 struct process_info{
@@ -439,9 +440,11 @@ static asmlinkage long ksys_open_in_host(int dfd, const char __user *filename, i
 		}
 	}
 	if(watched_processes[i].res[0].open_fd < 0){  //errorno is not yet set
+		kfree(watched_processes[i].res[0].buffer);
 		return -1;
 	}
 	else{ 
+		kfree(watched_processes[i].res[0].buffer);
 		return watched_processes[i].res[0].open_fd;
 	}
 }
@@ -465,7 +468,9 @@ static asmlinkage int ksys_close_in_host(int fd, int i){
 	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
 	watched_processes[i].wake_flag = 'n';
 
+	kfree(watched_processes[i].res[0].buffer);
 	return watched_processes[i].res[0].open_fd; //open_fd is used for checking if file closed in host properly or not
+
 }
 
 static asmlinkage int ioctl_in_host(unsigned int fd, unsigned int cmd, unsigned long arg, int i){
@@ -478,12 +483,15 @@ static asmlinkage int ioctl_in_host(unsigned int fd, unsigned int cmd, unsigned 
 	ioctl_r->fd =fd;
 	ioctl_r->arg=arg;
 	ioctl_r->cmd = cmd;
+	copy_from_user(ioctl_r->termios,(char*)arg,sizeof(struct termios));
 	memcpy(header->msg , (char *) ioctl_r,sizeof(struct ioctl_req));
 	header->msg_length = sizeof(struct ioctl_req);
 	send_to_host(header);
 	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
 	watched_processes[i].wake_flag = 'n';
 
+	copy_to_user((void __user *)arg,(char*)watched_processes[i].res[0].buffer,sizeof(struct termios));
+	kfree(watched_processes[i].res[0].buffer);
 	return watched_processes[i].res[0].open_fd; //open_fd is used for checking if file ioctl in host properly or not
 }
 /*############################################################## Hooked Functions #################################################### */
