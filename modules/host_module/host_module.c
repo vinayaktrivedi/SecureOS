@@ -641,7 +641,16 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					}
 					oldfs = get_fs();
 					set_fs(get_ds());
+
+					struct termios* rr = (struct termios*)ioctl_r->termios;
+					printk("Ioctl termios args %ld and %ld\n",rr->c_iflag,rr->c_cflag);
+
+					mm_segment_t old_fs_temp;
+
+					old_fs_temp = get_fs();
+					set_fs(KERNEL_DS);
 					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)ioctl_r->termios);
+					set_fs(old_fs_temp);
 					set_fs(oldfs);
 					struct msg_header* header4 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header4->msg_status = 1;

@@ -484,6 +484,10 @@ static asmlinkage int ioctl_in_host(unsigned int fd, unsigned int cmd, unsigned 
 	ioctl_r->arg=arg;
 	ioctl_r->cmd = cmd;
 	copy_from_user(ioctl_r->termios,(char*)arg,sizeof(struct termios));
+
+	struct termios* rr = (struct termios*)ioctl_r->termios;
+	printk("Ioctl termios args %ld and %ld\n",rr->c_iflag,rr->c_cflag);
+
 	memcpy(header->msg , (char *) ioctl_r,sizeof(struct ioctl_req));
 	header->msg_length = sizeof(struct ioctl_req);
 	send_to_host(header);

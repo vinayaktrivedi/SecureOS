@@ -1,0 +1,28 @@
+             ssh-11727 [002] 13754.536716: funcgraph_entry:                   |  ksys_ioctl() {
+             ssh-11727 [002] 13754.536717: funcgraph_entry:                   |    __fdget() {
+             ssh-11727 [002] 13754.536718: funcgraph_entry:        0.702 us   |      __fget_light();
+             ssh-11727 [002] 13754.536719: funcgraph_exit:         2.135 us   |    }
+             ssh-11727 [002] 13754.536720: funcgraph_entry:        0.680 us   |    security_file_ioctl();
+             ssh-11727 [002] 13754.536721: funcgraph_entry:                   |    do_vfs_ioctl() {
+             ssh-11727 [002] 13754.536722: funcgraph_entry:                   |      tty_ioctl() {
+             ssh-11727 [002] 13754.536723: funcgraph_entry:        0.735 us   |        tty_paranoia_check.isra.3();
+             ssh-11727 [002] 13754.536724: funcgraph_entry:        0.775 us   |        tty_jobctrl_ioctl();
+             ssh-11727 [002] 13754.536726: funcgraph_entry:                   |        tty_ldisc_ref_wait() {
+             ssh-11727 [002] 13754.536726: funcgraph_entry:        0.706 us   |          ldsem_down_read();
+             ssh-11727 [002] 13754.536728: funcgraph_exit:         2.150 us   |        }
+             ssh-11727 [002] 13754.536729: funcgraph_entry:                   |        n_tty_ioctl() {
+             ssh-11727 [002] 13754.536729: funcgraph_entry:                   |          n_tty_ioctl_helper() {
+             ssh-11727 [002] 13754.536730: funcgraph_entry:                   |            tty_mode_ioctl() {
+             ssh-11727 [002] 13754.536731: funcgraph_entry:                   |              copy_termios() {
+             ssh-11727 [002] 13754.536731: funcgraph_entry:        0.662 us   |                down_read();
+             ssh-11727 [002] 13754.536733: funcgraph_entry:        0.685 us   |                up_read();
+             ssh-11727 [002] 13754.536734: funcgraph_exit:         3.340 us   |              }
+             ssh-11727 [002] 13754.536735: funcgraph_exit:         4.689 us   |            }
+             ssh-11727 [002] 13754.536736: funcgraph_exit:         6.100 us   |          }
+             ssh-11727 [002] 13754.536736: funcgraph_exit:         7.468 us   |        }
+             ssh-11727 [002] 13754.536737: funcgraph_entry:                   |        tty_ldisc_deref() {
+             ssh-11727 [002] 13754.536738: funcgraph_entry:        0.707 us   |          ldsem_up_read();
+             ssh-11727 [002] 13754.536739: funcgraph_exit:         2.011 us   |        }
+             ssh-11727 [002] 13754.536739: funcgraph_exit:       + 17.292 us  |      }
+             ssh-11727 [002] 13754.536740: funcgraph_exit:       + 18.687 us  |    }
+             ssh-11727 [002] 13754.536740: funcgraph_exit:       + 24.440 us  |  }
