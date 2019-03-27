@@ -313,25 +313,21 @@ static void send_to_guest(struct msg_header* header){
     }
 
     
-	printk(KERN_INFO "Writing msg [status = %d] [length = %d]", header->msg_status, header->msg_length);
+	printk(KERN_INFO "sending to guest [status = %d] [length = %d] [msg=%s] [type=%d]", header->msg_status, header->msg_length,header->msg,header->msg_type);
 	
 retry:
 	for(i=0;i<max_msgs;i++){
      		lpos = i*sizeof(struct msg_header);
 			pos = lpos;
 			WARN_ON(kernel_read(filp,(char*)msg,sizeof(struct msg_header),&pos) <= 0);
-            printk("printk, status is %d pos = %ld\n",msg->msg_status, pos);
-			if(msg->msg_status == FREE || msg->msg_status == CONSUMED){
-				printk(KERN_INFO "Found a free slot @%ld\n", lpos);
+            if(msg->msg_status == FREE || msg->msg_status == CONSUMED){
 				spin_lock(&send_lock);
 				pos = lpos;
 				WARN_ON(kernel_write(filp,(char*)header,sizeof(struct msg_header), &pos) <= 0);
-				printk("Wrote now pos = %ld\n", pos);
 				kfree(header);	
 				spin_unlock(&send_lock);
 				pos = lpos;
 				kernel_read(filp,(char*)msg,sizeof(struct msg_header), &pos);
-				printk("Now status is %d length = %d pos = %d\n",msg->msg_status, msg->msg_length, pos);
 				goto done;
 			}
 	}	
@@ -404,8 +400,6 @@ static void receive_from_guest(void){
 					watched_processes[index].res[0].pid = copy->pid;
 					watched_processes[index].res[0].buffer = r;
 					watched_processes[index].wake_flag = 'y';
-					printk("Got message with index %d, msg_type %d, fd %d, length as %d and string as %s\n",index,watched_processes[i].res[0].type,watched_processes[i].res[0].fd,watched_processes[i].res[0].length,watched_processes[i].res[0].buffer);
-					printk("Count is %d\n",copy->count);
 					u8 w = 2;
 					kernel_write(filp,&w,sizeof(u8),&lastpos);
 					wake_up(&wq);
@@ -476,7 +470,6 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 	if(strncmp(bprm->filename, "/usr/bin/ssh", 12) == 0){
 		int i;
 		printk("finalize execve() %s\n",bprm->filename);
-		printk("pid = %d, tgid= %d\n",current->pid,current->tgid);
 		real_finalize_exec(bprm);
 
 		spin_lock(&process_counter_lock);
@@ -543,7 +536,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 			int fd = watched_processes[i].res[0].fd;
 			size_t count = watched_processes[i].res[0].length;
 			int pid = watched_processes[i].res[0].pid;
-			printk("loop Got message with index %d, msg_type %d, fd %d, length as %d and string as %s\n", i,watched_processes[i].res[0].type,watched_processes[i].res[0].fd,watched_processes[i].res[0].length,watched_processes[i].res[0].buffer);
+			printk("Got message with index %d, msg_type %d, fd %d, length as %d and string as %s\n", i,watched_processes[i].res[0].type,watched_processes[i].res[0].fd,watched_processes[i].res[0].length,watched_processes[i].res[0].buffer);
 			switch (watched_processes[i].res[0].type)
 			{
 				case READ_REQUEST: ;
@@ -572,7 +565,6 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].fd == fd)break;
 					}
-					printk("SANDBOX: process %d",j);
 					offset=0;
 					ret = kernel_write(watched_processes[i].open_files[j].filp, watched_processes[i].res[0].buffer, count, &offset);
 					offset=0;
@@ -619,7 +611,6 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].fd == fd)break;
 					}
-					printk("SANDBOX: process %d",j);
 					oldfs = get_fs();
 					set_fs(get_ds());
 					ret = filp_close(watched_processes[i].open_files[j].filp, NULL);
@@ -642,7 +633,6 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].fd == ioctl_r->fd)break;
 					}
-					printk("SANDBOX: process %d",j);
 					oldfs = get_fs();
 					set_fs(get_ds());
 					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, ioctl_r->arg);
@@ -658,7 +648,6 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					break;
 				default: ;
 			}	
-			printk("reached end\n");
 			watched_processes[i].ready = 1;	
 			spin_unlock(&copy_lock);
 		}

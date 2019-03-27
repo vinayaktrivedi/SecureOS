@@ -288,7 +288,7 @@ static void send_to_host(struct msg_header* header){
 			u8* status = (u8*)(shared+HOST_ADDR+sizeof(struct msg_header)*i);
 			if(*status == 0 || *status == 2){
 				spin_lock(&send_lock);
-                                printk("SANDBOX: %s\n",header->msg);
+                                printk("SANDBOX sending msg:msg=%s type=%d fd=%d\n",header->msg,header->msg_type,header->fd);
 				char* base = (char*)status;
 				copy_bytes(base,(char*)header,sizeof(struct msg_header));
 				flag=1;
@@ -321,7 +321,7 @@ static void receive_from_host(void){
 			char* r = kmalloc(msg->msg_length*sizeof(char),GFP_KERNEL);
 			strncpy(r,msg->msg,msg->msg_length);
 
-			printk("Got mesage as pid %d , length as %d and type as %d and host fd=%d\n",msg->pid,msg->msg_length,msg->msg_type,msg->fd);
+			printk("Got from host mesage as pid %d , length as %d and type as %d and host fd=%d\n",msg->pid,msg->msg_length,msg->msg_type,msg->fd);
 			int index=0;
 			if(msg->msg_type == EXECVE_REQUEST && msg->pid == 0 ){
 				if(ready == 0){
@@ -407,7 +407,6 @@ static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user
 		return -1;
 	}
 	else{
-	    printk("TUSHAR: got from host string %s %d\n",watched_processes[i].res[0].buffer,watched_processes[i].res[0].length);	
 		copy_to_user( (void __user *) buf,(const void *)watched_processes[i].res[0].buffer, (unsigned long) watched_processes[i].res[0].length);
 		kfree(watched_processes[i].res[0].buffer);
 		return watched_processes[i].res[0].length;
@@ -433,10 +432,11 @@ static asmlinkage long ksys_open_in_host(int dfd, const char __user *filename, i
 	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
 	watched_processes[i].wake_flag = 'n';
 	int j;
-
-	for(i=0;j<10;j++){
-		if(watched_processes[i].fds_open_in_host[j]==-1)
+	for(j=0;j<10;j++){
+		if(watched_processes[i].fds_open_in_host[j]==-1){
 			watched_processes[i].fds_open_in_host[j]=watched_processes[i].res[0].open_fd;
+			break;
+		}
 	}
 	if(watched_processes[i].res[0].open_fd < 0){  //errorno is not yet set
 		return -1;
@@ -599,8 +599,9 @@ static asmlinkage int fake_close(struct files_struct *files, unsigned fd){
 	if(watched_process_flag){
 		int j;
 		for(j=0;j<10;j++){
-			if(watched_processes[i].fds_open_in_host[j]==fd)
+			if(watched_processes[i].fds_open_in_host[j]==fd){
 				return ksys_close_in_host(fd,i);
+			}	
 		}
 		return real_close(files,fd);
 	}
