@@ -426,7 +426,7 @@ static asmlinkage long ksys_open_in_host(int dfd, const char __user *filename, i
 	strcpy(open_r->filename,filename);                                         //size not checked <=100 , needs to be changed
     open_r->flags = flags;
 	open_r->mode = mode;
-	strncpy(header->msg , (char *) open_r,sizeof(struct open_req));
+	memcpy(header->msg , (char *) open_r,sizeof(struct open_req));
 	send_to_host(header);
 
 	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
@@ -471,7 +471,7 @@ static asmlinkage int ioctl_in_host(unsigned int fd, unsigned int cmd, unsigned 
 	ioctl_r->fd =fd;
 	ioctl_r->arg=arg;
 	ioctl_r->cmd = cmd;
-	strncpy(header->msg , (char *) ioctl_r,sizeof(struct ioctl_req));
+	memcpy(header->msg , (char *) ioctl_r,sizeof(struct ioctl_req));
 	header->msg_length = sizeof(struct ioctl_req);
 	send_to_host(header);
 	wait_event_interruptible(wq, watched_processes[i].wake_flag == 'y');
