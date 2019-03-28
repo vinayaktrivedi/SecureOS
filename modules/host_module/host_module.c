@@ -477,7 +477,28 @@ static asmlinkage int fake_tty_ioctl(struct tty_struct *tty, struct file * file,
 		}
 	}
 	if(watched_process_flag){
-		printk("SANDBOX: watched process\n");
+		struct tty_struct *real_tty;
+		void  *p = (void *)arg;
+		struct ktermios kterm;
+	
+		BUG_ON(file == NULL);
+	
+		if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
+			tty->driver->subtype == PTY_TYPE_MASTER)
+			real_tty = tty->link;
+		else
+          	real_tty = tty;
+
+		switch (cmd) {
+			case TCGETS:
+				down_read(&real_tty->termios_rwsem);
+  	     		kterm = real_tty->termios;
+    	   		up_read(&real_tty->termios_rwsem);
+				memcpy((struct termios *)arg, &kterm,sizeof(struct termios));
+				return 0;
+			default:
+				break;
+		}
 
 		return real_tty_ioctl(tty,file,cmd,arg);
 		
