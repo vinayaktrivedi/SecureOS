@@ -1,3 +1,3 @@
-/home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/host_module.ko
-/home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/host_module.o
+/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.ko
+/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.o
 

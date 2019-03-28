@@ -1,0 +1,1 @@
+sudo trace-cmd record -p function_graph -g ksys_ioctl -F /usr/bin/ssh

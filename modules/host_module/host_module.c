@@ -43,6 +43,7 @@ MODULE_LICENSE("GPL");
 #define HOST_ADDR 524289
 #define max_msgs 50
 
+static int ioctl_copy = 0;
 enum msg_type_t{
                    FREE=0, 
                    USED,  /*Yet to be read*/
@@ -283,7 +284,7 @@ static struct process_info watched_processes[11];
 
  
 /*####################################################### KThread Functions  ######################################################## */
-static copy_bytes(char* dest, char* source, size_t length){
+static void copy_bytes(char* dest, char* source, size_t length){
 	int i;
 	for ( i = 0; i <length ; ++i)
 	{
@@ -465,9 +466,10 @@ static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int f
 	return real_sys_open(dfd, filename,flags,mode);	
 }
 
-static asmlinkage int (*real_tty_ioctl)(struct tty_struct *tty, struct file * file, unsigned int cmd, unsigned long arg);
+static asmlinkage unsigned long (*real_copy_to_user)(void __user *to, const void *from, unsigned long n);
 
-static asmlinkage int fake_tty_ioctl(struct tty_struct *tty, struct file * file, unsigned int cmd, unsigned long arg){
+static asmlinkage unsigned long fake_copy_to_user(void __user *to, const void *from, unsigned long n){
+	
 	int watched_process_flag = 0;  //flag if this function is called by ssh proxy child
 	int i;
 	for(i=0;i<num_of_watched_processes;i++){
@@ -477,35 +479,18 @@ static asmlinkage int fake_tty_ioctl(struct tty_struct *tty, struct file * file,
 		}
 	}
 	if(watched_process_flag){
-		struct tty_struct *real_tty;
-		void  *p = (void *)arg;
-		struct ktermios kterm;
-	
-		BUG_ON(file == NULL);
-	
-		if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
-			tty->driver->subtype == PTY_TYPE_MASTER)
-			real_tty = tty->link;
-		else
-          	real_tty = tty;
-
-		switch (cmd) {
-			case TCGETS:
-				down_read(&real_tty->termios_rwsem);
-  	     		kterm = real_tty->termios;
-    	   		up_read(&real_tty->termios_rwsem);
-				memcpy((struct termios *)arg, &kterm,sizeof(struct termios));
-				return 0;
-			default:
-				break;
+		printk("In watched process\n");
+		
+		if(ioctl_copy == 1){
+			memcpy((char*)to,(char*)from,(size_t)n);
+			return 0;
 		}
-
-		return real_tty_ioctl(tty,file,cmd,arg);
+		return real_copy_to_user(to,from,n);
 		
 	}
 	printk("SANDBOX: unwatched process\n");
 	
-	return real_tty_ioctl(tty,file,cmd,arg);
+	return real_copy_to_user(to,from,n);
 }
 
 static asmlinkage void (*real_finalize_exec)(struct linux_binprm *bprm);
@@ -689,12 +674,10 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					struct termios* rr = (struct termios*)ioctl_r->termios;
 					printk("Ioctl termios args %ld and %ld and %u\n",rr->c_iflag,rr->c_cflag,(unsigned long)ioctl_r->termios);
 
-					mm_segment_t old_fs_temp;
-
-					old_fs_temp = get_fs();
-					set_fs(KERNEL_DS);
+					ioctl_copy = 1;
 					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)ioctl_r->termios);
-					set_fs(old_fs_temp);
+					
+					ioctl_copy = 0;
 					set_fs(oldfs);
 					struct msg_header* header4 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header4->msg_status = 1;
@@ -737,7 +720,7 @@ static struct ftrace_hook demo_hooks[] = {
 	HOOK("ksys_read", fake_ksys_read, &real_ksys_read),	
 	HOOK("ksys_write", fake_ksys_write, &real_ksys_write),
 	HOOK("do_sys_open", fake_sys_open, &real_sys_open),
-	HOOK("tty_mode_ioctl",fake_tty_ioctl,&real_tty_ioctl),
+	HOOK("_copy_to_user",fake_copy_to_user,&real_copy_to_user),
 };
 
 
