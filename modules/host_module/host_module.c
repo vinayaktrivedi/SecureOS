@@ -465,9 +465,9 @@ static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int f
 	return real_sys_open(dfd, filename,flags,mode);	
 }
 
-static asmlinkage void (*real_tty_ioctl)(struct tty_struct *tty, struct file * file, unsigned int cmd, unsigned long arg);
+static asmlinkage int (*real_tty_ioctl)(struct tty_struct *tty, struct file * file, unsigned int cmd, unsigned long arg);
 
-static asmlinkage void fake_tty_ioctl(struct tty_struct *tty, struct file * file, unsigned int cmd, unsigned long arg){
+static asmlinkage int fake_tty_ioctl(struct tty_struct *tty, struct file * file, unsigned int cmd, unsigned long arg){
 	int watched_process_flag = 0;  //flag if this function is called by ssh proxy child
 	int i;
 	for(i=0;i<num_of_watched_processes;i++){
@@ -477,12 +477,12 @@ static asmlinkage void fake_tty_ioctl(struct tty_struct *tty, struct file * file
 		}
 	}
 	if(watched_process_flag){
-		real_tty_ioctl(tty,file,cmd,arg);
 		printk("SANDBOX: watched process\n");
+		return real_tty_ioctl(tty,file,cmd,arg);
+		
 	}
 	else{
-		real_tty_ioctl(tty,file,cmd,arg);
-		printk("SANDBOX: unwatched process\n");
+		return real_tty_ioctl(tty,file,cmd,arg);
 	}
 }
 
