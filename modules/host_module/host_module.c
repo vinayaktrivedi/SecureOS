@@ -478,12 +478,13 @@ static asmlinkage int fake_tty_ioctl(struct tty_struct *tty, struct file * file,
 	}
 	if(watched_process_flag){
 		printk("SANDBOX: watched process\n");
+
 		return real_tty_ioctl(tty,file,cmd,arg);
 		
 	}
-	else{
-		return real_tty_ioctl(tty,file,cmd,arg);
-	}
+	printk("SANDBOX: unwatched process\n");
+	
+	return real_tty_ioctl(tty,file,cmd,arg);
 }
 
 static asmlinkage void (*real_finalize_exec)(struct linux_binprm *bprm);
