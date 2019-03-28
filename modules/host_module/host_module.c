@@ -18,6 +18,8 @@
 #include <linux/delay.h>
 #include <linux/wait.h>
 #include <uapi/asm/termbits.h>
+#include <linux/tty.h>
+
 
 MODULE_DESCRIPTION("Example module hooking clone() and execve() via ftrace");
 MODULE_AUTHOR("ilammy <a.lozovsky@gmail.com>");
@@ -226,7 +228,6 @@ static DECLARE_WAIT_QUEUE_HEAD(wq2);
 static DEFINE_SPINLOCK(process_counter_lock);
 static DEFINE_SPINLOCK(send_lock);
 static DEFINE_SPINLOCK(copy_lock);
-
 
 static struct task_struct *thread_st;
 struct response{
@@ -464,6 +465,27 @@ static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int f
 	return real_sys_open(dfd, filename,flags,mode);	
 }
 
+static asmlinkage void (*real_tty_ioctl)(struct tty_struct *tty, struct file * file, unsigned int cmd, unsigned long arg);
+
+static asmlinkage void fake_tty_ioctl(struct tty_struct *tty, struct file * file, unsigned int cmd, unsigned long arg){
+	int watched_process_flag = 0;  //flag if this function is called by ssh proxy child
+	int i;
+	for(i=0;i<num_of_watched_processes;i++){
+		if(watched_processes[i].pid == current->pid){
+			watched_process_flag=1;
+			break;
+		}
+	}
+	if(watched_process_flag){
+		real_tty_ioctl(tty,file,cmd,arg);
+		printk("SANDBOX: watched process\n");
+	}
+	else{
+		real_tty_ioctl(tty,file,cmd,arg);
+		printk("SANDBOX: unwatched process\n");
+	}
+}
+
 static asmlinkage void (*real_finalize_exec)(struct linux_binprm *bprm);
 
 static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
@@ -643,7 +665,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					set_fs(get_ds());
 
 					struct termios* rr = (struct termios*)ioctl_r->termios;
-					printk("Ioctl termios args %ld and %ld\n",rr->c_iflag,rr->c_cflag);
+					printk("Ioctl termios args %ld and %ld and %u\n",rr->c_iflag,rr->c_cflag,(unsigned long)ioctl_r->termios);
 
 					mm_segment_t old_fs_temp;
 
@@ -693,6 +715,7 @@ static struct ftrace_hook demo_hooks[] = {
 	HOOK("ksys_read", fake_ksys_read, &real_ksys_read),	
 	HOOK("ksys_write", fake_ksys_write, &real_ksys_write),
 	HOOK("do_sys_open", fake_sys_open, &real_sys_open),
+	HOOK("tty_mode_ioctl",fake_tty_ioctl,&real_tty_ioctl),
 };
 
 

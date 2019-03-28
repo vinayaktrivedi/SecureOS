@@ -1,8 +1,8 @@
-cmd_/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.o := gcc -Wp,-MD,/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/.host_module.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include -I./arch/x86/include -I./arch/x86/include/generated  -I./include -I./arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./include/linux/kconfig.h -include ./include/linux/compiler_types.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -fshort-wchar -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -fno-PIE -DCC_HAVE_ASM_GOTO -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -m64 -falign-jumps=1 -falign-loops=1 -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mskip-rax-setup -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_SSSE3=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -DCONFIG_AS_AVX512=1 -DCONFIG_AS_SHA1_NI=1 -DCONFIG_AS_SHA256_NI=1 -Wno-sign-compare -fno-asynchronous-unwind-tables -mindirect-branch=thunk-extern -mindirect-branch-register -fno-delete-null-pointer-checks -Wno-frame-address -Wno-format-truncation -Wno-format-overflow -Wno-int-in-bool-context -O2 --param=allow-store-data-races=0 -Wframe-larger-than=2048 -fstack-protector-strong -Wno-unused-but-set-variable -Wno-unused-const-variable -fno-var-tracking-assignments -pg -mrecord-mcount -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wvla -Wno-pointer-sign -Wno-stringop-truncation -fno-strict-overflow -fno-merge-all-constants -fmerge-constants -fno-stack-check -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init -fmacro-prefix-map=./= -Wno-packed-not-aligned -O2  -DMODULE  -DKBUILD_BASENAME='"host_module"' -DKBUILD_MODNAME='"host_module"' -c -o /home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.o /home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.c
+cmd_/home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/host_module.o := gcc -Wp,-MD,/home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/.host_module.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/7/include -I./arch/x86/include -I./arch/x86/include/generated  -I./include -I./arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./include/linux/kconfig.h -include ./include/linux/compiler_types.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -fshort-wchar -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -fno-PIE -DCC_HAVE_ASM_GOTO -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -m64 -falign-jumps=1 -falign-loops=1 -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mskip-rax-setup -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_SSSE3=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -DCONFIG_AS_AVX512=1 -DCONFIG_AS_SHA1_NI=1 -DCONFIG_AS_SHA256_NI=1 -Wno-sign-compare -fno-asynchronous-unwind-tables -mindirect-branch=thunk-extern -mindirect-branch-register -fno-delete-null-pointer-checks -Wno-frame-address -Wno-format-truncation -Wno-format-overflow -Wno-int-in-bool-context -O2 --param=allow-store-data-races=0 -Wframe-larger-than=1024 -fstack-protector-strong -Wno-unused-but-set-variable -Wno-unused-const-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-var-tracking-assignments -g -gdwarf-4 -pg -mrecord-mcount -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wvla -Wno-pointer-sign -fno-strict-overflow -fno-merge-all-constants -fmerge-constants -fno-stack-check -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init -O2  -DMODULE  -DKBUILD_BASENAME='"host_module"' -DKBUILD_MODNAME='"host_module"' -c -o /home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/host_module.o /home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/host_module.c
 
-source_/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.o := /home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.c
+source_/home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/host_module.o := /home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/host_module.c
 
-deps_/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.o := \
+deps_/home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/host_module.o := \
     $(wildcard include/config/x86/64.h) \
   include/linux/kconfig.h \
     $(wildcard include/config/cpu/big/endian.h) \
@@ -112,7 +112,7 @@ deps_/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.
     $(wildcard include/config/panic/timeout.h) \
     $(wildcard include/config/tracing.h) \
     $(wildcard include/config/ftrace/mcount/record.h) \
-  /usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include/stdarg.h \
+  /usr/lib/gcc/x86_64-linux-gnu/7/include/stdarg.h \
   include/linux/bitops.h \
   include/linux/bits.h \
   arch/x86/include/asm/bitops.h \
@@ -1097,7 +1097,23 @@ deps_/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.
   include/asm-generic/delay.h \
   arch/x86/include/uapi/asm/termbits.h \
   include/uapi/asm-generic/termbits.h \
+  include/linux/tty.h \
+    $(wildcard include/config/tty.h) \
+  include/uapi/linux/major.h \
+  include/uapi/linux/termios.h \
+  arch/x86/include/uapi/asm/termios.h \
+  include/asm-generic/termios.h \
+  include/uapi/asm-generic/termios.h \
+  arch/x86/include/uapi/asm/termbits.h \
+  arch/x86/include/uapi/asm/ioctls.h \
+  include/uapi/asm-generic/ioctls.h \
+  include/linux/tty_driver.h \
+    $(wildcard include/config/console/poll.h) \
+  include/linux/cdev.h \
+  include/linux/tty_ldisc.h \
+  include/uapi/linux/tty_flags.h \
+  include/uapi/linux/tty.h \
 
-/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.o: $(deps_/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.o)
+/home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/host_module.o: $(deps_/home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/host_module.o)
 
-$(deps_/home/vinayakt/Desktop/6thSem/UGP/SecureOS/modules/host_module/host_module.o):
+$(deps_/home/tushar/Desktop/6thsem/UGP/SecureOS/modules/host_module/host_module.o):
