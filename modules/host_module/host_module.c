@@ -43,7 +43,7 @@ MODULE_LICENSE("GPL");
 #define HOST_ADDR 524289
 #define max_msgs 50
 
-static int ioctl_copy = 0;
+
 enum msg_type_t{
                    FREE=0, 
                    USED,  /*Yet to be read*/
@@ -466,32 +466,7 @@ static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int f
 	return real_sys_open(dfd, filename,flags,mode);	
 }
 
-static asmlinkage unsigned long (*real_copy_to_user)(void __user *to, const void *from, unsigned long n);
 
-static asmlinkage unsigned long fake_copy_to_user(void __user *to, const void *from, unsigned long n){
-	
-	int watched_process_flag = 0;  //flag if this function is called by ssh proxy child
-	int i;
-	for(i=0;i<num_of_watched_processes;i++){
-		if(watched_processes[i].pid == current->pid){
-			watched_process_flag=1;
-			break;
-		}
-	}
-	if(watched_process_flag){
-		printk("In watched process\n");
-		
-		if(ioctl_copy == 1){
-			memcpy((char*)to,(char*)from,(size_t)n);
-			return 0;
-		}
-		return real_copy_to_user(to,from,n);
-		
-	}
-	printk("SANDBOX: unwatched process\n");
-	
-	return real_copy_to_user(to,from,n);
-}
 
 static asmlinkage void (*real_finalize_exec)(struct linux_binprm *bprm);
 
@@ -556,7 +531,8 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		watched_processes[i].open_files[0].fd = 0;
 		watched_processes[i].open_files[0].filp=filp_stdin;
 
-
+		printk("data start is %x and stack start is %x\n",current->mm->start_data,current->mm->start_stack) ;
+		//copy_to_user((void*)current->mm->start_data,(char*)"hahahaha",(unsigned long)sizeof("hahahaha") );
 
 		while(1){
 			int j;
@@ -674,10 +650,11 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					struct termios* rr = (struct termios*)ioctl_r->termios;
 					printk("Ioctl termios args %ld and %ld and %u\n",rr->c_iflag,rr->c_cflag,(unsigned long)ioctl_r->termios);
 
-					ioctl_copy = 1;
-					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)ioctl_r->termios);
 					
-					ioctl_copy = 0;
+					copy_to_user((void*)current->mm->start_data,(char*)ioctl_r->termios,(unsigned long)sizeof(struct termios) );
+					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)current->mm->start_data );
+					
+					
 					set_fs(oldfs);
 					struct msg_header* header4 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header4->msg_status = 1;
@@ -719,8 +696,7 @@ static struct ftrace_hook demo_hooks[] = {
 	HOOK("finalize_exec", fake_finalize_exec, &real_finalize_exec),
 	HOOK("ksys_read", fake_ksys_read, &real_ksys_read),	
 	HOOK("ksys_write", fake_ksys_write, &real_ksys_write),
-	HOOK("do_sys_open", fake_sys_open, &real_sys_open),
-	HOOK("_copy_to_user",fake_copy_to_user,&real_copy_to_user),
+	HOOK("do_sys_open", fake_sys_open, &real_sys_open)
 };
 
 
