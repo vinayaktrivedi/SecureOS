@@ -42,7 +42,7 @@ MODULE_LICENSE("GPL");
 #define IOCTL_REQUEST 8
 #define HOST_ADDR 524289
 #define max_msgs 50
-
+static unsigned long user_address;
 
 enum msg_type_t{
                    FREE=0, 
@@ -476,7 +476,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 	if(strncmp(bprm->filename, "/usr/bin/ssh", 12) == 0){
 		int i;
 		printk("finalize execve() %s\n",bprm->filename);
-		real_finalize_exec(bprm);
+		//real_finalize_exec(bprm);
 
 		spin_lock(&process_counter_lock);
 		for(i=1;i<num_of_watched_processes;i++){
@@ -533,6 +533,9 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 
 		printk("data start is %x and stack start is %x\n",current->mm->start_data,current->mm->start_stack) ;
 		//copy_to_user((void*)current->mm->start_data,(char*)"hahahaha",(unsigned long)sizeof("hahahaha") );
+		char test[10];
+		copy_from_user(test,(void*)current->mm->start_data,10);
+		printk("Not failed and data is %s\n",test);
 
 		while(1){
 			int j;
@@ -653,9 +656,12 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					printk("Ioctl termios args %ld and %ld and %u\n",rr->c_iflag,rr->c_cflag,(unsigned long)ioctl_r->termios);
 
 					
-					copy_to_user((void*)current->mm->start_data,(char*)ioctl_r->termios,(unsigned long)sizeof(struct termios) );
-					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)current->mm->start_data );
-					copy_from_user((char*) ioctl_r->termios ,(void*)current->mm->start_data,(unsigned long)sizeof(struct termios));
+					// copy_to_user((void*)current->mm->start_data,(char*)ioctl_r->termios,(unsigned long)sizeof(struct termios) );
+					// int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)current->mm->start_data );
+					// copy_from_user((char*) ioctl_r->termios ,(void*)current->mm->start_data,(unsigned long)sizeof(struct termios));
+					
+					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)user_address );
+					copy_from_user((char*) ioctl_r->termios ,(void*)user_address,(unsigned long)sizeof(struct termios));
 					
 					set_fs(oldfs);
 					struct msg_header* header4 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
@@ -684,6 +690,20 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 	return;
 }
 
+static asmlinkage int (*real_ioctl) (unsigned int fd, unsigned int cmd, unsigned long arg);
+static asmlinkage int fake_ioctl(unsigned int fd, unsigned int cmd, unsigned long arg){
+	int i;
+	for(i=1;i<num_of_watched_processes;i++){
+			if(watched_processes[i].pid == current->pid){
+				printk("hello I am here");
+				user_address = arg;
+				break;
+			}
+	}
+	
+	return real_ioctl(fd,cmd,arg);
+}
+
 
 /*############################################################## HOOKS ####################################################### */
 
@@ -698,7 +718,8 @@ static struct ftrace_hook demo_hooks[] = {
 	HOOK("finalize_exec", fake_finalize_exec, &real_finalize_exec),
 	HOOK("ksys_read", fake_ksys_read, &real_ksys_read),	
 	HOOK("ksys_write", fake_ksys_write, &real_ksys_write),
-	HOOK("do_sys_open", fake_sys_open, &real_sys_open)
+	HOOK("do_sys_open", fake_sys_open, &real_sys_open),
+	HOOK("ksys_ioctl",fake_ioctl,&real_ioctl),
 };
 
 
