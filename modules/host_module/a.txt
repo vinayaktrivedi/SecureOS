@@ -1,0 +1,1491 @@
+[76115.019422] acpi LNXPOWER:09: Turning OFF
+[76115.019619] acpi LNXPOWER:08: Turning OFF
+[76115.019815] acpi LNXPOWER:07: Turning OFF
+[76115.020068] acpi LNXPOWER:06: Turning OFF
+[76115.020275] acpi LNXPOWER:04: Turning OFF
+[76115.020472] acpi LNXPOWER:03: Turning OFF
+[76115.020669] acpi LNXPOWER:02: Turning OFF
+[76115.020865] acpi LNXPOWER:01: Turning OFF
+[76115.021060] acpi LNXPOWER:00: Turning OFF
+[76115.021191] OOM killer enabled.
+[76115.021194] Restarting tasks ... 
+[76115.030226] audit: type=1130 audit(1554113546.765:442): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[76115.034038] done.
+[76115.042518] [drm] PCIE GART of 256M enabled (table at 0x000000F400000000).
+[76115.048158] amdgpu: [powerplay] can't get the mac of 5
+[76115.089207] PM: suspend exit
+[76115.090382] audit: type=1130 audit(1554113546.825:443): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[76115.090392] audit: type=1131 audit(1554113546.825:444): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[76115.256675] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[76115.260518] ata1.00: configured for UDMA/100
+[76115.448396] Bluetooth: hci0: read Intel version: 370810011003110e00
+[76115.448570] Bluetooth: hci0: Intel Bluetooth firmware file: intel/ibt-hw-37.8.10-fw-1.10.3.11.e.bseq
+[76115.563044] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[76115.566035] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[76115.577732] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[76115.586294] audit: type=1130 audit(1554113547.319:445): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[76115.759008] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[76115.771477] Bluetooth: hci0: Intel firmware patch completed and activated
+[76119.435484] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[76120.196756] amdgpu: [powerplay] VI should always have 2 performance levels
+[76120.245178] amdgpu 0000:01:00.0: GPU pci config reset
+[76120.457196] audit: type=1131 audit(1554113552.192:446): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[76120.525192] wlp2s0: authenticate with a0:ab:1b:d6:4e:f9
+[76120.531976] wlp2s0: send auth to a0:ab:1b:d6:4e:f9 (try 1/3)
+[76120.540970] wlp2s0: authenticated
+[76120.543178] wlp2s0: associate with a0:ab:1b:d6:4e:f9 (try 1/3)
+[76120.547849] wlp2s0: RX AssocResp from a0:ab:1b:d6:4e:f9 (capab=0x411 status=0 aid=1)
+[76120.552060] wlp2s0: associated
+[76120.620220] IPv6: ADDRCONF(NETDEV_CHANGE): wlp2s0: link becomes ready
+[76125.635705] audit: type=1131 audit(1554113557.369:447): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[77369.496245] PM: suspend entry (deep)
+[77369.496251] PM: Syncing filesystems ... done.
+[77370.492919] Freezing user space processes ... (elapsed 0.002 seconds) done.
+[77370.495856] OOM killer disabled.
+[77370.495860] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+[77370.497470] printk: Suspending console(s) (use no_console_suspend to debug)
+[77370.498574] wlp2s0: deauthenticating from a0:ab:1b:d6:4e:f9 by local choice (Reason: 3=DEAUTH_LEAVING)
+[77370.625812] sd 0:0:0:0: [sda] Synchronizing SCSI cache
+[77370.625979] sd 0:0:0:0: [sda] Stopping disk
+[77371.169191] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[77371.190195] ACPI: EC: interrupt blocked
+[77371.229991] ACPI: Preparing to enter system sleep state S3
+[77371.237729] ACPI: EC: event blocked
+[77371.237731] ACPI: EC: EC stopped
+[77371.237732] PM: Saving platform NVS memory
+[77371.237862] Disabling non-boot CPUs ...
+[77371.274747] smpboot: CPU 1 is now offline
+[77371.314906] smpboot: CPU 2 is now offline
+[77371.357164] smpboot: CPU 3 is now offline
+[77371.361699] ACPI: Low-level resume complete
+[77371.361783] ACPI: EC: EC started
+[77371.361784] PM: Restoring platform NVS memory
+[77371.362765] mce: [Hardware Error]: Machine check events logged
+[77371.362768] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 6: ee2000000040110a
+[77371.362769] mce: [Hardware Error]: TSC 0 ADDR fef1db80 MISC 53880000086 
+[77371.362771] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554115338 SOCKET 0 APIC 0 microcode 30
+[77371.362772] mce: [Hardware Error]: Machine check events logged
+[77371.362773] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 7: ee2000000040110a
+[77371.362774] mce: [Hardware Error]: TSC 0 ADDR fef1dbc0 MISC 53880000086 
+[77371.362776] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554115338 SOCKET 0 APIC 0 microcode 30
+[77371.362790] Enabling non-boot CPUs ...
+[77371.362819] x86: Booting SMP configuration:
+[77371.362820] smpboot: Booting Node 0 Processor 1 APIC 0x2
+[77371.363352]  cache: parent cpu1 should not be sleeping
+[77371.363492] CPU1 is up
+[77371.363508] smpboot: Booting Node 0 Processor 2 APIC 0x1
+[77371.363978]  cache: parent cpu2 should not be sleeping
+[77371.364173] CPU2 is up
+[77371.364192] smpboot: Booting Node 0 Processor 3 APIC 0x3
+[77371.364619]  cache: parent cpu3 should not be sleeping
+[77371.364751] CPU3 is up
+[77371.367930] ACPI: Waking up from system sleep state S3
+[77371.698016] ACPI: EC: interrupt unblocked
+[77371.699350] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[77371.713403] pcieport 0000:00:1c.5: Intel SPT PCH root port ACS workaround enabled
+[77371.713530] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS workaround enabled
+[77371.734542] ACPI: EC: event unblocked
+[77371.735099] sd 0:0:0:0: [sda] Starting disk
+[77371.741779] iwlwifi 0000:02:00.0: RF_KILL bit toggled to enable radio.
+[77371.976881] usb 1-2: reset full-speed USB device number 3 using xhci_hcd
+[77372.047169] ata2: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[77372.054662] ata2.00: configured for UDMA/100
+[77372.380208] usb 1-1: reset low-speed USB device number 18 using xhci_hcd
+[77372.783570] usb 1-5: reset high-speed USB device number 4 using xhci_hcd
+[77373.046939] usb 1-6: reset high-speed USB device number 5 using xhci_hcd
+[77373.310336] usb 1-8: reset full-speed USB device number 6 using xhci_hcd
+[77373.454129] acpi LNXPOWER:13: Turning OFF
+[77373.454336] acpi LNXPOWER:12: Turning OFF
+[77373.454533] acpi LNXPOWER:11: Turning OFF
+[77373.454731] acpi LNXPOWER:10: Turning OFF
+[77373.454928] acpi LNXPOWER:0f: Turning OFF
+[77373.455127] acpi LNXPOWER:0e: Turning OFF
+[77373.455324] acpi LNXPOWER:0d: Turning OFF
+[77373.455522] acpi LNXPOWER:0c: Turning OFF
+[77373.455719] acpi LNXPOWER:0b: Turning OFF
+[77373.455916] acpi LNXPOWER:0a: Turning OFF
+[77373.456112] acpi LNXPOWER:09: Turning OFF
+[77373.456308] acpi LNXPOWER:08: Turning OFF
+[77373.456505] acpi LNXPOWER:07: Turning OFF
+[77373.456746] acpi LNXPOWER:06: Turning OFF
+[77373.456952] acpi LNXPOWER:04: Turning OFF
+[77373.457148] acpi LNXPOWER:03: Turning OFF
+[77373.457345] acpi LNXPOWER:02: Turning OFF
+[77373.457541] acpi LNXPOWER:01: Turning OFF
+[77373.457738] acpi LNXPOWER:00: Turning OFF
+[77373.457867] OOM killer enabled.
+[77373.457871] Restarting tasks ... done.
+[77373.469975] [drm] PCIE GART of 256M enabled (table at 0x000000F400000000).
+[77373.475123] audit: type=1130 audit(1554115340.725:448): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[77373.477740] amdgpu: [powerplay] can't get the mac of 5
+[77373.520130] PM: suspend exit
+[77373.521360] audit: type=1130 audit(1554115340.772:449): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[77373.521363] audit: type=1131 audit(1554115340.772:450): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[77373.870044] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[77373.873712] ata1.00: configured for UDMA/100
+[77373.883127] Bluetooth: hci0: read Intel version: 370810011003110e00
+[77373.883143] Bluetooth: hci0: Intel Bluetooth firmware file: intel/ibt-hw-37.8.10-fw-1.10.3.11.e.bseq
+[77374.246057] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[77374.249267] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[77374.261058] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[77374.276157] audit: type=1130 audit(1554115341.525:451): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[77374.313157] Bluetooth: hci0: Intel firmware patch completed and activated
+[77374.449906] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[77378.131939] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[77378.883420] audit: type=1131 audit(1554115346.131:452): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[77379.201863] wlp2s0: authenticate with a0:ab:1b:d6:4e:f9
+[77379.207496] wlp2s0: send auth to a0:ab:1b:d6:4e:f9 (try 1/3)
+[77379.211962] wlp2s0: authenticated
+[77379.213597] wlp2s0: associate with a0:ab:1b:d6:4e:f9 (try 1/3)
+[77379.220333] wlp2s0: RX AssocResp from a0:ab:1b:d6:4e:f9 (capab=0x411 status=0 aid=4)
+[77379.225409] wlp2s0: associated
+[77379.250442] amdgpu: [powerplay] VI should always have 2 performance levels
+[77379.295919] IPv6: ADDRCONF(NETDEV_CHANGE): wlp2s0: link becomes ready
+[77379.298117] amdgpu 0000:01:00.0: GPU pci config reset
+[77384.598996] audit: type=1131 audit(1554115351.848:453): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[80982.928252] audit: type=1130 audit(1554118950.489:454): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[80993.287959] audit: type=1131 audit(1554118960.849:455): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[84582.120885] audit: type=1130 audit(1554122549.706:456): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[84592.268863] audit: type=1131 audit(1554122559.853:457): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[86744.974950] PM: suspend entry (deep)
+[86744.974955] PM: Syncing filesystems ... done.
+[86745.323003] Freezing user space processes ... (elapsed 0.023 seconds) done.
+[86745.346740] OOM killer disabled.
+[86745.346745] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+[86745.348366] printk: Suspending console(s) (use no_console_suspend to debug)
+[86745.349901] wlp2s0: deauthenticating from a0:ab:1b:d6:4e:f9 by local choice (Reason: 3=DEAUTH_LEAVING)
+[86745.378058] sd 0:0:0:0: [sda] Synchronizing SCSI cache
+[86745.378220] sd 0:0:0:0: [sda] Stopping disk
+[86745.931377] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[86745.952481] ACPI: EC: interrupt blocked
+[86745.988944] ACPI: Preparing to enter system sleep state S3
+[86745.996126] ACPI: EC: event blocked
+[86745.996128] ACPI: EC: EC stopped
+[86745.996130] PM: Saving platform NVS memory
+[86745.996269] Disabling non-boot CPUs ...
+[86746.023602] smpboot: CPU 1 is now offline
+[86746.063960] smpboot: CPU 2 is now offline
+[86746.102692] smpboot: CPU 3 is now offline
+[86746.107291] ACPI: Low-level resume complete
+[86746.107376] ACPI: EC: EC started
+[86746.107377] PM: Restoring platform NVS memory
+[86746.108364] mce: [Hardware Error]: Machine check events logged
+[86746.108367] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 6: ee2000000040110a
+[86746.108367] mce: [Hardware Error]: TSC 0 ADDR fef1db80 MISC 53880000086 
+[86746.108370] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554127441 SOCKET 0 APIC 0 microcode 30
+[86746.108371] mce: [Hardware Error]: Machine check events logged
+[86746.108372] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 7: ee2000000040110a
+[86746.108372] mce: [Hardware Error]: TSC 0 ADDR fef1dbc0 MISC 53880000086 
+[86746.108374] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554127441 SOCKET 0 APIC 0 microcode 30
+[86746.108389] Enabling non-boot CPUs ...
+[86746.108418] x86: Booting SMP configuration:
+[86746.108419] smpboot: Booting Node 0 Processor 1 APIC 0x2
+[86746.108960]  cache: parent cpu1 should not be sleeping
+[86746.109102] CPU1 is up
+[86746.109119] smpboot: Booting Node 0 Processor 2 APIC 0x1
+[86746.109605]  cache: parent cpu2 should not be sleeping
+[86746.109802] CPU2 is up
+[86746.109820] smpboot: Booting Node 0 Processor 3 APIC 0x3
+[86746.110244]  cache: parent cpu3 should not be sleeping
+[86746.110379] CPU3 is up
+[86746.113560] ACPI: Waking up from system sleep state S3
+[86746.439851] ACPI: EC: interrupt unblocked
+[86746.455542] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS workaround enabled
+[86746.455543] pcieport 0000:00:1c.5: Intel SPT PCH root port ACS workaround enabled
+[86746.492703] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[86746.515606] ACPI: EC: event unblocked
+[86746.516111] iwlwifi 0000:02:00.0: RF_KILL bit toggled to enable radio.
+[86746.516837] sd 0:0:0:0: [sda] Starting disk
+[86746.758961] usb 1-2: reset full-speed USB device number 3 using xhci_hcd
+[86746.829213] ata2: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[86746.836729] ata2.00: configured for UDMA/100
+[86747.162259] usb 1-1: reset low-speed USB device number 18 using xhci_hcd
+[86747.565572] usb 1-5: reset high-speed USB device number 4 using xhci_hcd
+[86747.828917] usb 1-6: reset high-speed USB device number 5 using xhci_hcd
+[86748.092276] usb 1-8: reset full-speed USB device number 6 using xhci_hcd
+[86748.236206] acpi LNXPOWER:13: Turning OFF
+[86748.236412] acpi LNXPOWER:12: Turning OFF
+[86748.236610] acpi LNXPOWER:11: Turning OFF
+[86748.236807] acpi LNXPOWER:10: Turning OFF
+[86748.237003] acpi LNXPOWER:0f: Turning OFF
+[86748.237201] acpi LNXPOWER:0e: Turning OFF
+[86748.237397] acpi LNXPOWER:0d: Turning OFF
+[86748.237637] acpi LNXPOWER:0c: Turning OFF
+[86748.237846] acpi LNXPOWER:0b: Turning OFF
+[86748.238026] acpi LNXPOWER:0a: Turning OFF
+[86748.238205] acpi LNXPOWER:09: Turning OFF
+[86748.238384] acpi LNXPOWER:08: Turning OFF
+[86748.238601] acpi LNXPOWER:07: Turning OFF
+[86748.238807] acpi LNXPOWER:06: Turning OFF
+[86748.239012] acpi LNXPOWER:04: Turning OFF
+[86748.239208] acpi LNXPOWER:03: Turning OFF
+[86748.239404] acpi LNXPOWER:02: Turning OFF
+[86748.239623] acpi LNXPOWER:01: Turning OFF
+[86748.239820] acpi LNXPOWER:00: Turning OFF
+[86748.239949] OOM killer enabled.
+[86748.239952] Restarting tasks ... done.
+[86748.249795] audit: type=1130 audit(1554127443.755:458): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[86748.256708] [drm] PCIE GART of 256M enabled (table at 0x000000F400000000).
+[86748.261321] amdgpu: [powerplay] can't get the mac of 5
+[86748.314306] PM: suspend exit
+[86748.316045] audit: type=1130 audit(1554127443.822:459): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[86748.316053] audit: type=1131 audit(1554127443.822:460): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[86748.645227] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[86748.648920] ata1.00: configured for UDMA/100
+[86748.669957] Bluetooth: hci0: read Intel version: 370810011003110e00
+[86748.670129] Bluetooth: hci0: Intel Bluetooth firmware file: intel/ibt-hw-37.8.10-fw-1.10.3.11.e.bseq
+[86748.986109] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[86748.989117] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[86748.992958] Bluetooth: hci0: Intel firmware patch completed and activated
+[86749.001682] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[86749.015991] audit: type=1130 audit(1554127444.522:461): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[86749.195714] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[86752.818932] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[86753.672934] audit: type=1131 audit(1554127449.176:462): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[86753.825078] amdgpu: [powerplay] VI should always have 2 performance levels
+[86753.871727] amdgpu 0000:01:00.0: GPU pci config reset
+[86754.384467] wlp2s0: authenticate with a0:ab:1b:d6:4e:f9
+[86754.391239] wlp2s0: send auth to a0:ab:1b:d6:4e:f9 (try 1/3)
+[86754.396447] wlp2s0: authenticated
+[86754.398103] wlp2s0: associate with a0:ab:1b:d6:4e:f9 (try 1/3)
+[86754.408706] wlp2s0: RX AssocResp from a0:ab:1b:d6:4e:f9 (capab=0x411 status=0 aid=5)
+[86754.422737] wlp2s0: associated
+[86754.495398] IPv6: ADDRCONF(NETDEV_CHANGE): wlp2s0: link becomes ready
+[86759.238565] audit: type=1131 audit(1554127454.743:463): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[87308.755207] audit: type=1130 audit(1554128005.082:464): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-tmpfiles-clean comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[87308.755250] audit: type=1131 audit(1554128005.082:465): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-tmpfiles-clean comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[87868.625588] audit: type=1130 audit(1554128564.927:466): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[87879.278689] audit: type=1131 audit(1554128575.577:467): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[87995.966278] audit: type=1130 audit(1554128692.264:468): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[88006.283253] audit: type=1131 audit(1554128702.580:469): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[90358.653893] audit: type=1130 audit(1554131055.017:470): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[90369.213906] audit: type=1131 audit(1554131065.577:471): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[92749.206771] PM: suspend entry (deep)
+[92749.206777] PM: Syncing filesystems ... done.
+[92749.557238] Freezing user space processes ... (elapsed 0.004 seconds) done.
+[92749.562068] OOM killer disabled.
+[92749.562072] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+[92749.563800] printk: Suspending console(s) (use no_console_suspend to debug)
+[92749.565402] wlp2s0: deauthenticating from a0:ab:1b:d6:4e:f9 by local choice (Reason: 3=DEAUTH_LEAVING)
+[92749.578587] sd 0:0:0:0: [sda] Synchronizing SCSI cache
+[92749.586451] sd 0:0:0:0: [sda] Stopping disk
+[92750.148620] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[92750.169715] ACPI: EC: interrupt blocked
+[92750.209525] ACPI: Preparing to enter system sleep state S3
+[92750.216779] ACPI: EC: event blocked
+[92750.216781] ACPI: EC: EC stopped
+[92750.216783] PM: Saving platform NVS memory
+[92750.216923] Disabling non-boot CPUs ...
+[92750.254323] smpboot: CPU 1 is now offline
+[92750.294527] smpboot: CPU 2 is now offline
+[92750.333242] smpboot: CPU 3 is now offline
+[92750.342168] ACPI: Low-level resume complete
+[92750.342376] ACPI: EC: EC started
+[92750.342380] PM: Restoring platform NVS memory
+[92750.343934] mce: [Hardware Error]: Machine check events logged
+[92750.343948] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 6: ee2000000040110a
+[92750.343952] mce: [Hardware Error]: TSC 0 ADDR fef1db80 MISC 53880000086 
+[92750.343968] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554137638 SOCKET 0 APIC 0 microcode 30
+[92750.343973] mce: [Hardware Error]: Machine check events logged
+[92750.343981] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 7: ee2000000040110a
+[92750.343984] mce: [Hardware Error]: TSC 0 ADDR fef1dbc0 MISC 4f880000086 
+[92750.343996] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554137638 SOCKET 0 APIC 0 microcode 30
+[92750.344111] Enabling non-boot CPUs ...
+[92750.344238] x86: Booting SMP configuration:
+[92750.344244] smpboot: Booting Node 0 Processor 1 APIC 0x2
+[92750.347374]  cache: parent cpu1 should not be sleeping
+[92750.348162] CPU1 is up
+[92750.348255] smpboot: Booting Node 0 Processor 2 APIC 0x1
+[92750.351757]  cache: parent cpu2 should not be sleeping
+[92750.353121] CPU2 is up
+[92750.353224] smpboot: Booting Node 0 Processor 3 APIC 0x3
+[92750.356227]  cache: parent cpu3 should not be sleeping
+[92750.357109] CPU3 is up
+[92750.380619] ACPI: Waking up from system sleep state S3
+[92750.683111] ACPI: EC: interrupt unblocked
+[92750.691664] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[92750.697772] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS workaround enabled
+[92750.697847] pcieport 0000:00:1c.5: Intel SPT PCH root port ACS workaround enabled
+[92750.722942] ACPI: EC: event unblocked
+[92750.724668] sd 0:0:0:0: [sda] Starting disk
+[92750.725139] iwlwifi 0000:02:00.0: RF_KILL bit toggled to enable radio.
+[92751.038076] ata2: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[92751.045529] ata2.00: configured for UDMA/100
+[92751.104269] usb 1-1: reset low-speed USB device number 18 using xhci_hcd
+[92751.507624] usb 1-2: reset full-speed USB device number 3 using xhci_hcd
+[92751.770944] usb 1-5: reset high-speed USB device number 4 using xhci_hcd
+[92752.034326] usb 1-8: reset full-speed USB device number 6 using xhci_hcd
+[92752.297646] usb 1-6: reset high-speed USB device number 5 using xhci_hcd
+[92752.441677] acpi LNXPOWER:13: Turning OFF
+[92752.441884] acpi LNXPOWER:12: Turning OFF
+[92752.442083] acpi LNXPOWER:11: Turning OFF
+[92752.442281] acpi LNXPOWER:10: Turning OFF
+[92752.442479] acpi LNXPOWER:0f: Turning OFF
+[92752.442678] acpi LNXPOWER:0e: Turning OFF
+[92752.442875] acpi LNXPOWER:0d: Turning OFF
+[92752.443072] acpi LNXPOWER:0c: Turning OFF
+[92752.443270] acpi LNXPOWER:0b: Turning OFF
+[92752.443468] acpi LNXPOWER:0a: Turning OFF
+[92752.443665] acpi LNXPOWER:09: Turning OFF
+[92752.443862] acpi LNXPOWER:08: Turning OFF
+[92752.444121] acpi LNXPOWER:07: Turning OFF
+[92752.444320] acpi LNXPOWER:06: Turning OFF
+[92752.444524] acpi LNXPOWER:04: Turning OFF
+[92752.444720] acpi LNXPOWER:03: Turning OFF
+[92752.444916] acpi LNXPOWER:02: Turning OFF
+[92752.445113] acpi LNXPOWER:01: Turning OFF
+[92752.445309] acpi LNXPOWER:00: Turning OFF
+[92752.445439] OOM killer enabled.
+[92752.445443] Restarting tasks ... done.
+[92752.452121] audit: type=1130 audit(1554137640.722:472): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[92752.458936] [drm] PCIE GART of 256M enabled (table at 0x000000F400000000).
+[92752.463486] amdgpu: [powerplay] can't get the mac of 5
+[92752.485204] Bluetooth: hci0: read Intel version: 370810011003110e00
+[92752.485210] Bluetooth: hci0: Intel Bluetooth firmware file: intel/ibt-hw-37.8.10-fw-1.10.3.11.e.bseq
+[92752.518354] PM: suspend exit
+[92752.519892] audit: type=1130 audit(1554137640.789:473): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[92752.519897] audit: type=1131 audit(1554137640.789:474): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[92752.684004] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[92752.687640] ata1.00: configured for UDMA/100
+[92752.809352] Bluetooth: hci0: Intel firmware patch completed and activated
+[92752.820654] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[92752.823590] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[92752.839244] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[92752.853601] audit: type=1130 audit(1554137641.122:475): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[92753.040981] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[92756.650247] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[92757.487531] audit: type=1131 audit(1554137645.758:476): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[92757.746427] wlp2s0: authenticate with a0:ab:1b:d6:4e:f9
+[92757.752910] wlp2s0: send auth to a0:ab:1b:d6:4e:f9 (try 1/3)
+[92757.756009] wlp2s0: authenticated
+[92757.757562] wlp2s0: associate with a0:ab:1b:d6:4e:f9 (try 1/3)
+[92757.770870] wlp2s0: RX AssocResp from a0:ab:1b:d6:4e:f9 (capab=0x411 status=0 aid=4)
+[92757.772446] wlp2s0: associated
+[92757.845167] IPv6: ADDRCONF(NETDEV_CHANGE): wlp2s0: link becomes ready
+[92757.860801] amdgpu: [powerplay] VI should always have 2 performance levels
+[92757.910688] amdgpu 0000:01:00.0: GPU pci config reset
+[92763.223165] audit: type=1131 audit(1554137651.492:477): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[94583.639910] PM: suspend entry (deep)
+[94583.639915] PM: Syncing filesystems ... done.
+[94583.805977] Freezing user space processes ... (elapsed 0.002 seconds) done.
+[94583.808761] OOM killer disabled.
+[94583.808765] Freezing remaining freezable tasks ... (elapsed 0.000 seconds) done.
+[94583.809769] printk: Suspending console(s) (use no_console_suspend to debug)
+[94583.810821] wlp2s0: deauthenticating from a0:ab:1b:d6:4e:f9 by local choice (Reason: 3=DEAUTH_LEAVING)
+[94583.826562] sd 0:0:0:0: [sda] Synchronizing SCSI cache
+[94583.826842] sd 0:0:0:0: [sda] Stopping disk
+[94584.393053] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[94584.415243] ACPI: EC: interrupt blocked
+[94584.453944] ACPI: Preparing to enter system sleep state S3
+[94584.461236] ACPI: EC: event blocked
+[94584.461238] ACPI: EC: EC stopped
+[94584.461240] PM: Saving platform NVS memory
+[94584.461396] Disabling non-boot CPUs ...
+[94584.498820] smpboot: CPU 1 is now offline
+[94584.539155] smpboot: CPU 2 is now offline
+[94584.577737] smpboot: CPU 3 is now offline
+[94584.582690] ACPI: Low-level resume complete
+[94584.582774] ACPI: EC: EC started
+[94584.582774] PM: Restoring platform NVS memory
+[94584.583763] mce: [Hardware Error]: Machine check events logged
+[94584.583766] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 6: ee2000000040110a
+[94584.583767] mce: [Hardware Error]: TSC 0 ADDR fef1db80 MISC 53880000086 
+[94584.583769] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554139630 SOCKET 0 APIC 0 microcode 30
+[94584.583770] mce: [Hardware Error]: Machine check events logged
+[94584.583771] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 7: ee2000000040110a
+[94584.583772] mce: [Hardware Error]: TSC 0 ADDR fef1dbc0 MISC 4f880000086 
+[94584.583774] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554139630 SOCKET 0 APIC 0 microcode 30
+[94584.583797] Enabling non-boot CPUs ...
+[94584.583826] x86: Booting SMP configuration:
+[94584.583827] smpboot: Booting Node 0 Processor 1 APIC 0x2
+[94584.584369]  cache: parent cpu1 should not be sleeping
+[94584.584509] CPU1 is up
+[94584.584525] smpboot: Booting Node 0 Processor 2 APIC 0x1
+[94584.584995]  cache: parent cpu2 should not be sleeping
+[94584.585194] CPU2 is up
+[94584.585211] smpboot: Booting Node 0 Processor 3 APIC 0x3
+[94584.585637]  cache: parent cpu3 should not be sleeping
+[94584.585774] CPU3 is up
+[94584.588953] ACPI: Waking up from system sleep state S3
+[94584.908501] ACPI: EC: interrupt unblocked
+[94584.909783] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[94584.924061] pcieport 0000:00:1c.5: Intel SPT PCH root port ACS workaround enabled
+[94584.924120] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS workaround enabled
+[94584.945283] ACPI: EC: event unblocked
+[94584.946131] iwlwifi 0000:02:00.0: RF_KILL bit toggled to enable radio.
+[94584.946647] sd 0:0:0:0: [sda] Starting disk
+[94585.184048] usb 1-6: reset high-speed USB device number 5 using xhci_hcd
+[94585.260939] ata2: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[94585.268427] ata2.00: configured for UDMA/100
+[94585.587396] usb 1-1: reset low-speed USB device number 18 using xhci_hcd
+[94585.990703] usb 1-5: reset high-speed USB device number 4 using xhci_hcd
+[94586.254056] usb 1-2: reset full-speed USB device number 3 using xhci_hcd
+[94586.517405] usb 1-8: reset full-speed USB device number 6 using xhci_hcd
+[94586.660843] acpi LNXPOWER:13: Turning OFF
+[94586.661049] acpi LNXPOWER:12: Turning OFF
+[94586.661247] acpi LNXPOWER:11: Turning OFF
+[94586.661446] acpi LNXPOWER:10: Turning OFF
+[94586.661643] acpi LNXPOWER:0f: Turning OFF
+[94586.661841] acpi LNXPOWER:0e: Turning OFF
+[94586.662039] acpi LNXPOWER:0d: Turning OFF
+[94586.662236] acpi LNXPOWER:0c: Turning OFF
+[94586.662435] acpi LNXPOWER:0b: Turning OFF
+[94586.662633] acpi LNXPOWER:0a: Turning OFF
+[94586.662831] acpi LNXPOWER:09: Turning OFF
+[94586.663028] acpi LNXPOWER:08: Turning OFF
+[94586.663225] acpi LNXPOWER:07: Turning OFF
+[94586.663421] acpi LNXPOWER:06: Turning OFF
+[94586.663642] acpi LNXPOWER:04: Turning OFF
+[94586.663847] acpi LNXPOWER:03: Turning OFF
+[94586.664045] acpi LNXPOWER:02: Turning OFF
+[94586.664242] acpi LNXPOWER:01: Turning OFF
+[94586.664439] acpi LNXPOWER:00: Turning OFF
+[94586.664616] OOM killer enabled.
+[94586.664621] Restarting tasks ... 
+[94586.672760] [drm] PCIE GART of 256M enabled (table at 0x000000F400000000).
+[94586.673428] done.
+[94586.674169] audit: type=1130 audit(1554139632.702:478): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[94586.683761] amdgpu: [powerplay] can't get the mac of 5
+[94586.721616] PM: suspend exit
+[94586.722864] audit: type=1130 audit(1554139632.749:479): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[94586.722868] audit: type=1131 audit(1554139632.749:480): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[94587.083685] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[94587.086359] Bluetooth: hci0: read Intel version: 370810011003110e00
+[94587.086503] Bluetooth: hci0: Intel Bluetooth firmware file: intel/ibt-hw-37.8.10-fw-1.10.3.11.e.bseq
+[94587.088178] ata1.00: configured for UDMA/100
+[94587.244067] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[94587.246831] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[94587.269433] audit: type=1130 audit(1554139633.295:481): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[94587.409389] Bluetooth: hci0: Intel firmware patch completed and activated
+[94587.425622] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[94587.506604] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[94591.191983] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[94591.833742] amdgpu: [powerplay] VI should always have 2 performance levels
+[94591.882494] amdgpu 0000:01:00.0: GPU pci config reset
+[94592.090964] audit: type=1131 audit(1554139638.119:482): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[94592.262020] wlp2s0: authenticate with a0:ab:1b:d6:4e:f9
+[94592.272781] wlp2s0: send auth to a0:ab:1b:d6:4e:f9 (try 1/3)
+[94592.288442] wlp2s0: authenticated
+[94592.290235] wlp2s0: associate with a0:ab:1b:d6:4e:f9 (try 1/3)
+[94592.296868] wlp2s0: RX AssocResp from a0:ab:1b:d6:4e:f9 (capab=0x411 status=0 aid=4)
+[94592.301566] wlp2s0: associated
+[94592.381134] IPv6: ADDRCONF(NETDEV_CHANGE): wlp2s0: link becomes ready
+[94597.170163] audit: type=1131 audit(1554139643.199:483): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[95925.226405] PM: suspend entry (deep)
+[95925.226410] PM: Syncing filesystems ... done.
+[95925.584124] Freezing user space processes ... (elapsed 0.015 seconds) done.
+[95925.599401] OOM killer disabled.
+[95925.599405] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+[95925.601242] printk: Suspending console(s) (use no_console_suspend to debug)
+[95925.602834] wlp2s0: deauthenticating from a0:ab:1b:d6:4e:f9 by local choice (Reason: 3=DEAUTH_LEAVING)
+[95925.619301] sd 0:0:0:0: [sda] Synchronizing SCSI cache
+[95925.692164] sd 0:0:0:0: [sda] Stopping disk
+[95926.189169] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[95926.210262] ACPI: EC: interrupt blocked
+[95926.246750] ACPI: Preparing to enter system sleep state S3
+[95926.253683] ACPI: EC: event blocked
+[95926.253685] ACPI: EC: EC stopped
+[95926.253687] PM: Saving platform NVS memory
+[95926.253829] Disabling non-boot CPUs ...
+[95926.280601] smpboot: CPU 1 is now offline
+[95926.321721] smpboot: CPU 2 is now offline
+[95926.373763] smpboot: CPU 3 is now offline
+[95926.378240] ACPI: Low-level resume complete
+[95926.378324] ACPI: EC: EC started
+[95926.378324] PM: Restoring platform NVS memory
+[95926.379307] mce: [Hardware Error]: Machine check events logged
+[95926.379310] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 6: ee2000000040110a
+[95926.379311] mce: [Hardware Error]: TSC 0 ADDR fef1db80 MISC 43880000086 
+[95926.379313] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554141494 SOCKET 0 APIC 0 microcode 30
+[95926.379314] mce: [Hardware Error]: Machine check events logged
+[95926.379315] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 7: ee2000000040110a
+[95926.379316] mce: [Hardware Error]: TSC 0 ADDR fef1dc00 MISC 13880000086 
+[95926.379317] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554141494 SOCKET 0 APIC 0 microcode 30
+[95926.379332] Enabling non-boot CPUs ...
+[95926.379362] x86: Booting SMP configuration:
+[95926.379363] smpboot: Booting Node 0 Processor 1 APIC 0x2
+[95926.379899]  cache: parent cpu1 should not be sleeping
+[95926.380041] CPU1 is up
+[95926.380058] smpboot: Booting Node 0 Processor 2 APIC 0x1
+[95926.380531]  cache: parent cpu2 should not be sleeping
+[95926.380727] CPU2 is up
+[95926.380744] smpboot: Booting Node 0 Processor 3 APIC 0x3
+[95926.381172]  cache: parent cpu3 should not be sleeping
+[95926.381304] CPU3 is up
+[95926.384481] ACPI: Waking up from system sleep state S3
+[95926.711978] ACPI: EC: interrupt unblocked
+[95926.726597] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS workaround enabled
+[95926.726916] pcieport 0000:00:1c.5: Intel SPT PCH root port ACS workaround enabled
+[95926.750724] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[95926.773623] ACPI: EC: event unblocked
+[95926.774472] sd 0:0:0:0: [sda] Starting disk
+[95927.013427] usb 1-2: reset full-speed USB device number 3 using xhci_hcd
+[95927.086832] ata2: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[95927.093090] ata2.00: configured for UDMA/100
+[95927.416675] usb 1-1: reset low-speed USB device number 18 using xhci_hcd
+[95927.819997] usb 1-5: reset high-speed USB device number 4 using xhci_hcd
+[95928.083366] usb 1-8: reset full-speed USB device number 6 using xhci_hcd
+[95928.346698] usb 1-6: reset high-speed USB device number 5 using xhci_hcd
+[95928.490608] acpi LNXPOWER:13: Turning OFF
+[95928.490814] acpi LNXPOWER:12: Turning OFF
+[95928.491011] acpi LNXPOWER:11: Turning OFF
+[95928.491208] acpi LNXPOWER:10: Turning OFF
+[95928.491404] acpi LNXPOWER:0f: Turning OFF
+[95928.491602] acpi LNXPOWER:0e: Turning OFF
+[95928.491797] acpi LNXPOWER:0d: Turning OFF
+[95928.491993] acpi LNXPOWER:0c: Turning OFF
+[95928.492190] acpi LNXPOWER:0b: Turning OFF
+[95928.492386] acpi LNXPOWER:0a: Turning OFF
+[95928.492581] acpi LNXPOWER:09: Turning OFF
+[95928.492777] acpi LNXPOWER:08: Turning OFF
+[95928.493015] acpi LNXPOWER:07: Turning OFF
+[95928.493225] acpi LNXPOWER:06: Turning OFF
+[95928.493429] acpi LNXPOWER:04: Turning OFF
+[95928.493624] acpi LNXPOWER:03: Turning OFF
+[95928.493819] acpi LNXPOWER:02: Turning OFF
+[95928.494014] acpi LNXPOWER:01: Turning OFF
+[95928.494208] acpi LNXPOWER:00: Turning OFF
+[95928.494367] OOM killer enabled.
+[95928.494372] Restarting tasks ... done.
+[95928.503424] audit: type=1130 audit(1554141496.739:484): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[95928.512939] [drm] PCIE GART of 256M enabled (table at 0x000000F400000000).
+[95928.517434] amdgpu: [powerplay] can't get the mac of 5
+[95928.522539] Bluetooth: hci0: read Intel version: 370810011003110e00
+[95928.522543] Bluetooth: hci0: Intel Bluetooth firmware file: intel/ibt-hw-37.8.10-fw-1.10.3.11.e.bseq
+[95928.573935] PM: suspend exit
+[95928.575252] audit: type=1130 audit(1554141496.809:485): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[95928.575262] audit: type=1131 audit(1554141496.809:486): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[95928.844652] Bluetooth: hci0: Intel firmware patch completed and activated
+[95928.899668] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[95928.903322] ata1.00: configured for UDMA/100
+[95929.230273] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[95929.233035] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[95929.244690] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[95929.258951] audit: type=1130 audit(1554141497.492:487): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[95929.462504] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[95933.045317] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[95933.524185] audit: type=1131 audit(1554141501.759:488): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[95933.709573] amdgpu: [powerplay] VI should always have 2 performance levels
+[95933.758097] amdgpu 0000:01:00.0: GPU pci config reset
+[95934.150599] wlp2s0: authenticate with a0:ab:1b:d6:4e:f9
+[95934.157744] wlp2s0: send auth to a0:ab:1b:d6:4e:f9 (try 1/3)
+[95934.164232] wlp2s0: authenticated
+[95934.166090] wlp2s0: associate with a0:ab:1b:d6:4e:f9 (try 1/3)
+[95934.170618] wlp2s0: RX AssocResp from a0:ab:1b:d6:4e:f9 (capab=0x411 status=0 aid=2)
+[95934.172111] wlp2s0: associated
+[95934.243586] IPv6: ADDRCONF(NETDEV_CHANGE): wlp2s0: link becomes ready
+[95939.174332] audit: type=1131 audit(1554141507.406:489): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[97839.435438] audit: type=1130 audit(1554143408.436:490): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=shadow comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[97839.462495] audit: type=1131 audit(1554143408.463:491): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=shadow comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=failed'
+[97842.856537] audit: type=1130 audit(1554143411.856:492): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=man-db comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[97842.856568] audit: type=1131 audit(1554143411.856:493): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=man-db comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[97946.119241] audit: type=1130 audit(1554143515.117:494): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[97956.189448] audit: type=1131 audit(1554143525.187:495): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[98217.551346] audit: type=1130 audit(1554143786.548:496): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[98228.188458] audit: type=1131 audit(1554143797.188:497): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[99535.851487] audit: type=1130 audit(1554145104.879:498): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[99546.161490] audit: type=1131 audit(1554145115.188:499): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[101796.267865] PM: suspend entry (deep)
+[101796.267869] PM: Syncing filesystems ... done.
+[101796.813202] Freezing user space processes ... (elapsed 0.004 seconds) done.
+[101796.818157] OOM killer disabled.
+[101796.818160] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+[101796.819718] printk: Suspending console(s) (use no_console_suspend to debug)
+[101796.820841] wlp2s0: deauthenticating from a0:ab:1b:d6:4e:f9 by local choice (Reason: 3=DEAUTH_LEAVING)
+[101796.834921] sd 0:0:0:0: [sda] Synchronizing SCSI cache
+[101796.988713] sd 0:0:0:0: [sda] Stopping disk
+[101797.388098] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[101797.492629] ACPI: EC: interrupt blocked
+[101797.532379] ACPI: Preparing to enter system sleep state S3
+[101797.539435] ACPI: EC: event blocked
+[101797.539438] ACPI: EC: EC stopped
+[101797.539439] PM: Saving platform NVS memory
+[101797.539582] Disabling non-boot CPUs ...
+[101797.559568] smpboot: CPU 1 is now offline
+[101797.600942] smpboot: CPU 2 is now offline
+[101797.652773] smpboot: CPU 3 is now offline
+[101797.657551] ACPI: Low-level resume complete
+[101797.657634] ACPI: EC: EC started
+[101797.657635] PM: Restoring platform NVS memory
+[101797.658611] mce: [Hardware Error]: Machine check events logged
+[101797.658614] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 6: ee2000000040110a
+[101797.658615] mce: [Hardware Error]: TSC 0 ADDR fef1db80 MISC 53880000086 
+[101797.658617] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554148692 SOCKET 0 APIC 0 microcode 30
+[101797.658618] mce: [Hardware Error]: Machine check events logged
+[101797.658619] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 7: ee2000000040110a
+[101797.658620] mce: [Hardware Error]: TSC 0 ADDR fef1dbc0 MISC 4f880000086 
+[101797.658622] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554148692 SOCKET 0 APIC 0 microcode 30
+[101797.658634] Enabling non-boot CPUs ...
+[101797.658664] x86: Booting SMP configuration:
+[101797.658665] smpboot: Booting Node 0 Processor 1 APIC 0x2
+[101797.659203]  cache: parent cpu1 should not be sleeping
+[101797.659349] CPU1 is up
+[101797.659366] smpboot: Booting Node 0 Processor 2 APIC 0x1
+[101797.659836]  cache: parent cpu2 should not be sleeping
+[101797.660033] CPU2 is up
+[101797.660051] smpboot: Booting Node 0 Processor 3 APIC 0x3
+[101797.660479]  cache: parent cpu3 should not be sleeping
+[101797.660614] CPU3 is up
+[101797.663792] ACPI: Waking up from system sleep state S3
+[101797.983048] ACPI: EC: interrupt unblocked
+[101797.984091] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[101797.999104] pcieport 0000:00:1c.5: Intel SPT PCH root port ACS workaround enabled
+[101797.999312] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS workaround enabled
+[101798.020722] ACPI: EC: event unblocked
+[101798.021357] iwlwifi 0000:02:00.0: RF_KILL bit toggled to enable radio.
+[101798.022017] sd 0:0:0:0: [sda] Starting disk
+[101798.265895] usb 1-2: reset full-speed USB device number 3 using xhci_hcd
+[101798.336202] ata2: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[101798.343655] ata2.00: configured for UDMA/100
+[101798.529245] usb 1-6: reset high-speed USB device number 5 using xhci_hcd
+[101798.792495] usb 1-5: reset high-speed USB device number 4 using xhci_hcd
+[101799.055927] usb 1-8: reset full-speed USB device number 6 using xhci_hcd
+[101799.459219] usb 1-1: reset low-speed USB device number 18 using xhci_hcd
+[101799.748419] acpi LNXPOWER:13: Turning OFF
+[101799.748605] acpi LNXPOWER:12: Turning OFF
+[101799.748785] acpi LNXPOWER:11: Turning OFF
+[101799.749204] acpi LNXPOWER:10: Turning OFF
+[101799.749404] acpi LNXPOWER:0f: Turning OFF
+[101799.749602] acpi LNXPOWER:0e: Turning OFF
+[101799.749798] acpi LNXPOWER:0d: Turning OFF
+[101799.749995] acpi LNXPOWER:0c: Turning OFF
+[101799.750192] acpi LNXPOWER:0b: Turning OFF
+[101799.750388] acpi LNXPOWER:0a: Turning OFF
+[101799.750583] acpi LNXPOWER:09: Turning OFF
+[101799.750779] acpi LNXPOWER:08: Turning OFF
+[101799.750975] acpi LNXPOWER:07: Turning OFF
+[101799.751171] acpi LNXPOWER:06: Turning OFF
+[101799.751374] acpi LNXPOWER:04: Turning OFF
+[101799.751569] acpi LNXPOWER:03: Turning OFF
+[101799.751765] acpi LNXPOWER:02: Turning OFF
+[101799.751961] acpi LNXPOWER:01: Turning OFF
+[101799.752156] acpi LNXPOWER:00: Turning OFF
+[101799.752328] OOM killer enabled.
+[101799.752334] Restarting tasks ... done.
+[101799.763059] [drm] PCIE GART of 256M enabled (table at 0x000000F400000000).
+[101799.766864] Bluetooth: hci0: read Intel version: 370810011003110e00
+[101799.766917] Bluetooth: hci0: Intel Bluetooth firmware file: intel/ibt-hw-37.8.10-fw-1.10.3.11.e.bseq
+[101799.767798] amdgpu: [powerplay] can't get the mac of 5
+[101799.792578] audit: type=1130 audit(1554148694.749:500): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[101799.810665] PM: suspend exit
+[101799.811852] audit: type=1130 audit(1554148694.765:501): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[101799.811860] audit: type=1131 audit(1554148694.765:502): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[101800.082947] Bluetooth: hci0: Intel firmware patch completed and activated
+[101800.152298] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[101800.156406] ata1.00: configured for UDMA/100
+[101800.492484] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[101800.496059] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[101800.507074] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[101800.516184] audit: type=1130 audit(1554148695.472:503): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[101800.721275] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[101804.296895] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[101804.793097] audit: type=1131 audit(1554148699.749:504): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[101804.802385] amdgpu: [powerplay] VI should always have 2 performance levels
+[101804.850340] amdgpu 0000:01:00.0: GPU pci config reset
+[101805.402499] wlp2s0: authenticate with a0:ab:1b:d6:4e:f9
+[101805.408782] wlp2s0: send auth to a0:ab:1b:d6:4e:f9 (try 1/3)
+[101805.412196] wlp2s0: authenticated
+[101805.438949] wlp2s0: associate with a0:ab:1b:d6:4e:f9 (try 1/3)
+[101805.444484] wlp2s0: RX AssocResp from a0:ab:1b:d6:4e:f9 (capab=0x411 status=0 aid=1)
+[101805.446412] wlp2s0: associated
+[101805.519107] IPv6: ADDRCONF(NETDEV_CHANGE): wlp2s0: link becomes ready
+[101811.124436] audit: type=1131 audit(1554148706.079:505): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[105408.188080] audit: type=1130 audit(1554152303.866:506): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[105418.165382] audit: type=1131 audit(1554152313.843:507): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[108376.137372] audit: type=1130 audit(1554155271.877:508): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-hostnamed comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[108416.888680] audit: type=1131 audit(1554155312.630:509): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-hostnamed comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[109007.866342] audit: type=1130 audit(1554155903.609:510): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[109018.100343] audit: type=1131 audit(1554155913.842:511): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[109219.169640] audit: type=1130 audit(1554156114.913:512): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[109229.101046] audit: type=1131 audit(1554156124.843:513): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[109346.539945] audit: type=1130 audit(1554156242.283:514): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[109357.102553] audit: type=1131 audit(1554156252.846:515): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[112608.105316] audit: type=1130 audit(1554159503.900:516): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[112618.046412] audit: type=1131 audit(1554159513.840:517): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[113009.813378] PM: suspend entry (deep)
+[113009.813382] PM: Syncing filesystems ... done.
+[113010.634600] Freezing user space processes ... (elapsed 0.024 seconds) done.
+[113010.658664] OOM killer disabled.
+[113010.658668] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+[113010.660421] printk: Suspending console(s) (use no_console_suspend to debug)
+[113010.661599] wlp2s0: deauthenticating from a0:ab:1b:d6:4e:f9 by local choice (Reason: 3=DEAUTH_LEAVING)
+[113010.788401] sd 0:0:0:0: [sda] Synchronizing SCSI cache
+[113010.810431] sd 0:0:0:0: [sda] Stopping disk
+[113011.331788] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[113011.352791] ACPI: EC: interrupt blocked
+[113011.389197] ACPI: Preparing to enter system sleep state S3
+[113011.394339] ACPI: EC: event blocked
+[113011.394340] ACPI: EC: EC stopped
+[113011.394340] PM: Saving platform NVS memory
+[113011.394392] Disabling non-boot CPUs ...
+[113011.423162] smpboot: CPU 1 is now offline
+[113011.464040] smpboot: CPU 2 is now offline
+[113011.489689] smpboot: CPU 3 is now offline
+[113011.494017] ACPI: Low-level resume complete
+[113011.494101] ACPI: EC: EC started
+[113011.494101] PM: Restoring platform NVS memory
+[113011.495097] mce: [Hardware Error]: Machine check events logged
+[113011.495100] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 6: ee2000000040110a
+[113011.495101] mce: [Hardware Error]: TSC 0 ADDR fef1db80 MISC 53880000086 
+[113011.495103] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554200024 SOCKET 0 APIC 0 microcode 30
+[113011.495104] mce: [Hardware Error]: Machine check events logged
+[113011.495105] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 7: ee2000000040110a
+[113011.495106] mce: [Hardware Error]: TSC 0 ADDR fef1dbc0 MISC 4f880000086 
+[113011.495108] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554200024 SOCKET 0 APIC 0 microcode 30
+[113011.495120] Enabling non-boot CPUs ...
+[113011.495150] x86: Booting SMP configuration:
+[113011.495151] smpboot: Booting Node 0 Processor 1 APIC 0x2
+[113011.495686]  cache: parent cpu1 should not be sleeping
+[113011.495829] CPU1 is up
+[113011.495845] smpboot: Booting Node 0 Processor 2 APIC 0x1
+[113011.496320]  cache: parent cpu2 should not be sleeping
+[113011.496518] CPU2 is up
+[113011.496536] smpboot: Booting Node 0 Processor 3 APIC 0x3
+[113011.496962]  cache: parent cpu3 should not be sleeping
+[113011.497094] CPU3 is up
+[113011.500272] ACPI: Waking up from system sleep state S3
+[113011.824370] ACPI: EC: interrupt unblocked
+[113011.825620] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[113011.839146] pcieport 0000:00:1c.5: Intel SPT PCH root port ACS workaround enabled
+[113011.839319] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS workaround enabled
+[113011.860248] ACPI: EC: event unblocked
+[113011.861221] iwlwifi 0000:02:00.0: RF_KILL bit toggled to enable radio.
+[113011.861536] sd 0:0:0:0: [sda] Starting disk
+[113012.102574] usb 1-6: reset high-speed USB device number 5 using xhci_hcd
+[113012.176259] ata2: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[113012.182420] ata2.00: configured for UDMA/100
+[113012.365902] usb 1-2: reset full-speed USB device number 3 using xhci_hcd
+[113012.769231] usb 1-1: reset low-speed USB device number 18 using xhci_hcd
+[113013.172543] usb 1-5: reset high-speed USB device number 4 using xhci_hcd
+[113013.435979] usb 1-8: reset full-speed USB device number 6 using xhci_hcd
+[113013.579901] acpi LNXPOWER:13: Turning OFF
+[113013.580107] acpi LNXPOWER:12: Turning OFF
+[113013.580306] acpi LNXPOWER:11: Turning OFF
+[113013.580505] acpi LNXPOWER:10: Turning OFF
+[113013.580703] acpi LNXPOWER:0f: Turning OFF
+[113013.580902] acpi LNXPOWER:0e: Turning OFF
+[113013.581099] acpi LNXPOWER:0d: Turning OFF
+[113013.581296] acpi LNXPOWER:0c: Turning OFF
+[113013.581495] acpi LNXPOWER:0b: Turning OFF
+[113013.581692] acpi LNXPOWER:0a: Turning OFF
+[113013.581888] acpi LNXPOWER:09: Turning OFF
+[113013.582086] acpi LNXPOWER:08: Turning OFF
+[113013.582356] acpi LNXPOWER:07: Turning OFF
+[113013.582556] acpi LNXPOWER:06: Turning OFF
+[113013.582761] acpi LNXPOWER:04: Turning OFF
+[113013.582958] acpi LNXPOWER:03: Turning OFF
+[113013.583155] acpi LNXPOWER:02: Turning OFF
+[113013.583352] acpi LNXPOWER:01: Turning OFF
+[113013.583549] acpi LNXPOWER:00: Turning OFF
+[113013.583680] OOM killer enabled.
+[113013.583683] Restarting tasks ... 
+[113013.592823] audit: type=1130 audit(1554200026.712:518): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[113013.598008] [drm] PCIE GART of 256M enabled (table at 0x000000F400000000).
+[113013.602787] done.
+[113013.606647] amdgpu: [powerplay] can't get the mac of 5
+[113013.655114] PM: suspend exit
+[113013.656542] audit: type=1130 audit(1554200026.775:519): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[113013.656546] audit: type=1131 audit(1554200026.775:520): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-suspend comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[113014.011816] Bluetooth: hci0: read Intel version: 370810011003110e00
+[113014.011836] Bluetooth: hci0: Intel Bluetooth firmware file: intel/ibt-hw-37.8.10-fw-1.10.3.11.e.bseq
+[113014.105636] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[113014.109575] ata1.00: configured for UDMA/100
+[113014.334902] Bluetooth: hci0: Intel firmware patch completed and activated
+[113014.497676] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[113014.500322] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[113014.508208] audit: type=1130 audit(1554200027.625:521): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[113014.508504] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[113014.733449] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[113018.352219] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[113018.622401] amdgpu: [powerplay] VI should always have 2 performance levels
+[113018.671433] amdgpu 0000:01:00.0: GPU pci config reset
+[113019.015123] audit: type=1131 audit(1554200032.132:522): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[113019.476212] wlp2s0: authenticate with a0:ab:1b:d6:4e:f9
+[113019.483717] wlp2s0: send auth to a0:ab:1b:d6:4e:f9 (try 1/3)
+[113019.486677] wlp2s0: authenticated
+[113019.488829] wlp2s0: associate with a0:ab:1b:d6:4e:f9 (try 1/3)
+[113019.495301] wlp2s0: RX AssocResp from a0:ab:1b:d6:4e:f9 (capab=0x411 status=0 aid=3)
+[113019.497306] wlp2s0: associated
+[113019.566622] IPv6: ADDRCONF(NETDEV_CHANGE): wlp2s0: link becomes ready
+[113025.041799] audit: type=1131 audit(1554200038.159:523): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[114876.331059] usb 1-1: USB disconnect, device number 18
+[114877.199780] usb 1-1: new low-speed USB device number 19 using xhci_hcd
+[114877.344873] usb 1-1: New USB device found, idVendor=1a2c, idProduct=2124, bcdDevice= 1.10
+[114877.344877] usb 1-1: New USB device strings: Mfr=1, Product=2, SerialNumber=0
+[114877.344880] usb 1-1: Product: USB Keyboard
+[114877.344882] usb 1-1: Manufacturer: SEM
+[114877.349417] input: SEM USB Keyboard as /devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0/0003:1A2C:2124.0014/input/input113
+[114877.403900] hid-generic 0003:1A2C:2124.0014: input,hidraw0: USB HID v1.10 Keyboard [SEM USB Keyboard] on usb-0000:00:14.0-1/input0
+[114877.406918] input: SEM USB Keyboard Consumer Control as /devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.1/0003:1A2C:2124.0015/input/input114
+[114877.463535] input: SEM USB Keyboard System Control as /devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.1/0003:1A2C:2124.0015/input/input115
+[114877.463913] hid-generic 0003:1A2C:2124.0015: input,hidraw1: USB HID v1.10 Device [SEM USB Keyboard] on usb-0000:00:14.0-1/input1
+[116623.116154] audit: type=1130 audit(1554203637.374:524): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[116633.473955] audit: type=1131 audit(1554203647.731:525): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[116997.729097] PM: Image not found (code -22)
+[116997.745048] PM: hibernation entry
+[116997.803676] PM: Syncing filesystems ... 
+[116998.294611] PM: done.
+[116998.294621] Freezing user space processes ... (elapsed 0.003 seconds) done.
+[116998.297807] OOM killer disabled.
+[116998.298015] PM: Marking nosave pages: [mem 0x00000000-0x00000fff]
+[116998.298021] PM: Marking nosave pages: [mem 0x00058000-0x00058fff]
+[116998.298025] PM: Marking nosave pages: [mem 0x0009f000-0x000fffff]
+[116998.298033] PM: Marking nosave pages: [mem 0x75226000-0x75227fff]
+[116998.298038] PM: Marking nosave pages: [mem 0x7a209000-0x7b4fdfff]
+[116998.298241] PM: Marking nosave pages: [mem 0x7b4ff000-0xffffffff]
+[116998.301317] PM: Basic memory bitmaps created
+[116998.301321] PM: Preallocating image memory... done (allocated 812009 pages)
+[117002.146067] PM: Allocated 3248036 kbytes in 3.84 seconds (845.84 MB/s)
+[117002.146069] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+[117002.147751] printk: Suspending console(s) (use no_console_suspend to debug)
+[117002.147926] wlp2s0: deauthenticating from a0:ab:1b:d6:4e:f9 by local choice (Reason: 3=DEAUTH_LEAVING)
+[117002.816088] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[117002.824938] [drm] PCIE GART of 256M enabled (table at 0x000000F400000000).
+[117002.829450] amdgpu: [powerplay] can't get the mac of 5
+[117002.838508] amdgpu: [powerplay] VI should always have 2 performance levels
+[117002.884059] amdgpu 0000:01:00.0: GPU pci config reset
+[117002.903723] ACPI: EC: interrupt blocked
+[117002.922797] Disabling non-boot CPUs ...
+[117002.960804] smpboot: CPU 1 is now offline
+[117003.001822] smpboot: CPU 2 is now offline
+[117003.053976] smpboot: CPU 3 is now offline
+[117003.056440] PM: Creating hibernation image:
+[117003.161252] PM: Need to copy 803756 pages
+[117003.161254] PM: Normal pages needed: 803756 + 1024, available pages: 1267017
+[117003.971959] PM: Hibernation image created (803756 pages copied)
+[117003.058074] Enabling non-boot CPUs ...
+[117003.058133] x86: Booting SMP configuration:
+[117003.058134] smpboot: Booting Node 0 Processor 1 APIC 0x2
+[117003.058686]  cache: parent cpu1 should not be sleeping
+[117003.058833] CPU1 is up
+[117003.058853] smpboot: Booting Node 0 Processor 2 APIC 0x1
+[117003.059430]  cache: parent cpu2 should not be sleeping
+[117003.059663] CPU2 is up
+[117003.059683] smpboot: Booting Node 0 Processor 3 APIC 0x3
+[117003.060196]  cache: parent cpu3 should not be sleeping
+[117003.060353] CPU3 is up
+[117003.064227] ACPI: EC: interrupt unblocked
+[117003.064359] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS workaround enabled
+[117003.064374] pcieport 0000:00:1c.5: Intel SPT PCH root port ACS workaround enabled
+[117003.069779] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[117003.099526] [drm] PCIE GART of 256M enabled (table at 0x000000F400000000).
+[117003.102972] amdgpu: [powerplay] can't get the mac of 5
+[117003.412998] ata2: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[117003.413048] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[117003.420524] ata2.00: configured for UDMA/100
+[117003.451607] ata1.00: configured for UDMA/100
+[117003.453124] PM: Using 3 thread(s) for compression
+[117003.453132] PM: Compressing and saving image data (805326 pages)...
+[117003.453153] PM: Image saving progress:   0%
+[117006.619932] PM: Image saving progress:  10%
+[117009.683106] PM: Image saving progress:  20%
+[117013.466367] PM: Image saving progress:  30%
+[117016.397931] PM: Image saving progress:  40%
+[117019.025569] PM: Image saving progress:  50%
+[117021.909101] PM: Image saving progress:  60%
+[117025.176851] PM: Image saving progress:  70%
+[117028.320149] PM: Image saving progress:  80%
+[117031.132233] PM: Image saving progress:  90%
+[117033.543775] PM: Image saving progress: 100%
+[117033.593210] PM: Image saving done
+[117033.593214] PM: Wrote 3221304 kbytes in 30.14 seconds (106.87 MB/s)
+[117033.593449] PM: S|
+[117033.714815] printk: Suspending console(s) (use no_console_suspend to debug)
+[117033.717351] amdgpu: [powerplay] VI should always have 2 performance levels
+[117033.768852] sd 0:0:0:0: [sda] Synchronizing SCSI cache
+[117033.770383] sd 0:0:0:0: [sda] Stopping disk
+[117034.266445] ACPI: EC: interrupt blocked
+[117034.306593] ACPI: Preparing to enter system sleep state S3
+[117034.313496] ACPI: EC: event blocked
+[117034.313498] ACPI: EC: EC stopped
+[117034.313500] PM: Saving platform NVS memory
+[117034.313641] Disabling non-boot CPUs ...
+[117034.337115] smpboot: CPU 1 is now offline
+[117034.391577] smpboot: CPU 2 is now offline
+[117034.443633] smpboot: CPU 3 is now offline
+[117034.447296] ACPI: Low-level resume complete
+[117034.447375] ACPI: EC: EC started
+[117034.447376] PM: Restoring platform NVS memory
+[117034.448350] mce: [Hardware Error]: Machine check events logged
+[117034.448352] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 6: ee2000000040110a
+[117034.448353] mce: [Hardware Error]: TSC 0 ADDR fef1cf00 MISC 3880020086 
+[117034.448356] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554232622 SOCKET 0 APIC 0 microcode 30
+[117034.448356] mce: [Hardware Error]: Machine check events logged
+[117034.448358] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 7: ee2000000040110a
+[117034.448358] mce: [Hardware Error]: TSC 0 ADDR fef1ff00 MISC 43880020086 
+[117034.448360] mce: [Hardware Error]: PROCESSOR 0:806e9 TIME 1554232622 SOCKET 0 APIC 0 microcode 30
+[117034.448366] Enabling non-boot CPUs ...
+[117034.448396] x86: Booting SMP configuration:
+[117034.448397] smpboot: Booting Node 0 Processor 1 APIC 0x2
+[117034.448952]  cache: parent cpu1 should not be sleeping
+[117034.449091] CPU1 is up
+[117034.449107] smpboot: Booting Node 0 Processor 2 APIC 0x1
+[117034.449590]  cache: parent cpu2 should not be sleeping
+[117034.449781] CPU2 is up
+[117034.449798] smpboot: Booting Node 0 Processor 3 APIC 0x3
+[117034.450229]  cache: parent cpu3 should not be sleeping
+[117034.450360] CPU3 is up
+[117034.453451] ACPI: Waking up from system sleep state S3
+[117034.769636] ACPI: EC: interrupt unblocked
+[117034.786515] pcieport 0000:00:1c.5: Intel SPT PCH root port ACS workaround enabled
+[117034.786639] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS workaround enabled
+[117034.824019] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+[117034.833131] ACPI: EC: event unblocked
+[117034.833685] sd 0:0:0:0: [sda] Starting disk
+[117034.835138] iwlwifi 0000:02:00.0: RF_KILL bit toggled to enable radio.
+[117034.843654] [drm] PCIE GART of 256M enabled (table at 0x000000F400000000).
+[117034.849907] amdgpu: [powerplay] can't get the mac of 5
+[117035.147025] ata2: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[117035.153129] ata2.00: configured for UDMA/100
+[117035.213303] usb 1-1: reset low-speed USB device number 19 using xhci_hcd
+[117035.616673] usb 1-6: reset high-speed USB device number 5 using xhci_hcd
+[117035.879998] usb 1-8: reset full-speed USB device number 6 using xhci_hcd
+[117036.143326] usb 1-2: reset full-speed USB device number 3 using xhci_hcd
+[117036.406643] usb 1-5: reset high-speed USB device number 4 using xhci_hcd
+[117036.586540] acpi LNXPOWER:13: Turning OFF
+[117036.586727] acpi LNXPOWER:12: Turning OFF
+[117036.586908] acpi LNXPOWER:11: Turning OFF
+[117036.587088] acpi LNXPOWER:10: Turning OFF
+[117036.587267] acpi LNXPOWER:0f: Turning OFF
+[117036.587447] acpi LNXPOWER:0e: Turning OFF
+[117036.587626] acpi LNXPOWER:0d: Turning OFF
+[117036.587806] acpi LNXPOWER:0c: Turning OFF
+[117036.587986] acpi LNXPOWER:0b: Turning OFF
+[117036.588165] acpi LNXPOWER:0a: Turning OFF
+[117036.588343] acpi LNXPOWER:09: Turning OFF
+[117036.588522] acpi LNXPOWER:08: Turning OFF
+[117036.588700] acpi LNXPOWER:07: Turning OFF
+[117036.588878] acpi LNXPOWER:06: Turning OFF
+[117036.589064] acpi LNXPOWER:04: Turning OFF
+[117036.589242] acpi LNXPOWER:03: Turning OFF
+[117036.589420] acpi LNXPOWER:02: Turning OFF
+[117036.589614] acpi LNXPOWER:01: Turning OFF
+[117036.589797] acpi LNXPOWER:00: Turning OFF
+[117036.608467] Bluetooth: hci0: read Intel version: 370810011003110e00
+[117037.129692] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[117037.133457] ata1.00: configured for UDMA/100
+[117037.199130] PM: Basic memory bitmaps freed
+[117037.199133] OOM killer enabled.
+[117037.199134] Restarting tasks ... done.
+[117037.253527] PM: hibernation exit
+[117037.622882] Bluetooth: hci0: Intel Bluetooth firmware file: intel/ibt-hw-37.8.10-fw-1.10.3.11.e.bseq
+[117037.944376] Bluetooth: hci0: Intel firmware patch completed and activated
+[117041.071121] wlp2s0: authenticate with a0:ab:1b:d6:4e:f9
+[117041.077377] wlp2s0: send auth to a0:ab:1b:d6:4e:f9 (try 1/3)
+[117041.083015] wlp2s0: authenticated
+[117041.086310] wlp2s0: associate with a0:ab:1b:d6:4e:f9 (try 1/3)
+[117041.090914] wlp2s0: RX AssocResp from a0:ab:1b:d6:4e:f9 (capab=0x411 status=0 aid=3)
+[117041.096623] wlp2s0: associated
+[117042.206415] amdgpu: [powerplay] VI should always have 2 performance levels
+[117042.258294] amdgpu 0000:01:00.0: GPU pci config reset
+[117047.537380] audit: type=1130 audit(1554232635.435:526): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=shadow comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[117047.542059] audit: type=1130 audit(1554232635.438:527): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-hybrid-sleep comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[117047.542074] audit: type=1131 audit(1554232635.438:528): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-hybrid-sleep comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[117048.284654] wlp2s0: deauthenticating from a0:ab:1b:d6:4e:f9 by local choice (Reason: 3=DEAUTH_LEAVING)
+[117049.902388] audit: type=1130 audit(1554232637.798:529): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[117049.936704] audit: type=1130 audit(1554232637.835:530): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[117050.315940] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[117050.318987] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[117050.326093] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[117051.443362] audit: type=1131 audit(1554232639.342:531): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=shadow comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=failed'
+[117051.662100] audit: type=1130 audit(1554232639.558:532): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=logrotate comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[117051.662134] audit: type=1131 audit(1554232639.558:533): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=logrotate comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[117052.823505] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[117053.862820] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready
+[117054.940621] audit: type=1131 audit(1554232642.838:534): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=systemd-rfkill comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[117054.966910] wlp2s0: authenticate with a0:ab:1b:d6:4e:f9
+[117054.972437] wlp2s0: send auth to a0:ab:1b:d6:4e:f9 (try 1/3)
+[117054.976478] wlp2s0: authenticated
+[117054.979653] wlp2s0: associate with a0:ab:1b:d6:4e:f9 (try 1/3)
+[117054.990775] wlp2s0: RX AssocResp from a0:ab:1b:d6:4e:f9 (capab=0x411 status=0 aid=3)
+[117054.994784] wlp2s0: associated
+[117055.060917] IPv6: ADDRCONF(NETDEV_CHANGE): wlp2s0: link becomes ready
+[117060.513419] audit: type=1131 audit(1554232648.412:535): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=NetworkManager-dispatcher comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[117065.942705] audit: type=1130 audit(1554232653.838:536): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=man-db comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[117065.942711] audit: type=1131 audit(1554232653.838:537): pid=1 uid=0 auid=4294967295 ses=4294967295 msg='unit=man-db comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+[117836.866621] ftrace_hook: SANDBOX: module loaded
+[117836.866624] SANDBOX: Creating KThread
+[117836.866695] SANDBOX: Thread Created successfully
+[117849.546526] finalize execve() /usr/bin/ssh
+[117849.546545] sending to guest [status = 1] [length = 17] [msg=badguy@localhost
+                ] [type=7]
+[117849.562443] data start is 94104075568976 and stack start is 140730686751424
+[117885.264707] SANDBOX: Thread Stopping
+[117885.264786] SANDBOX: Thread stopped
+[117885.264794] ftrace_hook: SANDBOX: module unloaded
+[117887.711374] ftrace_hook: SANDBOX: module loaded
+[117887.711377] SANDBOX: Creating KThread
+[117887.711407] SANDBOX: Thread Created successfully
+[117897.512407] finalize execve() /usr/bin/ssh
+[117897.512414] sending to guest [status = 1] [length = 17] [msg=badguy@localhost
+                ] [type=7]
+[117897.512441] data start is 1b847750 and stack start is 14447e90
+[117956.728619] SANDBOX: Thread Stopping
+[117956.728694] SANDBOX: Thread stopped
+[117956.728701] ftrace_hook: SANDBOX: module unloaded
+[118421.209562] ftrace_hook: SANDBOX: module loaded
+[118421.209565] SANDBOX: Creating KThread
+[118421.209622] SANDBOX: Thread Created successfully
+[118431.161263] finalize execve() /usr/bin/ssh
+[118431.161271] sending to guest [status = 1] [length = 17] [msg=badguy@localhost
+                ] [type=7]
+[118431.181363] data start is eafa2750 and stack start is 14161430
+[118474.211854] SANDBOX: Thread Stopping
+[118474.211925] SANDBOX: Thread stopped
+[118474.211934] ftrace_hook: SANDBOX: module unloaded
+[118631.373043] kvm [5598]: vcpu0, guest rIP: 0xffffffff81c71b9c disabled perfctr wrmsr: 0xc2 data 0xffff
+[118869.005031] ftrace_hook: SANDBOX: module loaded
+[118869.005035] SANDBOX: Creating KThread
+[118869.005110] SANDBOX: Thread Created successfully
+[118880.101977] finalize execve() /usr/bin/ssh
+[118880.102001] sending to guest [status = 1] [length = 17] [msg=badguy@localhost
+                ] [type=7]
+[118880.102063] data start is 6e029750 and stack start is 70938350
+[118880.215267] Got message with index 1, msg_type 0, fd 863, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[118880.215293] sending to guest [status = 1] [length = 0] [msg=\xe4\xe9\xe8] [type=10]
+[118880.255348] Got message with index 1, msg_type 4, fd 40, length as 0 and string as (null)
+[118880.255384] sending to guest [status = 1] [length = 0] [msg=\xe4\xe9\xe8] [type=10]
+[118880.275328] Got message with index 1, msg_type 0, fd 0, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[118880.275397] sending to guest [status = 1] [length = 0] [msg=\xe4\xe9\xe8] [type=10]
+[118880.295364] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118880.295385] Ioctl termios args 80 and 159 and 878826704
+[118880.295420] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118880.315263] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118880.315282] Ioctl termios args 152 and 3744656640 and 878826448
+[118880.315315] sending to guest [status = 1] [length = 0] [msg=\x98] [type=10]
+[118880.335288] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118880.335306] Ioctl termios args 80 and 159 and 878825616
+[118880.335341] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118880.375321] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118880.375339] Ioctl termios args 80 and 159 and 878827664
+[118880.375370] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118880.395369] Got message with index 1, msg_type 1, fd 40, length as 29 and string as badguy@localhost's password: \xa3\xff\xff@\x94H\xbd\xf4\xff\xff
+[118880.418675] Got message with index 1, msg_type 2, fd 40, length as 0 and string as (null)
+[118880.418700] BUG: scheduling while atomic: ssh/5783/0x00000002
+[118880.418704] Modules linked in: host_module(OE) fuse uas usb_storage xt_nat veth nf_conntrack_netlink nfnetlink xfrm_user xfrm_algo xt_addrtype br_netfilter overlay ccm iptable_mangle xt_CHECKSUM iptable_nat ipt_MASQUERADE nf_nat_ipv4 nf_nat xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c ipt_REJECT nf_reject_ipv4 xt_tcpudp tun bridge stp llc devlink ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter nls_iso8859_1 nls_cp437 vfat fat snd_soc_skl snd_hda_codec_hdmi snd_soc_hdac_hda snd_hda_codec_realtek snd_hda_ext_core iTCO_wdt snd_hda_codec_generic iTCO_vendor_support hid_multitouch dell_wmi sparse_keymap wmi_bmof snd_soc_skl_ipc snd_soc_sst_ipc snd_soc_sst_dsp snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core intel_rapl x86_pkg_temp_thermal intel_powerclamp coretemp snd_compress ac97_bus snd_pcm_dmaengine dell_laptop kvm_intel dell_smbios dell_wmi_descriptor dcdbas crct10dif_pclmul crc32_pclmul ghash_clmulni_intel uvcvideo dell_smm_hwmon aesni_intel arc4
+[118880.418773]  amdgpu aes_x86_64 iwlmvm crypto_simd cryptd glue_helper btusb btrtl btbcm btintel intel_cstate intel_uncore intel_rapl_perf bluetooth videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 videobuf2_common mac80211 i915 videodev rtsx_usb_ms memstick media pcspkr ecdh_generic psmouse snd_hda_intel snd_hda_codec mousedev joydev input_leds chash amd_iommu_v2 kvmgt snd_hda_core snd_hwdep vfio_mdev gpu_sched mdev ttm r8169 iwlwifi kvm i2c_algo_bit cfg80211 drm_kms_helper realtek snd_pcm snd_timer snd libphy wmi drm tpm_crb tpm_tis tpm_tis_core i2c_hid intel_gtt i2c_i801 agpgart dell_rbtn tpm syscopyarea sysfillrect sysimgblt soundcore int3400_thermal fb_sys_fops rfkill rng_core battery ac idma64 acpi_thermal_rel int3402_thermal int3403_thermal evdev pcc_cpufreq mei_me intel_lpss_pci intel_lpss mac_hid mei processor_thermal_device int340x_thermal_zone intel_soc_dts_iosf intel_pch_thermal crypto_user ip_tables x_tables ext4 crc32c_generic crc16 mbcache jbd2 fscrypto rtsx_usb_sdmmc
+[118880.418857]  mmc_core rtsx_usb hid_logitech_hidpp sr_mod cdrom sd_mod hid_logitech_dj hid_generic usbhid hid serio_raw atkbd ahci libps2 libahci libata xhci_pci crc32c_intel scsi_mod xhci_hcd i8042 serio vfio_pci irqbypass vfio_virqfd vfio_iommu_type1 vfio [last unloaded: host_module]
+[118880.418887] Preemption disabled at:
+[118880.418889] [<0000000000000000>]           (null)
+[118880.418900] CPU: 1 PID: 5783 Comm: ssh Tainted: G      D    OE     4.20.6 #1
+[118880.418904] Hardware name: Dell Inc. Inspiron 5567/05VRRG, BIOS 1.0.2 09/09/2016
+[118880.418908] Call Trace:
+[118880.418925]  dump_stack+0x5c/0x80
+[118880.418936]  __schedule_bug.cold.13+0x38/0x51
+[118880.418943]  __schedule+0x6fd/0x8b0
+[118880.418950]  ? enqueue_task_fair+0xc3/0x750
+[118880.418956]  schedule+0x32/0x90
+[118880.418962]  schedule_timeout+0x311/0x4a0
+[118880.418969]  ? _raw_spin_lock+0x13/0x30
+[118880.418975]  ? _raw_spin_unlock_irq+0x1d/0x30
+[118880.418982]  ? __flush_work+0x1a6/0x1c0
+[118880.418991]  ? __inc_numa_state+0x23/0x70
+[118880.419000]  wait_woken+0x44/0x80
+[118880.419010]  n_tty_read+0x8c0/0x910
+[118880.419021]  ? do_wait_intr_irq+0x80/0x80
+[118880.419028]  tty_read+0x86/0x100
+[118880.419037]  __vfs_read+0x36/0x190
+[118880.419045]  vfs_read+0x8a/0x130
+[118880.419054]  kernel_read+0x2c/0x40
+[118880.419064]  fake_finalize_exec.cold.4+0x5cf/0x7f7 [host_module]
+[118880.419073]  ? wait_woken+0x80/0x80
+[118880.419082]  load_elf_binary+0x1613/0x16c0
+[118880.419093]  search_binary_handler+0x80/0x250
+[118880.419100]  __do_execve_file.isra.12+0x58a/0x850
+[118880.419107]  ? mpi_resize+0x70/0x78
+[118880.419114]  do_execve+0x21/0x30
+[118880.419120]  __x64_sys_execve+0x26/0x30
+[118880.419128]  do_syscall_64+0x5b/0x170
+[118880.419135]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[118880.419142] RIP: 0033:0x7f0de075e98b
+[118880.419155] Code: Bad RIP value.
+[118880.419160] RSP: 002b:00007ffdfe59ac48 EFLAGS: 00000246 ORIG_RAX: 000000000000003b
+[118880.419166] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000000000
+[118880.419170] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[118880.419174] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+[118880.419178] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+[118880.419182] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[118886.406513] sending to guest [status = 1] [length = 6] [msg=temp
+                	] [type=10]
+[118886.438948] Got message with index 1, msg_type 1, fd 40, length as 1 and string as 
+                )\x8c%\xcd\xdf[t(\x8c%\xcd\xdf[%\x8c%\xcd\xdf[L$\x8c%\xcd\xdf[\x8c.\x8c%\xcd\xdf[\xd4"\x8c%\xcd\xdf[l.\x8c%\xcd\xdf[\xb4/\x8c%\xcd\xdf[-\x8c%\xcd\xdf[|-\x8c%\xcd\xdf[$#\x8c%\xcd\xdf[sdd1
+[118886.458954] Got message with index 1, msg_type 8, fd 40, length as 56 and string as (
+[118886.458967] Ioctl termios args 152 and 3744656640 and 856357776
+[118886.458995] sending to guest [status = 1] [length = 0] [msg=\x98] [type=10]
+[118886.478955] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118886.478971] Ioctl termios args 80 and 159 and 856355728
+[118886.478998] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118886.502233] Got message with index 1, msg_type 4, fd 40, length as 0 and string as (null)
+[118886.502283] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118886.545667] Got message with index 1, msg_type 0, fd 0, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[118886.545719] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118886.565513] Got message with index 1, msg_type 4, fd 40, length as 0 and string as (null)
+[118886.565550] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118886.585675] Got message with index 1, msg_type 0, fd 0, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[118886.585726] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118886.605619] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118886.605639] Ioctl termios args 80 and 159 and 4145619024
+[118886.605676] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118886.625575] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118886.625593] Ioctl termios args 152 and 3744656640 and 4145619408
+[118886.625622] sending to guest [status = 1] [length = 0] [msg=\x98] [type=10]
+[118886.645576] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118886.645592] Ioctl termios args 80 and 159 and 4145619344
+[118886.645621] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118886.685636] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118886.685654] Ioctl termios args 80 and 159 and 4145622608
+[118886.685683] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118886.705636] Got message with index 1, msg_type 1, fd 40, length as 29 and string as badguy@localhost's password: 
+[118886.725656] Got message with index 1, msg_type 2, fd 40, length as 0 and string as (null)
+[118886.725688] BUG: scheduling while atomic: ssh/5783/0x00000002
+[118886.725695] Modules linked in: host_module(OE) fuse uas usb_storage xt_nat veth nf_conntrack_netlink nfnetlink xfrm_user xfrm_algo xt_addrtype br_netfilter overlay ccm iptable_mangle xt_CHECKSUM iptable_nat ipt_MASQUERADE nf_nat_ipv4 nf_nat xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c ipt_REJECT nf_reject_ipv4 xt_tcpudp tun bridge stp llc devlink ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter nls_iso8859_1 nls_cp437 vfat fat snd_soc_skl snd_hda_codec_hdmi snd_soc_hdac_hda snd_hda_codec_realtek snd_hda_ext_core iTCO_wdt snd_hda_codec_generic iTCO_vendor_support hid_multitouch dell_wmi sparse_keymap wmi_bmof snd_soc_skl_ipc snd_soc_sst_ipc snd_soc_sst_dsp snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core intel_rapl x86_pkg_temp_thermal intel_powerclamp coretemp snd_compress ac97_bus snd_pcm_dmaengine dell_laptop kvm_intel dell_smbios dell_wmi_descriptor dcdbas crct10dif_pclmul crc32_pclmul ghash_clmulni_intel uvcvideo dell_smm_hwmon aesni_intel arc4
+[118886.725807]  amdgpu aes_x86_64 iwlmvm crypto_simd cryptd glue_helper btusb btrtl btbcm btintel intel_cstate intel_uncore intel_rapl_perf bluetooth videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 videobuf2_common mac80211 i915 videodev rtsx_usb_ms memstick media pcspkr ecdh_generic psmouse snd_hda_intel snd_hda_codec mousedev joydev input_leds chash amd_iommu_v2 kvmgt snd_hda_core snd_hwdep vfio_mdev gpu_sched mdev ttm r8169 iwlwifi kvm i2c_algo_bit cfg80211 drm_kms_helper realtek snd_pcm snd_timer snd libphy wmi drm tpm_crb tpm_tis tpm_tis_core i2c_hid intel_gtt i2c_i801 agpgart dell_rbtn tpm syscopyarea sysfillrect sysimgblt soundcore int3400_thermal fb_sys_fops rfkill rng_core battery ac idma64 acpi_thermal_rel int3402_thermal int3403_thermal evdev pcc_cpufreq mei_me intel_lpss_pci intel_lpss mac_hid mei processor_thermal_device int340x_thermal_zone intel_soc_dts_iosf intel_pch_thermal crypto_user ip_tables x_tables ext4 crc32c_generic crc16 mbcache jbd2 fscrypto rtsx_usb_sdmmc
+[118886.725942]  mmc_core rtsx_usb hid_logitech_hidpp sr_mod cdrom sd_mod hid_logitech_dj hid_generic usbhid hid serio_raw atkbd ahci libps2 libahci libata xhci_pci crc32c_intel scsi_mod xhci_hcd i8042 serio vfio_pci irqbypass vfio_virqfd vfio_iommu_type1 vfio [last unloaded: host_module]
+[118886.725977] Preemption disabled at:
+[118886.725980] [<0000000000000000>]           (null)
+[118886.725992] CPU: 2 PID: 5783 Comm: ssh Tainted: G      D W  OE     4.20.6 #1
+[118886.725997] Hardware name: Dell Inc. Inspiron 5567/05VRRG, BIOS 1.0.2 09/09/2016
+[118886.726000] Call Trace:
+[118886.726020]  dump_stack+0x5c/0x80
+[118886.726030]  __schedule_bug.cold.13+0x38/0x51
+[118886.726038]  __schedule+0x6fd/0x8b0
+[118886.726047]  schedule+0x32/0x90
+[118886.726054]  schedule_timeout+0x311/0x4a0
+[118886.726062]  ? _raw_spin_lock+0x13/0x30
+[118886.726068]  ? _raw_spin_unlock_irq+0x1d/0x30
+[118886.726077]  ? __flush_work+0x1a6/0x1c0
+[118886.726086]  ? __inc_numa_state+0x23/0x70
+[118886.726095]  wait_woken+0x44/0x80
+[118886.726106]  n_tty_read+0x8c0/0x910
+[118886.726118]  ? do_wait_intr_irq+0x80/0x80
+[118886.726127]  tty_read+0x86/0x100
+[118886.726136]  __vfs_read+0x36/0x190
+[118886.726145]  vfs_read+0x8a/0x130
+[118886.726156]  kernel_read+0x2c/0x40
+[118886.726167]  fake_finalize_exec.cold.4+0x5cf/0x7f7 [host_module]
+[118886.726176]  ? wait_woken+0x80/0x80
+[118886.726187]  load_elf_binary+0x1613/0x16c0
+[118886.726199]  search_binary_handler+0x80/0x250
+[118886.726207]  __do_execve_file.isra.12+0x58a/0x850
+[118886.726215]  ? mpi_resize+0x70/0x78
+[118886.726222]  do_execve+0x21/0x30
+[118886.726229]  __x64_sys_execve+0x26/0x30
+[118886.726238]  do_syscall_64+0x5b/0x170
+[118886.726246]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[118886.726254] RIP: 0033:0x7f0de075e98b
+[118886.726269] Code: Bad RIP value.
+[118886.726274] RSP: 002b:00007ffdfe59ac48 EFLAGS: 00000246 ORIG_RAX: 000000000000003b
+[118886.726281] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000000000
+[118886.726286] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[118886.726290] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+[118886.726294] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+[118886.726299] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[118890.494194] sending to guest [status = 1] [length = 6] [msg=temp
+                	\xffT\xffT\xffT\xffT\xff] [type=10]
+[118890.525785] Got message with index 1, msg_type 1, fd 40, length as 1 and string as 
+                )\x8c%\xcd\xdf[.text
+[118890.545810] Got message with index 1, msg_type 8, fd 40, length as 56 and string as (
+[118890.545824] Ioctl termios args 152 and 3744656640 and 878829136
+[118890.545862] sending to guest [status = 1] [length = 0] [msg=\x98] [type=10]
+[118890.565813] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118890.565829] Ioctl termios args 80 and 159 and 878827792
+[118890.565856] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118890.585824] Got message with index 1, msg_type 4, fd 40, length as 0 and string as (null)
+[118890.585865] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118890.625793] Got message with index 1, msg_type 0, fd 0, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[118890.625846] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118890.645825] Got message with index 1, msg_type 4, fd 40, length as 0 and string as (null)
+[118890.645866] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118890.665855] Got message with index 1, msg_type 0, fd 0, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[118890.665933] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118890.685833] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118890.685850] Ioctl termios args 80 and 159 and 878827408
+[118890.685879] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118890.705800] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118890.705814] Ioctl termios args 152 and 3744656640 and 878829328
+[118890.705842] sending to guest [status = 1] [length = 0] [msg=\x98] [type=10]
+[118890.725858] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118890.725871] Ioctl termios args 80 and 159 and 878826384
+[118890.725896] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118890.765872] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118890.765894] Ioctl termios args 80 and 159 and 878829456
+[118890.765924] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118890.785881] Got message with index 1, msg_type 1, fd 40, length as 29 and string as badguy@localhost's password: 
+[118890.809173] Got message with index 1, msg_type 2, fd 40, length as 0 and string as (null)
+[118890.809201] BUG: scheduling while atomic: ssh/5783/0x00000002
+[118890.809206] Modules linked in: host_module(OE) fuse uas usb_storage xt_nat veth nf_conntrack_netlink nfnetlink xfrm_user xfrm_algo xt_addrtype br_netfilter overlay ccm iptable_mangle xt_CHECKSUM iptable_nat ipt_MASQUERADE nf_nat_ipv4 nf_nat xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c ipt_REJECT nf_reject_ipv4 xt_tcpudp tun bridge stp llc devlink ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter nls_iso8859_1 nls_cp437 vfat fat snd_soc_skl snd_hda_codec_hdmi snd_soc_hdac_hda snd_hda_codec_realtek snd_hda_ext_core iTCO_wdt snd_hda_codec_generic iTCO_vendor_support hid_multitouch dell_wmi sparse_keymap wmi_bmof snd_soc_skl_ipc snd_soc_sst_ipc snd_soc_sst_dsp snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core intel_rapl x86_pkg_temp_thermal intel_powerclamp coretemp snd_compress ac97_bus snd_pcm_dmaengine dell_laptop kvm_intel dell_smbios dell_wmi_descriptor dcdbas crct10dif_pclmul crc32_pclmul ghash_clmulni_intel uvcvideo dell_smm_hwmon aesni_intel arc4
+[118890.809286]  amdgpu aes_x86_64 iwlmvm crypto_simd cryptd glue_helper btusb btrtl btbcm btintel intel_cstate intel_uncore intel_rapl_perf bluetooth videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 videobuf2_common mac80211 i915 videodev rtsx_usb_ms memstick media pcspkr ecdh_generic psmouse snd_hda_intel snd_hda_codec mousedev joydev input_leds chash amd_iommu_v2 kvmgt snd_hda_core snd_hwdep vfio_mdev gpu_sched mdev ttm r8169 iwlwifi kvm i2c_algo_bit cfg80211 drm_kms_helper realtek snd_pcm snd_timer snd libphy wmi drm tpm_crb tpm_tis tpm_tis_core i2c_hid intel_gtt i2c_i801 agpgart dell_rbtn tpm syscopyarea sysfillrect sysimgblt soundcore int3400_thermal fb_sys_fops rfkill rng_core battery ac idma64 acpi_thermal_rel int3402_thermal int3403_thermal evdev pcc_cpufreq mei_me intel_lpss_pci intel_lpss mac_hid mei processor_thermal_device int340x_thermal_zone intel_soc_dts_iosf intel_pch_thermal crypto_user ip_tables x_tables ext4 crc32c_generic crc16 mbcache jbd2 fscrypto rtsx_usb_sdmmc
+[118890.809384]  mmc_core rtsx_usb hid_logitech_hidpp sr_mod cdrom sd_mod hid_logitech_dj hid_generic usbhid hid serio_raw atkbd ahci libps2 libahci libata xhci_pci crc32c_intel scsi_mod xhci_hcd i8042 serio vfio_pci irqbypass vfio_virqfd vfio_iommu_type1 vfio [last unloaded: host_module]
+[118890.809417] Preemption disabled at:
+[118890.809420] [<0000000000000000>]           (null)
+[118890.809432] CPU: 3 PID: 5783 Comm: ssh Tainted: G      D W  OE     4.20.6 #1
+[118890.809437] Hardware name: Dell Inc. Inspiron 5567/05VRRG, BIOS 1.0.2 09/09/2016
+[118890.809441] Call Trace:
+[118890.809461]  dump_stack+0x5c/0x80
+[118890.809472]  __schedule_bug.cold.13+0x38/0x51
+[118890.809480]  __schedule+0x6fd/0x8b0
+[118890.809488]  ? enqueue_task_fair+0xc3/0x750
+[118890.809495]  schedule+0x32/0x90
+[118890.809502]  schedule_timeout+0x311/0x4a0
+[118890.809510]  ? _raw_spin_lock+0x13/0x30
+[118890.809517]  ? _raw_spin_unlock_irq+0x1d/0x30
+[118890.809525]  ? __flush_work+0x1a6/0x1c0
+[118890.809534]  ? __inc_numa_state+0x23/0x70
+[118890.809543]  wait_woken+0x44/0x80
+[118890.809554]  n_tty_read+0x8c0/0x910
+[118890.809566]  ? do_wait_intr_irq+0x80/0x80
+[118890.809575]  tty_read+0x86/0x100
+[118890.809590]  __vfs_read+0x36/0x190
+[118890.809601]  vfs_read+0x8a/0x130
+[118890.809614]  kernel_read+0x2c/0x40
+[118890.809624]  fake_finalize_exec.cold.4+0x5cf/0x7f7 [host_module]
+[118890.809634]  ? wait_woken+0x80/0x80
+[118890.809645]  load_elf_binary+0x1613/0x16c0
+[118890.809657]  search_binary_handler+0x80/0x250
+[118890.809664]  __do_execve_file.isra.12+0x58a/0x850
+[118890.809672]  ? mpi_resize+0x70/0x78
+[118890.809680]  do_execve+0x21/0x30
+[118890.809686]  __x64_sys_execve+0x26/0x30
+[118890.809695]  do_syscall_64+0x5b/0x170
+[118890.809704]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[118890.809712] RIP: 0033:0x7f0de075e98b
+[118890.809727] Code: Bad RIP value.
+[118890.809732] RSP: 002b:00007ffdfe59ac48 EFLAGS: 00000246 ORIG_RAX: 000000000000003b
+[118890.809739] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000000000
+[118890.809744] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[118890.809748] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+[118890.809753] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+[118890.809757] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[118893.094403] sending to guest [status = 1] [length = 6] [msg=temp
+                	] [type=10]
+[118893.115993] Got message with index 1, msg_type 1, fd 40, length as 1 and string as 
+                +\x8c%\xcd\xdf[\x8c!\x8c%\xcd\xdf[tasks
+[118893.135877] Got message with index 1, msg_type 8, fd 40, length as 56 and string as (
+[118893.135887] Ioctl termios args 152 and 3744656640 and 4145619152
+[118893.135909] sending to guest [status = 1] [length = 0] [msg=\x98] [type=10]
+[118893.155940] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[118893.155953] Ioctl termios args 80 and 159 and 4145619728
+[118893.155978] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118893.175942] Got message with index 1, msg_type 4, fd 40, length as 0 and string as (null)
+[118893.175980] sending to guest [status = 1] [length = 0] [msg=P] [type=10]
+[118990.288233] SANDBOX: Thread Stopping
+[118990.288286] SANDBOX: Thread stopped
+[118990.288295] ftrace_hook: SANDBOX: module unloaded
+[119002.399140] ftrace_hook: SANDBOX: module loaded
+[119002.399143] SANDBOX: Creating KThread
+[119002.399283] SANDBOX: Thread Created successfully
+[119005.333663] finalize execve() /usr/bin/ssh
+[119005.333685] sending to guest [status = 1] [length = 31] [msg=vinayakt@turing.cse.iitk.ac.in
+                ] [type=7]
+[119005.333747] data start is d2b7a750 and stack start is 8cf3e5f0
+[119005.461212] Got message with index 1, msg_type 0, fd 0, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[119005.461253] sending to guest [status = 1] [length = 0] [msg=vinayakt@turing.cse.iitk.ac.in
+                ] [type=10]
+[119005.501229] Got message with index 1, msg_type 4, fd 40, length as 0 and string as (null)
+[119005.501273] sending to guest [status = 1] [length = 0] [msg=vinayakt@turing.cse.iitk.ac.in
+                ] [type=10]
+[119005.521124] Got message with index 1, msg_type 0, fd 0, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[119005.521180] sending to guest [status = 1] [length = 0] [msg=vinayakt@turing.cse.iitk.ac.in
+                ] [type=10]
+[119005.541174] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[119005.541194] Ioctl termios args 151 and 186 and 532697232
+[119005.541221] BUG: unable to handle kernel NULL pointer dereference at 00000000000000f0
+[119005.541227] PGD 0 P4D 0 
+[119005.541239] Oops: 0000 [#3] PREEMPT SMP PTI
+[119005.541250] CPU: 2 PID: 6321 Comm: ssh Tainted: G      D W  OE     4.20.6 #1
+[119005.541256] Hardware name: Dell Inc. Inspiron 5567/05VRRG, BIOS 1.0.2 09/09/2016
+[119005.541272] RIP: 0010:tty_ioctl+0x30/0x8c0
+[119005.541281] Code: 56 41 55 49 89 fd 41 54 49 89 d4 48 c7 c2 53 bf af 93 55 53 89 f3 48 83 c4 80 65 48 8b 04 25 28 00 00 00 48 89 44 24 78 31 c0 <48> 8b 87 c8 00 00 00 48 8b 28 48 8b 47 20 48 89 ef 48 8d 70 4c e8
+[119005.541287] RSP: 0018:ffffbd720466fc28 EFLAGS: 00010246
+[119005.541296] RAX: 0000000000000000 RBX: 0000000000005401 RCX: 00000000fffffff2
+[119005.541303] RDX: ffffffff93afbf53 RSI: 0000000000005401 RDI: 0000000000000028
+[119005.541309] RBP: ffffffffc176ab38 R08: ffffa3f81fc05091 R09: 0000000000000000
+[119005.541316] R10: 000000000000000f R11: ffffa3f81fc05080 R12: 00005585d2b7a750
+[119005.541322] R13: 0000000000000028 R14: ffffa3f9a9ba3d80 R15: 000000000000092d
+[119005.541329] FS:  0000000000000000(0000) GS:ffffa3fa37300000(0000) knlGS:0000000000000000
+[119005.541336] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[119005.541342] CR2: 00000000000000f0 CR3: 000000006cc96003 CR4: 00000000003626e0
+[119005.541348] Call Trace:
+[119005.541374]  ? .E_write_words+0x21/0x2b
+[119005.541391]  fake_finalize_exec.cold.6+0x758/0x827 [host_module]
+[119005.541405]  ? wait_woken+0x80/0x80
+[119005.541419]  load_elf_binary+0x1613/0x16c0
+[119005.541433]  search_binary_handler+0x80/0x250
+[119005.541440]  __do_execve_file.isra.12+0x58a/0x850
+[119005.541447]  ? mpi_resize+0x70/0x78
+[119005.541454]  do_execve+0x21/0x30
+[119005.541460]  __x64_sys_execve+0x26/0x30
+[119005.541468]  do_syscall_64+0x5b/0x170
+[119005.541476]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[119005.541484] RIP: 0033:0x7f9a1b07698b
+[119005.541492] Code: Bad RIP value.
+[119005.541496] RSP: 002b:00007ffc79c9a818 EFLAGS: 00000246 ORIG_RAX: 000000000000003b
+[119005.541502] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000000000
+[119005.541505] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[119005.541509] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+[119005.541513] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+[119005.541516] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[119005.541523] Modules linked in: host_module(OE) fuse uas usb_storage xt_nat veth nf_conntrack_netlink nfnetlink xfrm_user xfrm_algo xt_addrtype br_netfilter overlay ccm iptable_mangle xt_CHECKSUM iptable_nat ipt_MASQUERADE nf_nat_ipv4 nf_nat xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c ipt_REJECT nf_reject_ipv4 xt_tcpudp tun bridge stp llc devlink ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter nls_iso8859_1 nls_cp437 vfat fat snd_soc_skl snd_hda_codec_hdmi snd_soc_hdac_hda snd_hda_codec_realtek snd_hda_ext_core iTCO_wdt snd_hda_codec_generic iTCO_vendor_support hid_multitouch dell_wmi sparse_keymap wmi_bmof snd_soc_skl_ipc snd_soc_sst_ipc snd_soc_sst_dsp snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core intel_rapl x86_pkg_temp_thermal intel_powerclamp coretemp snd_compress ac97_bus snd_pcm_dmaengine dell_laptop kvm_intel dell_smbios dell_wmi_descriptor dcdbas crct10dif_pclmul crc32_pclmul ghash_clmulni_intel uvcvideo dell_smm_hwmon aesni_intel arc4
+[119005.541586]  amdgpu aes_x86_64 iwlmvm crypto_simd cryptd glue_helper btusb btrtl btbcm btintel intel_cstate intel_uncore intel_rapl_perf bluetooth videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 videobuf2_common mac80211 i915 videodev rtsx_usb_ms memstick media pcspkr ecdh_generic psmouse snd_hda_intel snd_hda_codec mousedev joydev input_leds chash amd_iommu_v2 kvmgt snd_hda_core snd_hwdep vfio_mdev gpu_sched mdev ttm r8169 iwlwifi kvm i2c_algo_bit cfg80211 drm_kms_helper realtek snd_pcm snd_timer snd libphy wmi drm tpm_crb tpm_tis tpm_tis_core i2c_hid intel_gtt i2c_i801 agpgart dell_rbtn tpm syscopyarea sysfillrect sysimgblt soundcore int3400_thermal fb_sys_fops rfkill rng_core battery ac idma64 acpi_thermal_rel int3402_thermal int3403_thermal evdev pcc_cpufreq mei_me intel_lpss_pci intel_lpss mac_hid mei processor_thermal_device int340x_thermal_zone intel_soc_dts_iosf intel_pch_thermal crypto_user ip_tables x_tables ext4 crc32c_generic crc16 mbcache jbd2 fscrypto rtsx_usb_sdmmc
+[119005.541666]  mmc_core rtsx_usb hid_logitech_hidpp sr_mod cdrom sd_mod hid_logitech_dj hid_generic usbhid hid serio_raw atkbd ahci libps2 libahci libata xhci_pci crc32c_intel scsi_mod xhci_hcd i8042 serio vfio_pci irqbypass vfio_virqfd vfio_iommu_type1 vfio [last unloaded: host_module]
+[119005.541697] CR2: 00000000000000f0
+[119005.541704] ---[ end trace 948cadaba3729f79 ]---
+[119005.541713] RIP: 0010:tty_ioctl+0x30/0x8c0
+[119005.541718] Code: 56 41 55 49 89 fd 41 54 49 89 d4 48 c7 c2 53 bf af 93 55 53 89 f3 48 83 c4 80 65 48 8b 04 25 28 00 00 00 48 89 44 24 78 31 c0 <48> 8b 87 c8 00 00 00 48 8b 28 48 8b 47 20 48 89 ef 48 8d 70 4c e8
+[119005.541722] RSP: 0018:ffffbd7200ed7c28 EFLAGS: 00010246
+[119005.541727] RAX: 0000000000000000 RBX: 0000000000005401 RCX: ffffffffffffffff
+[119005.541732] RDX: ffffffff93afbf53 RSI: 0000000000005401 RDI: 0000000000000028
+[119005.541736] RBP: ffffffffffffffff R08: 0000000000000001 R09: 0000000000000992
+[119005.541740] R10: ffffa3fa34abf380 R11: 0000000000000000 R12: ffffa3fa34abf390
+[119005.541744] R13: 0000000000000028 R14: ffffa3fa0a07dc40 R15: 000000000000079b
+[119005.541749] FS:  0000000000000000(0000) GS:ffffa3fa37300000(0000) knlGS:0000000000000000
+[119005.541753] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[119005.541757] CR2: 00007f9a1b076961 CR3: 000000006cc96003 CR4: 00000000003626e0
+[119005.541764] note: ssh[6321] exited with preempt_count 1
+[119109.566689] SANDBOX: Thread Stopping
+[119109.566767] SANDBOX: Thread stopped
+[119109.566775] ftrace_hook: SANDBOX: module unloaded
+[119114.689206] ftrace_hook: SANDBOX: module loaded
+[119114.689224] SANDBOX: Creating KThread
+[119114.689276] SANDBOX: Thread Created successfully
+[119128.069560] finalize execve() /usr/bin/ssh
+[119128.069581] sending to guest [status = 1] [length = 17] [msg=badguy@localhost
+                ] [type=7]
+[119128.069639] data start is 1a607750 and stack start is fd7f4960
+[119128.178767] Got message with index 1, msg_type 0, fd 0, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[119128.178794] sending to guest [status = 1] [length = 0] [msg=badguy@localhost
+                ] [type=10]
+[119128.198866] Got message with index 1, msg_type 4, fd 40, length as 0 and string as (null)
+[119128.198907] sending to guest [status = 1] [length = 0] [msg=badguy@localhost
+                ] [type=10]
+[119128.238876] Got message with index 1, msg_type 0, fd 0, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[119128.238930] sending to guest [status = 1] [length = 0] [msg=badguy@localhost
+                ] [type=10]
+[119128.258813] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[119128.258829] Ioctl termios args 50 and 255 and 661562064
+[119128.258854] BUG: unable to handle kernel NULL pointer dereference at 00000000000000f0
+[119128.258858] PGD 0 P4D 0 
+[119128.258869] Oops: 0000 [#4] PREEMPT SMP PTI
+[119128.258878] CPU: 3 PID: 6795 Comm: ssh Tainted: G      D W  OE     4.20.6 #1
+[119128.258883] Hardware name: Dell Inc. Inspiron 5567/05VRRG, BIOS 1.0.2 09/09/2016
+[119128.258896] RIP: 0010:tty_ioctl+0x30/0x8c0
+[119128.258902] Code: 56 41 55 49 89 fd 41 54 49 89 d4 48 c7 c2 53 bf af 93 55 53 89 f3 48 83 c4 80 65 48 8b 04 25 28 00 00 00 48 89 44 24 78 31 c0 <48> 8b 87 c8 00 00 00 48 8b 28 48 8b 47 20 48 89 ef 48 8d 70 4c e8
+[119128.258907] RSP: 0018:ffffbd7204667c30 EFLAGS: 00010246
+[119128.258914] RAX: 0000000000000000 RBX: 0000000000005401 RCX: 00000000fffffff2
+[119128.258919] RDX: ffffffff93afbf53 RSI: 0000000000005401 RDI: 0000000000000028
+[119128.258925] RBP: ffffffffc1761b38 R08: ffffa3f8276ea2d1 R09: 0000000000000000
+[119128.258930] R10: 000000000000000f R11: ffffa3f8276ea2c0 R12: 000056221a607750
+[119128.258935] R13: 0000000000000028 R14: ffffa3f9cbb00000 R15: 00000000000009a1
+[119128.258941] FS:  0000000000000000(0000) GS:ffffa3fa37380000(0000) knlGS:0000000000000000
+[119128.258947] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[119128.258952] CR2: 00000000000000f0 CR3: 00000001e8ab8006 CR4: 00000000003626e0
+[119128.258957] Call Trace:
+[119128.258983]  fake_finalize_exec.cold.6+0x758/0x827 [host_module]
+[119128.258996]  ? wait_woken+0x80/0x80
+[119128.259007]  load_elf_binary+0x1613/0x16c0
+[119128.259020]  search_binary_handler+0x80/0x250
+[119128.259028]  __do_execve_file.isra.12+0x58a/0x850
+[119128.259036]  ? mpi_resize+0x70/0x78
+[119128.259044]  do_execve+0x21/0x30
+[119128.259051]  __x64_sys_execve+0x26/0x30
+[119128.259060]  do_syscall_64+0x5b/0x170
+[119128.259070]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[119128.259077] RIP: 0033:0x7fe2b614298b
+[119128.259087] Code: Bad RIP value.
+[119128.259091] RSP: 002b:00007fff3ce94028 EFLAGS: 00000246 ORIG_RAX: 000000000000003b
+[119128.259097] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000000000
+[119128.259101] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[119128.259105] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+[119128.259109] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+[119128.259114] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[119128.259121] Modules linked in: host_module(OE) fuse uas usb_storage xt_nat veth nf_conntrack_netlink nfnetlink xfrm_user xfrm_algo xt_addrtype br_netfilter overlay ccm iptable_mangle xt_CHECKSUM iptable_nat ipt_MASQUERADE nf_nat_ipv4 nf_nat xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c ipt_REJECT nf_reject_ipv4 xt_tcpudp tun bridge stp llc devlink ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter nls_iso8859_1 nls_cp437 vfat fat snd_soc_skl snd_hda_codec_hdmi snd_soc_hdac_hda snd_hda_codec_realtek snd_hda_ext_core iTCO_wdt snd_hda_codec_generic iTCO_vendor_support hid_multitouch dell_wmi sparse_keymap wmi_bmof snd_soc_skl_ipc snd_soc_sst_ipc snd_soc_sst_dsp snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core intel_rapl x86_pkg_temp_thermal intel_powerclamp coretemp snd_compress ac97_bus snd_pcm_dmaengine dell_laptop kvm_intel dell_smbios dell_wmi_descriptor dcdbas crct10dif_pclmul crc32_pclmul ghash_clmulni_intel uvcvideo dell_smm_hwmon aesni_intel arc4
+[119128.259194]  amdgpu aes_x86_64 iwlmvm crypto_simd cryptd glue_helper btusb btrtl btbcm btintel intel_cstate intel_uncore intel_rapl_perf bluetooth videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 videobuf2_common mac80211 i915 videodev rtsx_usb_ms memstick media pcspkr ecdh_generic psmouse snd_hda_intel snd_hda_codec mousedev joydev input_leds chash amd_iommu_v2 kvmgt snd_hda_core snd_hwdep vfio_mdev gpu_sched mdev ttm r8169 iwlwifi kvm i2c_algo_bit cfg80211 drm_kms_helper realtek snd_pcm snd_timer snd libphy wmi drm tpm_crb tpm_tis tpm_tis_core i2c_hid intel_gtt i2c_i801 agpgart dell_rbtn tpm syscopyarea sysfillrect sysimgblt soundcore int3400_thermal fb_sys_fops rfkill rng_core battery ac idma64 acpi_thermal_rel int3402_thermal int3403_thermal evdev pcc_cpufreq mei_me intel_lpss_pci intel_lpss mac_hid mei processor_thermal_device int340x_thermal_zone intel_soc_dts_iosf intel_pch_thermal crypto_user ip_tables x_tables ext4 crc32c_generic crc16 mbcache jbd2 fscrypto rtsx_usb_sdmmc
+[119128.259292]  mmc_core rtsx_usb hid_logitech_hidpp sr_mod cdrom sd_mod hid_logitech_dj hid_generic usbhid hid serio_raw atkbd ahci libps2 libahci libata xhci_pci crc32c_intel scsi_mod xhci_hcd i8042 serio vfio_pci irqbypass vfio_virqfd vfio_iommu_type1 vfio [last unloaded: host_module]
+[119128.259328] CR2: 00000000000000f0
+[119128.259334] ---[ end trace 948cadaba3729f7a ]---
+[119128.259344] RIP: 0010:tty_ioctl+0x30/0x8c0
+[119128.259350] Code: 56 41 55 49 89 fd 41 54 49 89 d4 48 c7 c2 53 bf af 93 55 53 89 f3 48 83 c4 80 65 48 8b 04 25 28 00 00 00 48 89 44 24 78 31 c0 <48> 8b 87 c8 00 00 00 48 8b 28 48 8b 47 20 48 89 ef 48 8d 70 4c e8
+[119128.259355] RSP: 0018:ffffbd7200ed7c28 EFLAGS: 00010246
+[119128.259361] RAX: 0000000000000000 RBX: 0000000000005401 RCX: ffffffffffffffff
+[119128.259365] RDX: ffffffff93afbf53 RSI: 0000000000005401 RDI: 0000000000000028
+[119128.259370] RBP: ffffffffffffffff R08: 0000000000000001 R09: 0000000000000992
+[119128.259374] R10: ffffa3fa34abf380 R11: 0000000000000000 R12: ffffa3fa34abf390
+[119128.259379] R13: 0000000000000028 R14: ffffa3fa0a07dc40 R15: 000000000000079b
+[119128.259385] FS:  0000000000000000(0000) GS:ffffa3fa37380000(0000) knlGS:0000000000000000
+[119128.259390] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[119128.259394] CR2: 00007fe2b6142961 CR3: 00000001e8ab8006 CR4: 00000000003626e0
+[119128.259427] note: ssh[6795] exited with preempt_count 1
+[119215.679774] SANDBOX: Thread Stopping
+[119215.679785] SANDBOX: Thread stopped
+[119215.679788] ftrace_hook: SANDBOX: module unloaded
+[119285.250191] kvm [6804]: vcpu0, guest rIP: 0xffffffff9c671b9c disabled perfctr wrmsr: 0xc2 data 0xffff
+[119368.090675] ftrace_hook: SANDBOX: module loaded
+[119368.090679] SANDBOX: Creating KThread
+[119368.090785] SANDBOX: Thread Created successfully
+[119371.635492] finalize execve() /usr/bin/ssh
+[119371.635514] sending to guest [status = 1] [length = 17] [msg=badguy@localhost
+                ] [type=7]
+[119371.635574] data start is 89e6b750 and stack start is 2ba5af60
+[119371.881414] Got message with index 1, msg_type 0, fd -2068240128, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[119371.881467] sending to guest [status = 1] [length = 0] [msg=badguy@localhost
+                ] [type=10]
+[119371.901496] Got message with index 1, msg_type 4, fd 40, length as 0 and string as (null)
+[119371.901534] sending to guest [status = 1] [length = 0] [msg=badguy@localhost
+                ] [type=10]
+[119371.921462] Got message with index 1, msg_type 0, fd 0, length as 112 and string as \x9c\xff\xff\xff/dev/tty
+[119371.921512] sending to guest [status = 1] [length = 0] [msg=badguy@localhost
+                ] [type=10]
+[119371.941477] Got message with index 1, msg_type 8, fd 0, length as 56 and string as (
+[119371.941492] Ioctl termios args 18 and 141 and 3244397328
+[119371.941513] BUG: unable to handle kernel NULL pointer dereference at 00000000000000f0
+[119371.941517] PGD 0 P4D 0 
+[119371.941526] Oops: 0000 [#5] PREEMPT SMP PTI
+[119371.941534] CPU: 3 PID: 6865 Comm: ssh Tainted: G      D W  OE     4.20.6 #1
+[119371.941538] Hardware name: Dell Inc. Inspiron 5567/05VRRG, BIOS 1.0.2 09/09/2016
+[119371.941550] RIP: 0010:tty_ioctl+0x30/0x8c0
+[119371.941556] Code: 56 41 55 49 89 fd 41 54 49 89 d4 48 c7 c2 53 bf af 93 55 53 89 f3 48 83 c4 80 65 48 8b 04 25 28 00 00 00 48 89 44 24 78 31 c0 <48> 8b 87 c8 00 00 00 48 8b 28 48 8b 47 20 48 89 ef 48 8d 70 4c e8
+[119371.941561] RSP: 0018:ffffbd7205057c30 EFLAGS: 00010246
+[119371.941567] RAX: 0000000000000000 RBX: 0000000000005401 RCX: 00000000fffffff2
+[119371.941572] RDX: ffffffff93afbf53 RSI: 0000000000005401 RDI: 0000000000000028
+[119371.941577] RBP: ffffffffc1761b38 R08: ffffa3f8c1619311 R09: 0000000000000000
+[119371.941581] R10: 000000000000000f R11: ffffa3f8c1619300 R12: 000055b389e6b750
+[119371.941586] R13: 0000000000000028 R14: ffffa3f943401ec0 R15: 000000000000062d
+[119371.941592] FS:  0000000000000000(0000) GS:ffffa3fa37380000(0000) knlGS:0000000000000000
+[119371.941597] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[119371.941601] CR2: 00000000000000f0 CR3: 00000001b3f6e001 CR4: 00000000003626e0
+[119371.941606] Call Trace:
+[119371.941631]  fake_finalize_exec.cold.6+0x758/0x827 [host_module]
+[119371.941643]  ? wait_woken+0x80/0x80
+[119371.941653]  load_elf_binary+0x1613/0x16c0
+[119371.941664]  search_binary_handler+0x80/0x250
+[119371.941671]  __do_execve_file.isra.12+0x58a/0x850
+[119371.941679]  ? mpi_resize+0x70/0x78
+[119371.941685]  do_execve+0x21/0x30
+[119371.941691]  __x64_sys_execve+0x26/0x30
+[119371.941699]  do_syscall_64+0x5b/0x170
+[119371.941708]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[119371.941715] RIP: 0033:0x7f109c18198b
+[119371.941723] Code: Bad RIP value.
+[119371.941727] RSP: 002b:00007ffd2334ec68 EFLAGS: 00000246 ORIG_RAX: 000000000000003b
+[119371.941733] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000000000
+[119371.941737] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[119371.941740] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+[119371.941744] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+[119371.941748] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[119371.941755] Modules linked in: host_module(OE) fuse uas usb_storage xt_nat veth nf_conntrack_netlink nfnetlink xfrm_user xfrm_algo xt_addrtype br_netfilter overlay ccm iptable_mangle xt_CHECKSUM iptable_nat ipt_MASQUERADE nf_nat_ipv4 nf_nat xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c ipt_REJECT nf_reject_ipv4 xt_tcpudp tun bridge stp llc devlink ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter nls_iso8859_1 nls_cp437 vfat fat snd_soc_skl snd_hda_codec_hdmi snd_soc_hdac_hda snd_hda_codec_realtek snd_hda_ext_core iTCO_wdt snd_hda_codec_generic iTCO_vendor_support hid_multitouch dell_wmi sparse_keymap wmi_bmof snd_soc_skl_ipc snd_soc_sst_ipc snd_soc_sst_dsp snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core intel_rapl x86_pkg_temp_thermal intel_powerclamp coretemp snd_compress ac97_bus snd_pcm_dmaengine dell_laptop kvm_intel dell_smbios dell_wmi_descriptor dcdbas crct10dif_pclmul crc32_pclmul ghash_clmulni_intel uvcvideo dell_smm_hwmon aesni_intel arc4
+[119371.941817]  amdgpu aes_x86_64 iwlmvm crypto_simd cryptd glue_helper btusb btrtl btbcm btintel intel_cstate intel_uncore intel_rapl_perf bluetooth videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 videobuf2_common mac80211 i915 videodev rtsx_usb_ms memstick media pcspkr ecdh_generic psmouse snd_hda_intel snd_hda_codec mousedev joydev input_leds chash amd_iommu_v2 kvmgt snd_hda_core snd_hwdep vfio_mdev gpu_sched mdev ttm r8169 iwlwifi kvm i2c_algo_bit cfg80211 drm_kms_helper realtek snd_pcm snd_timer snd libphy wmi drm tpm_crb tpm_tis tpm_tis_core i2c_hid intel_gtt i2c_i801 agpgart dell_rbtn tpm syscopyarea sysfillrect sysimgblt soundcore int3400_thermal fb_sys_fops rfkill rng_core battery ac idma64 acpi_thermal_rel int3402_thermal int3403_thermal evdev pcc_cpufreq mei_me intel_lpss_pci intel_lpss mac_hid mei processor_thermal_device int340x_thermal_zone intel_soc_dts_iosf intel_pch_thermal crypto_user ip_tables x_tables ext4 crc32c_generic crc16 mbcache jbd2 fscrypto rtsx_usb_sdmmc
+[119371.941897]  mmc_core rtsx_usb hid_logitech_hidpp sr_mod cdrom sd_mod hid_logitech_dj hid_generic usbhid hid serio_raw atkbd ahci libps2 libahci libata xhci_pci crc32c_intel scsi_mod xhci_hcd i8042 serio vfio_pci irqbypass vfio_virqfd vfio_iommu_type1 vfio [last unloaded: host_module]
+[119371.941929] CR2: 00000000000000f0
+[119371.941936] ---[ end trace 948cadaba3729f7b ]---
+[119371.941944] RIP: 0010:tty_ioctl+0x30/0x8c0
+[119371.941949] Code: 56 41 55 49 89 fd 41 54 49 89 d4 48 c7 c2 53 bf af 93 55 53 89 f3 48 83 c4 80 65 48 8b 04 25 28 00 00 00 48 89 44 24 78 31 c0 <48> 8b 87 c8 00 00 00 48 8b 28 48 8b 47 20 48 89 ef 48 8d 70 4c e8
+[119371.941953] RSP: 0018:ffffbd7200ed7c28 EFLAGS: 00010246
+[119371.941958] RAX: 0000000000000000 RBX: 0000000000005401 RCX: ffffffffffffffff
+[119371.941962] RDX: ffffffff93afbf53 RSI: 0000000000005401 RDI: 0000000000000028
+[119371.941966] RBP: ffffffffffffffff R08: 0000000000000001 R09: 0000000000000992
+[119371.941970] R10: ffffa3fa34abf380 R11: 0000000000000000 R12: ffffa3fa34abf390
+[119371.941974] R13: 0000000000000028 R14: ffffa3fa0a07dc40 R15: 000000000000079b
+[119371.941979] FS:  0000000000000000(0000) GS:ffffa3fa37380000(0000) knlGS:0000000000000000
+[119371.941983] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[119371.941987] CR2: 00007f109c181961 CR3: 00000001b3f6e001 CR4: 00000000003626e0
+[119371.941994] note: ssh[6865] exited with preempt_count 1

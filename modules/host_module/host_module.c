@@ -596,6 +596,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					oldfs = get_fs();
 					set_fs(get_ds());
 					filp_temp = filp_open(open_r->filename, open_r->flags, open_r->mode);
+
 					set_fs(oldfs);
 
 					if (IS_ERR(filp_temp)) {
@@ -610,6 +611,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					watched_processes[i].open_files[j].fd = j;
 					watched_processes[i].open_files[j].filp=filp_temp;
 					header2->fd = j;
+					printk("Got open request for filename %s, opened with fd %d\n",open_r->filename,j);
 					send_to_guest(header2);
 					kfree(watched_processes[i].res[0].buffer);
 					break;	
@@ -653,7 +655,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					
 					copy_to_user((void*)current->mm->start_data,(char*)ioctl_r->termios,(unsigned long)sizeof(struct termios) );
 					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)current->mm->start_data );
-					
+					copy_from_user((char*) ioctl_r->termios ,(void*)current->mm->start_data,(unsigned long)sizeof(struct termios));
 					
 					set_fs(oldfs);
 					struct msg_header* header4 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
