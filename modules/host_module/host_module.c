@@ -268,7 +268,8 @@ struct msg_header
 } ;
 
 struct open_file{
-	int fd;
+	int host_fd;
+	int guest_fd;
 	struct file * filp;
 };
 
@@ -503,11 +504,14 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		loff_t pos = 0;
 	    mm_segment_t oldfs;
 		int err = 0;
-		watched_processes[i].open_files[0].fd = 0;
+		watched_processes[i].open_files[0].host_fd = 0;
+		watched_processes[i].open_files[0].guest_fd = 0;
 		watched_processes[i].open_files[0].filp = (fdget(0)).file;
-		watched_processes[i].open_files[1].fd = 1;
+		watched_processes[i].open_files[1].host_fd = 1;
+		watched_processes[i].open_files[1].guest_fd = 1;
 		watched_processes[i].open_files[1].filp = (fdget(1)).file;
-		watched_processes[i].open_files[2].fd = 2;
+		watched_processes[i].open_files[2].host_fd = 2;
+		watched_processes[i].open_files[2].guest_fd = 2;
 		watched_processes[i].open_files[2].filp = (fdget(2)).file;
 
 		printk("data start is %x and stack start is %x\n",current->mm->start_data,current->mm->start_stack) ;
@@ -534,7 +538,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					/* read */
 					char* buf = kmalloc(10000*sizeof(char),GFP_KERNEL);
 					for(j=0;j<50;j++){
-						if(watched_processes[i].open_files[j].fd == fd)break;
+						if(watched_processes[i].open_files[j].guest_fd == fd)break;
 					}
 					offset =0;
 					ret = kernel_read(watched_processes[i].open_files[j].filp, buf, 1024, &offset);
@@ -555,7 +559,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 						break;
 					}
 					for(j=0;j<50;j++){
-						if(watched_processes[i].open_files[j].fd == fd)break;
+						if(watched_processes[i].open_files[j].guest_fd == fd)break;
 					}
 					offset=0;
 					ret = kernel_write(watched_processes[i].open_files[j].filp, watched_processes[i].res[0].buffer, count, &offset);
@@ -574,21 +578,26 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					header2->host_pid = current->pid;
 					header2->msg_type = 10;                                                                //not sure what type is for open
 					header2->msg_length = 0;
+
+					mm_segment_t fs = get_fs();
+					set_fs(KERNEL_DS);
 					int open_fd = real_sys_open(0, open_r->filename, open_r->flags, open_r->mode);
+					set_fs(fs);
 					struct file *filp_temp = (fdget(open_fd)).file;
 					
 					//guest may be already using fd's from 0 to 39 , therefore fake fd is given to guest starting from 40 for now
 					for(j=40;j<50;j++){
-						if(watched_processes[i].open_files[j].fd == -1)break;
+						if(watched_processes[i].open_files[j].host_fd == -1)break;
 					}
 					if(j==50){
 						printk("Error in open\n");
 						break;
 					}
-					watched_processes[i].open_files[j].fd = open_fd;
+					watched_processes[i].open_files[j].host_fd = open_fd;
+					watched_processes[i].open_files[j].guest_fd = j;
 					watched_processes[i].open_files[j].filp= filp_temp;
-					header2->fd = open_fd;
-					printk("Got open request for filename %s, opened with fd %d\n",open_r->filename,open_fd);
+					header2->fd = j;
+					printk("Got open request for filename %s, opened with host_fd %d guest_fd %d\n",open_r->filename,open_fd,j);
 					send_to_guest(header2);
 					kfree(watched_processes[i].res[0].buffer);
 					break;	
@@ -598,7 +607,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 						break;
 					}
 					for(j=0;j<50;j++){
-						if(watched_processes[i].open_files[j].fd == fd)break;
+						if(watched_processes[i].open_files[j].guest_fd == fd)break;
 					}
 					if(j==50){
 						printk("Error in close\n");
@@ -607,7 +616,9 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					set_fs(get_ds());
 					ret = filp_close(watched_processes[i].open_files[j].filp, NULL);
 					set_fs(oldfs);
-					watched_processes[i].open_files[j].fd=-1;
+					watched_processes[i].open_files[j].guest_fd=-1;
+					watched_processes[i].open_files[j].host_fd=-1;
+					
 					struct msg_header* header3 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header3->msg_status = 1;
 					header3->pid = pid;
@@ -624,10 +635,11 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					}
 					struct ioctl_req* ioctl_r = (struct ioctl_req*)watched_processes[i].res[0].buffer;
 					for(j=0;j<50;j++){
-						if(watched_processes[i].open_files[j].fd == ioctl_r->fd)break;
+						if(watched_processes[i].open_files[j].guest_fd == ioctl_r->fd)break;
 					}
-					if(j==50 || (fdget(ioctl_r)).file == NULL){
-						printk("fffile open error in ioctl\n");
+					printk(" in ioctl j=%d with host_fd %d and file pointer as %x\n",j,watched_processes[i].open_files[j].host_fd,fdget(watched_processes[i].open_files[j].host_fd).file);
+					if(j==50 || (fdget(watched_processes[i].open_files[j].host_fd).file == NULL)){
+						printk("fffile open error in ioctl j=%d with host_fd %d\n",j,watched_processes[i].open_files[j].host_fd);
 						break;
 					}
 					oldfs = get_fs();
@@ -638,7 +650,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 
 					
 					copy_to_user((void*)current->mm->start_data,(char*)ioctl_r->termios,(unsigned long)sizeof(struct termios) );
-					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)current->mm->start_data );
+					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(watched_processes[i].open_files[j].host_fd, ioctl_r->cmd, (unsigned long)current->mm->start_data);
 					copy_from_user((char*) ioctl_r->termios ,(void*)current->mm->start_data,(unsigned long)sizeof(struct termios));
 					
 					// int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)user_address );
@@ -728,7 +740,8 @@ static int fh_init(void)
 		watched_processes[i].res[0].pid = 0;
 		int j;
 		for(j=0;j<50;j++){
-			watched_processes[i].open_files[j].fd=-1;
+			watched_processes[i].open_files[j].guest_fd=-1;
+			watched_processes[i].open_files[j].host_fd=-1;
 		}
 	}
 	watched_processes[0].ready = 1;

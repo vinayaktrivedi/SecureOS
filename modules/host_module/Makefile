@@ -8,7 +8,7 @@ obj-m += host_module.o
 # KDIR is the location of the kernel source.  The current standard is
 # to link to the associated source tree from the directory containing
 # the compiled modules.
-KDIR  := /home/vinayakt/Desktop/6thSem/UGP/SecureOS/src/kernel/host/linux-4.20.6
+KDIR  := /home/tushar/Desktop/6thsem/UGP/SecureOS/src/kernel/host/linux-4.20.6
 
 # PWD is the current working directory and the location of our module
 # source files.
