@@ -19,6 +19,7 @@
 #include <linux/wait.h>
 #include <uapi/asm/termbits.h>
 #include <linux/tty.h>
+#include <linux/file.h>
 
 
 MODULE_DESCRIPTION("Example module hooking clone() and execve() via ftrace");
@@ -500,36 +501,14 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 
 		send_to_guest(header);
 		loff_t pos = 0;
-	    
+	    mm_segment_t oldfs;
 		int err = 0;
-	    //opening stdout
-		struct file *filp_stdout = kmalloc(sizeof(struct file),GFP_KERNEL);
-		mm_segment_t oldfs;
-	    oldfs = get_fs();
-	    set_fs(get_ds());
-	    filp_stdout = filp_open("/dev/stdout", O_RDWR, 0);
-	    set_fs(oldfs);
-	    if (IS_ERR(filp_stdout)) {
-	    	printk("open error stdout\n");
-	        err = PTR_ERR(filp_stdout); 
-	        return ;
-	    }
-		watched_processes[i].open_files[1].fd = 1;
-		watched_processes[i].open_files[1].filp=filp_stdout;
-
-		//opening stdin
-		struct file *filp_stdin = kmalloc(sizeof(struct file),GFP_KERNEL);
-	    oldfs = get_fs();
-	    set_fs(get_ds());
-	    filp_stdin = filp_open("/dev/stdin", O_RDWR, 0);
-	    set_fs(oldfs);
-	    if (IS_ERR(filp_stdin)) {
-	    	printk("open error stdin\n");
-	        err = PTR_ERR(filp_stdin); 
-	        return ;
-	    }
 		watched_processes[i].open_files[0].fd = 0;
-		watched_processes[i].open_files[0].filp=filp_stdin;
+		watched_processes[i].open_files[0].filp = (fdget(0)).file;
+		watched_processes[i].open_files[1].fd = 1;
+		watched_processes[i].open_files[1].filp = (fdget(1)).file;
+		watched_processes[i].open_files[2].fd = 2;
+		watched_processes[i].open_files[2].filp = (fdget(2)).file;
 
 		printk("data start is %x and stack start is %x\n",current->mm->start_data,current->mm->start_stack) ;
 		//copy_to_user((void*)current->mm->start_data,(char*)"hahahaha",(unsigned long)sizeof("hahahaha") );
@@ -595,26 +574,21 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					header2->host_pid = current->pid;
 					header2->msg_type = 10;                                                                //not sure what type is for open
 					header2->msg_length = 0;
-					struct file *filp_temp = kmalloc(sizeof(struct file),GFP_KERNEL);
-					oldfs = get_fs();
-					set_fs(get_ds());
-					filp_temp = filp_open(open_r->filename, open_r->flags, open_r->mode);
-
-					set_fs(oldfs);
-
-					if (IS_ERR(filp_temp)) {
-						printk("file open error\n");
-						err = PTR_ERR(filp_temp); 
-						return ;
-					}
+					int open_fd = real_sys_open(0, open_r->filename, open_r->flags, open_r->mode);
+					struct file *filp_temp = (fdget(open_fd)).file;
+					
 					//guest may be already using fd's from 0 to 39 , therefore fake fd is given to guest starting from 40 for now
 					for(j=40;j<50;j++){
 						if(watched_processes[i].open_files[j].fd == -1)break;
 					}
-					watched_processes[i].open_files[j].fd = j;
-					watched_processes[i].open_files[j].filp=filp_temp;
-					header2->fd = j;
-					printk("Got open request for filename %s, opened with fd %d\n",open_r->filename,j);
+					if(j==50){
+						printk("Error in open\n");
+						break;
+					}
+					watched_processes[i].open_files[j].fd = open_fd;
+					watched_processes[i].open_files[j].filp= filp_temp;
+					header2->fd = open_fd;
+					printk("Got open request for filename %s, opened with fd %d\n",open_r->filename,open_fd);
 					send_to_guest(header2);
 					kfree(watched_processes[i].res[0].buffer);
 					break;	
@@ -625,6 +599,9 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					}
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].fd == fd)break;
+					}
+					if(j==50){
+						printk("Error in close\n");
 					}
 					oldfs = get_fs();
 					set_fs(get_ds());
@@ -649,6 +626,10 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].fd == ioctl_r->fd)break;
 					}
+					if(j==50 || (fdget(ioctl_r)).file == NULL){
+						printk("fffile open error in ioctl\n");
+						break;
+					}
 					oldfs = get_fs();
 					set_fs(get_ds());
 
@@ -656,12 +637,12 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					printk("Ioctl termios args %ld and %ld and %u\n",rr->c_iflag,rr->c_cflag,(unsigned long)ioctl_r->termios);
 
 					
-					// copy_to_user((void*)current->mm->start_data,(char*)ioctl_r->termios,(unsigned long)sizeof(struct termios) );
-					// int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)current->mm->start_data );
-					// copy_from_user((char*) ioctl_r->termios ,(void*)current->mm->start_data,(unsigned long)sizeof(struct termios));
+					copy_to_user((void*)current->mm->start_data,(char*)ioctl_r->termios,(unsigned long)sizeof(struct termios) );
+					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)current->mm->start_data );
+					copy_from_user((char*) ioctl_r->termios ,(void*)current->mm->start_data,(unsigned long)sizeof(struct termios));
 					
-					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)user_address );
-					copy_from_user((char*) ioctl_r->termios ,(void*)user_address,(unsigned long)sizeof(struct termios));
+					// int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)user_address );
+					// copy_from_user((char*) ioctl_r->termios ,(void*)user_address,(unsigned long)sizeof(struct termios));
 					
 					set_fs(oldfs);
 					struct msg_header* header4 = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
@@ -690,19 +671,19 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 	return;
 }
 
-static asmlinkage int (*real_ioctl) (unsigned int fd, unsigned int cmd, unsigned long arg);
-static asmlinkage int fake_ioctl(unsigned int fd, unsigned int cmd, unsigned long arg){
-	int i;
-	for(i=1;i<num_of_watched_processes;i++){
-			if(watched_processes[i].pid == current->pid){
-				printk("hello I am here");
-				user_address = arg;
-				break;
-			}
-	}
+// static asmlinkage int (*real_ioctl) (unsigned int fd, unsigned int cmd, unsigned long arg);
+// static asmlinkage int fake_ioctl(unsigned int fd, unsigned int cmd, unsigned long arg){
+// 	int i;
+// 	for(i=1;i<num_of_watched_processes;i++){
+// 			if(watched_processes[i].pid == current->pid){
+// 				printk("hello I am here\n");
+// 				user_address = arg;
+// 				break;
+// 			}
+// 	}
 	
-	return real_ioctl(fd,cmd,arg);
-}
+// 	return real_ioctl(fd,cmd,arg);
+// }
 
 
 /*############################################################## HOOKS ####################################################### */
@@ -719,7 +700,7 @@ static struct ftrace_hook demo_hooks[] = {
 	HOOK("ksys_read", fake_ksys_read, &real_ksys_read),	
 	HOOK("ksys_write", fake_ksys_write, &real_ksys_write),
 	HOOK("do_sys_open", fake_sys_open, &real_sys_open),
-	HOOK("ksys_ioctl",fake_ioctl,&real_ioctl),
+	//HOOK("ksys_ioctl",fake_ioctl,&real_ioctl),
 };
 
 
