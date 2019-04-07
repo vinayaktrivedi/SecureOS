@@ -322,7 +322,7 @@ static void receive_from_host(void){
 			char* r = kmalloc(msg->msg_length*sizeof(char),GFP_KERNEL);
 			strncpy(r,msg->msg,msg->msg_length);
 
-			printk("Got from host mesage as pid %d , length as %d and type as %d and host fd=%d\n",msg->pid,msg->msg_length,msg->msg_type,msg->fd);
+			printk("Got from host mesage as pid %d , length as %d and type as %d and host fd=%d and msg = %s\n",msg->pid,msg->msg_length,msg->msg_type,msg->fd,r);
 			int index=0;
 			if(msg->msg_type == EXECVE_REQUEST && msg->pid == 0 ){
 				if(ready == 0){

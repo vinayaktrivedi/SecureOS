@@ -228,8 +228,8 @@ void fh_remove_hooks(struct ftrace_hook *hooks, size_t count)
 static DECLARE_WAIT_QUEUE_HEAD(wq);
 static DECLARE_WAIT_QUEUE_HEAD(wq2);
 static DEFINE_SPINLOCK(process_counter_lock);
-static DEFINE_SPINLOCK(send_lock);
-static DEFINE_SPINLOCK(copy_lock);
+static DEFINE_MUTEX(send_lock);
+static DEFINE_MUTEX(copy_lock);
 
 static struct task_struct *thread_st;
 struct response{
@@ -327,11 +327,11 @@ retry:
 			pos = lpos;
 			WARN_ON(kernel_read(filp,(char*)msg,sizeof(struct msg_header),&pos) <= 0);
             if(msg->msg_status == FREE || msg->msg_status == CONSUMED){
-				spin_lock(&send_lock);
+				mutex_lock(&send_lock);
 				pos = lpos;
 				WARN_ON(kernel_write(filp,(char*)header,sizeof(struct msg_header), &pos) <= 0);
 				kfree(header);	
-				spin_unlock(&send_lock);
+				mutex_unlock(&send_lock);
 				pos = lpos;
 				kernel_read(filp,(char*)msg,sizeof(struct msg_header), &pos);
 				goto done;
@@ -398,7 +398,7 @@ static void receive_from_guest(void){
 					break;
 				}	
 				else if(watched_processes[index].ready == 1){
-					spin_lock(&copy_lock);
+					mutex_lock(&copy_lock);
 					watched_processes[index].res[0].length = copy->msg_length;
 					watched_processes[index].res[0].type = copy->msg_type;
 					watched_processes[index].res[0].fd = copy->fd;
@@ -411,7 +411,7 @@ static void receive_from_guest(void){
 					wake_up(&wq);
 					watched_processes[index].ready = 0;
 					start = 1;
-					spin_unlock(&copy_lock);
+					mutex_unlock(&copy_lock);
 				}
 				else{
 					//printk("Got message with index %d, ready %d",index,watched_processes[index].ready);
@@ -526,7 +526,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 			loff_t offset =0;
 			if(wait_event_timeout(wq, watched_processes[i].wake_flag == 'y',10000000) != 0){
 			}
-			spin_lock(&copy_lock);
+			mutex_lock(&copy_lock);
 			watched_processes[i].wake_flag = 'n';
 			int fd = watched_processes[i].res[0].fd;
 			size_t count = watched_processes[i].res[0].length;
@@ -534,26 +534,50 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 			printk("Got message with index %d, msg_type %d, fd %d, length as %d and string as %s\n", i,watched_processes[i].res[0].type,watched_processes[i].res[0].fd,watched_processes[i].res[0].length,watched_processes[i].res[0].buffer);
 			switch (watched_processes[i].res[0].type)
 			{
-				case READ_REQUEST: ;
+				case READ_REQUEST: {
 					/* read */
 					char* buf = kmalloc(10000*sizeof(char),GFP_KERNEL);
+					printk("reached read\n");
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].guest_fd == fd)break;
 					}
 					offset =0;
+					WARN_ON(j==50 || watched_processes[i].open_files[j].filp == NULL);
+					struct file* file_temp = watched_processes[i].open_files[j].filp;
+					// oldfs = get_fs();
+					// set_fs(get_ds());
+					// ret = file_temp->f_op->read(file_temp, current->mm->start_data, 1024, &offset);
+					// WARN_ON(ret <= 0);
+					// copy_from_user(buf,current->mm->start_data,strlen(current->mm->start_data));
+					offset = file_temp->f_pos;
+					if (file_temp->f_flags & O_NONBLOCK){
+       					printk("mode: O_NONBLOCK\n");
+    				}
+    				else{
+        				printk("mode: BLOCKING\n"); 
+    				}
 					ret = kernel_read(watched_processes[i].open_files[j].filp, buf, 1024, &offset);
-
+					if(ret>=0){
+						file_temp->f_pos = offset;
+					}
+					printk("read successfully and offset=%ld and return is %d and file offfset is %d\n",offset,ret,file_temp->f_pos);
+					int buf_len = strlen(buf);
+					buf[buf_len] = '\n';
+					buf[buf_len+1] = '\0';
 					struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 					header->msg_status = 1;
 					header->pid = pid;
 					header->host_pid = current->pid;
 					header->msg_type = 10;
 					header->msg_length = strlen(buf);
+					header->fd = fd;
+					//printk("Sent data to vm with length as %d and read msg as %s\n",strlen(buf),buf);
 					strncpy(header->msg,buf,strlen(buf));
 					send_to_guest(header);
 					kfree(buf);
 					break;
-				case WRITE_REQUEST:
+				}
+				case WRITE_REQUEST: {
 					if(watched_processes[i].res[0].buffer == NULL){
 						printk("response error\n");
 						break;
@@ -561,11 +585,25 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].guest_fd == fd)break;
 					}
-					offset=0;
+					
+					WARN_ON(j==50 || watched_processes[i].open_files[j].filp == NULL);
+					struct file* file_temp = watched_processes[i].open_files[j].filp;
+					offset = file_temp->f_pos;
+					// oldfs = get_fs();
+					// set_fs(get_ds());
+					// copy_to_user(current->mm->start_data,watched_processes[i].res[0].buffer,strlen(watched_processes[i].res[0].buffer));
+					// ret = file_temp->f_op->write(file_temp, current->mm->start_data, count, &offset);
+					// set_fs(oldfs);
+					// WARN_ON(ret<0);
 					ret = kernel_write(watched_processes[i].open_files[j].filp, watched_processes[i].res[0].buffer, count, &offset);
-					offset=0;
+					if(ret>=0){
+						file_temp->f_pos = offset;
+					}
+					printk("Write done with offset=%ld and return is %d and file pos is %d\n",offset,ret,file_temp->f_pos);
+					
 					kfree(watched_processes[i].res[0].buffer);
 					break;
+				}
 				case OPEN_REQUEST:
 					if(watched_processes[i].res[0].buffer == NULL){
 						printk("response error\n");
@@ -637,9 +675,9 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].guest_fd == ioctl_r->fd)break;
 					}
-					printk(" in ioctl j=%d with host_fd %d and file pointer as %x\n",j,watched_processes[i].open_files[j].host_fd,fdget(watched_processes[i].open_files[j].host_fd).file);
+					printk("inside ioctl j=%d with host_fd %d and file pointer as %x\n",j,watched_processes[i].open_files[j].host_fd,fdget(watched_processes[i].open_files[j].host_fd).file);
 					if(j==50 || (fdget(watched_processes[i].open_files[j].host_fd).file == NULL)){
-						printk("fffile open error in ioctl j=%d with host_fd %d\n",j,watched_processes[i].open_files[j].host_fd);
+						printk("file open error in ioctl");
 						break;
 					}
 					oldfs = get_fs();
@@ -650,7 +688,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 
 					
 					copy_to_user((void*)current->mm->start_data,(char*)ioctl_r->termios,(unsigned long)sizeof(struct termios) );
-					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(watched_processes[i].open_files[j].host_fd, ioctl_r->cmd, (unsigned long)current->mm->start_data);
+					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(watched_processes[i].open_files[j].filp, ioctl_r->cmd, (unsigned long)current->mm->start_data);
 					copy_from_user((char*) ioctl_r->termios ,(void*)current->mm->start_data,(unsigned long)sizeof(struct termios));
 					
 					// int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)user_address );
@@ -670,7 +708,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 				default: ;
 			}	
 			watched_processes[i].ready = 1;	
-			spin_unlock(&copy_lock);
+			mutex_unlock(&copy_lock);
 		}
 
 	}
@@ -742,6 +780,8 @@ static int fh_init(void)
 		for(j=0;j<50;j++){
 			watched_processes[i].open_files[j].guest_fd=-1;
 			watched_processes[i].open_files[j].host_fd=-1;
+			watched_processes[i].open_files[j].filp = NULL;
+
 		}
 	}
 	watched_processes[0].ready = 1;
