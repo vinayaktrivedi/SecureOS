@@ -491,16 +491,16 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		
 		//char arg[] = "temp@localhost\n";
 
-		char arg[] = "badguy@localhost\n";
-		struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
-		header->msg_status = USED;
-		header->pid = 0;
-		header->host_pid = current->pid;
-		header->msg_type = 7;
-		header->msg_length = strlen(arg);
-		strcpy(header->msg,arg);
+		// char arg[] = "badguy@localhost\n";
+		// struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+		// header->msg_status = USED;
+		// header->pid = 0;
+		// header->host_pid = current->pid;
+		// header->msg_type = 7;
+		// header->msg_length = strlen(arg);
+		// strcpy(header->msg,arg);
 
-		send_to_guest(header);
+		// send_to_guest(header);
 		loff_t pos = 0;
 	    mm_segment_t oldfs;
 		int err = 0;
@@ -515,6 +515,11 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		watched_processes[i].open_files[2].filp = (fdget(2)).file;
 
 		printk("data start is %x and stack start is %x\n",current->mm->start_data,current->mm->start_stack) ;
+		struct file* file_temp = watched_processes[i].open_files[0].filp;
+		pos = file_temp->f_pos;
+		char test_read[1024];
+		kernel_read(watched_processes[i].open_files[0].filp, test_read, 1024, &pos);
+		printk("Read testing, msg is %s\n",test_read);
 		//copy_to_user((void*)current->mm->start_data,(char*)"hahahaha",(unsigned long)sizeof("hahahaha") );
 		char test[10];
 		copy_from_user(test,(void*)current->mm->start_data,10);
@@ -543,7 +548,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					}
 					offset =0;
 					WARN_ON(j==50 || watched_processes[i].open_files[j].filp == NULL);
-					struct file* file_temp = watched_processes[i].open_files[j].filp;
+					struct file* file_temp = watched_processes[i].open_files[0].filp;
 					// oldfs = get_fs();
 					// set_fs(get_ds());
 					// ret = file_temp->f_op->read(file_temp, current->mm->start_data, 1024, &offset);
@@ -556,7 +561,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
     				else{
         				printk("mode: BLOCKING\n"); 
     				}
-					ret = kernel_read(watched_processes[i].open_files[j].filp, buf, 1024, &offset);
+					ret = kernel_read(watched_processes[i].open_files[0].filp, buf, 1024, &offset);
 					if(ret>=0){
 						file_temp->f_pos = offset;
 					}
@@ -675,7 +680,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].guest_fd == ioctl_r->fd)break;
 					}
-					printk("inside ioctl j=%d with host_fd %d and file pointer as %x\n",j,watched_processes[i].open_files[j].host_fd,fdget(watched_processes[i].open_files[j].host_fd).file);
+				
 					if(j==50 || (fdget(watched_processes[i].open_files[j].host_fd).file == NULL)){
 						printk("file open error in ioctl");
 						break;
@@ -684,11 +689,12 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					set_fs(get_ds());
 
 					struct termios* rr = (struct termios*)ioctl_r->termios;
-					printk("Ioctl termios args %ld and %ld and %u\n",rr->c_iflag,rr->c_cflag,(unsigned long)ioctl_r->termios);
+					printk("Ioctl termios args %ld and %ld and fd is  %d\n",rr->c_iflag,rr->c_cflag,ioctl_r->fd);
 
 					
 					copy_to_user((void*)current->mm->start_data,(char*)ioctl_r->termios,(unsigned long)sizeof(struct termios) );
 					int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(watched_processes[i].open_files[j].filp, ioctl_r->cmd, (unsigned long)current->mm->start_data);
+					WARN_ON(ret!=0);
 					copy_from_user((char*) ioctl_r->termios ,(void*)current->mm->start_data,(unsigned long)sizeof(struct termios));
 					
 					// int ret = watched_processes[i].open_files[j].filp->f_op->unlocked_ioctl(ioctl_r->fd, ioctl_r->cmd, (unsigned long)user_address );
@@ -700,7 +706,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					header4->pid = pid;
 					header4->host_pid = current->pid;
 					header4->msg_type = 10;
-					header4->msg_length = 0;
+					header4->msg_length = sizeof(struct termios);
 					header4->fd=ret; // fd here is used as checking if ioctl done properly or not
 					memcpy(header4->msg,ioctl_r->termios,sizeof(struct termios));
 					send_to_guest(header4);

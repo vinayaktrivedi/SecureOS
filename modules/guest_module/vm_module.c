@@ -381,7 +381,7 @@ static int ksys_write_to_host(unsigned int fd, const char __user *buf, size_t co
 	header->msg_length = strlen(buf);
 	header->fd = fd;
 	header->count = count;
-	strcpy(header->msg,buf);
+	memcpy(header->msg,buf,count);
 	send_to_host(header);
 
 	return count;
@@ -415,6 +415,7 @@ static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user
 }
 
 static asmlinkage long ksys_open_in_host(int dfd, const char __user *filename, int flags, umode_t mode,int i){
+	printk("reached ksys_open_in_host\n");
 	struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
 	header->pid = watched_processes[i].pid;
 	header->host_pid = watched_processes[i].host_pid;
@@ -486,7 +487,7 @@ static asmlinkage int ioctl_in_host(unsigned int fd, unsigned int cmd, unsigned 
 	copy_from_user(ioctl_r->termios,(char*)arg,sizeof(struct termios));
 
 	struct termios* rr = (struct termios*)ioctl_r->termios;
-	printk("Ioctl termios args %ld and %ld\n",rr->c_iflag,rr->c_cflag);
+	printk("Ioctl termios args %ld and %ld and command is %u and fd is %d\n",rr->c_iflag,rr->c_cflag,cmd,fd);
 
 	memcpy(header->msg , (char *) ioctl_r,sizeof(struct ioctl_req));
 	header->msg_length = sizeof(struct ioctl_req);
@@ -514,6 +515,7 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 			break;
 		}
 	}
+	printk("Flag in print is %d\n",watched_process_flag);
 	if(watched_process_flag){
 		int j;
 		for(j=0;j<10;j++){
@@ -590,6 +592,7 @@ static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int f
 			break;
 		}
 	}
+	printk("Watched process flag in open is %d\n",watched_process_flag);
 	char buffer[10];
 	copy_from_user((void *)buffer, (const void __user *) filename, (unsigned long) 8);
 	if(watched_process_flag && (strncmp(buffer, "/dev/tty", 8) == 0) ){
@@ -638,7 +641,7 @@ static asmlinkage int fake_ioctl(unsigned int fd, unsigned int cmd, unsigned lon
 	}
 	if(watched_process_flag){
 		int j;
-		for(j=3;j<10;j++){
+		for(j=0;j<10;j++){
 			if(watched_processes[i].fds_open_in_host[j]==fd)
 				return ioctl_in_host(fd,cmd,arg,i);
 		}
@@ -682,13 +685,14 @@ static int fh_init(void)
 
 	int i;
 	for(i=0;i<num_of_watched_processes;i++){
+		int j;
 		watched_processes[i].pid = -1;
 		watched_processes[i].wake_flag = 'n';        //-1 implies no request yet
 		watched_processes[i].res[0].length = -1;
-		int j;
-		watched_processes[i].fds_open_in_host[j]=0;
-		watched_processes[i].fds_open_in_host[j]=1;
-		watched_processes[i].fds_open_in_host[j]=2;
+		
+		watched_processes[i].fds_open_in_host[0]=0;
+		watched_processes[i].fds_open_in_host[1]=1;
+		watched_processes[i].fds_open_in_host[2]=2;
 		
 		for(j=3;j<10;j++){
 			watched_processes[i].fds_open_in_host[j]=-1;
