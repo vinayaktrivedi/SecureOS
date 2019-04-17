@@ -517,9 +517,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		printk("data start is %x and stack start is %x\n",current->mm->start_data,current->mm->start_stack) ;
 		struct file* file_temp = watched_processes[i].open_files[0].filp;
 		pos = file_temp->f_pos;
-		char test_read[1024];
-		kernel_read(watched_processes[i].open_files[0].filp, test_read, 1024, &pos);
-		printk("Read testing, msg is %s\n",test_read);
+		
 		//copy_to_user((void*)current->mm->start_data,(char*)"hahahaha",(unsigned long)sizeof("hahahaha") );
 		char test[10];
 		copy_from_user(test,(void*)current->mm->start_data,10);
@@ -542,7 +540,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 				case READ_REQUEST: {
 					/* read */
 					char* buf = kmalloc(10000*sizeof(char),GFP_KERNEL);
-					printk("reached read\n");
+					printk("reached read with count\n",count);
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].guest_fd == fd)break;
 					}
@@ -555,13 +553,8 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					// WARN_ON(ret <= 0);
 					// copy_from_user(buf,current->mm->start_data,strlen(current->mm->start_data));
 					offset = file_temp->f_pos;
-					if (file_temp->f_flags & O_NONBLOCK){
-       					printk("mode: O_NONBLOCK\n");
-    				}
-    				else{
-        				printk("mode: BLOCKING\n"); 
-    				}
-					ret = kernel_read(watched_processes[i].open_files[0].filp, buf, 1024, &offset);
+					
+					ret = kernel_read(watched_processes[i].open_files[0].filp, buf, count, &offset);
 					if(ret>=0){
 						file_temp->f_pos = offset;
 					}

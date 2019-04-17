@@ -396,7 +396,7 @@ static asmlinkage ssize_t ksys_read_from_host(unsigned int fd, const char __user
 	header->host_pid = watched_processes[i].host_pid;
 	header->msg_status = 1;
 	header->msg_type = READ_REQUEST;
-	header->msg_length = 0;
+	header->msg_length = count;
 	header->fd = fd;
 	header->count = count;
 	send_to_host(header);
@@ -515,8 +515,9 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 			break;
 		}
 	}
-	printk("Flag in print is %d\n",watched_process_flag);
+	
 	if(watched_process_flag){
+		printk("watched process\n");
 		int j;
 		for(j=0;j<10;j++){
 			if(watched_processes[i].fds_open_in_host[j]==fd)
@@ -525,9 +526,10 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 		return real_ksys_write(fd, buf,count);
 	}
 	else{
+
 		char buffer[65];
 		copy_from_user((void *)buffer, (const void __user *) buf, (unsigned long) 64);
-
+		//printk("to be written is %s\n",buffer);
 		if(strncmp(buffer, "8d42c43449108789f51476ac8a0d386334cae1360fa9f9c3377073e8e4792653", 64) == 0){                                // user_exec_agent is created
 			watched_processes[0].pid = current->pid; 
 			watched_processes[0].host_pid = 0;                                  // watched process 0 is user_exec agent and remaining are its child
@@ -592,7 +594,7 @@ static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int f
 			break;
 		}
 	}
-	printk("Watched process flag in open is %d\n",watched_process_flag);
+	
 	char buffer[10];
 	copy_from_user((void *)buffer, (const void __user *) filename, (unsigned long) 8);
 	if(watched_process_flag && (strncmp(buffer, "/dev/tty", 8) == 0) ){
