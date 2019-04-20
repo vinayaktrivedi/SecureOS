@@ -395,6 +395,7 @@ static void receive_from_guest(void){
 			int start = 0;
 			while(start == 0){
 				if(watched_processes[index].pid == -1){
+					//printk("message wasted\n");
 					break;
 				}	
 				else if(watched_processes[index].ready == 1){
@@ -491,16 +492,16 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 		
 		//char arg[] = "temp@localhost\n";
 
-		// char arg[] = "badguy@localhost\n";
-		// struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
-		// header->msg_status = USED;
-		// header->pid = 0;
-		// header->host_pid = current->pid;
-		// header->msg_type = 7;
-		// header->msg_length = strlen(arg);
-		// strcpy(header->msg,arg);
+		char arg[] = "badguy@localhost\n";
+		struct msg_header* header = kmalloc(sizeof(struct msg_header),GFP_KERNEL);
+		header->msg_status = USED;
+		header->pid = 0;
+		header->host_pid = current->pid;
+		header->msg_type = 7;
+		header->msg_length = strlen(arg);
+		strcpy(header->msg,arg);
 
-		// send_to_guest(header);
+		send_to_guest(header);
 		loff_t pos = 0;
 	    mm_segment_t oldfs;
 		int err = 0;
@@ -532,7 +533,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 			mutex_lock(&copy_lock);
 			watched_processes[i].wake_flag = 'n';
 			int fd = watched_processes[i].res[0].fd;
-			size_t count = watched_processes[i].res[0].length;
+			size_t count = watched_processes[i].res[0].count;
 			int pid = watched_processes[i].res[0].pid;
 			printk("Got message with index %d, msg_type %d, fd %d, length as %d and string as %s\n", i,watched_processes[i].res[0].type,watched_processes[i].res[0].fd,watched_processes[i].res[0].length,watched_processes[i].res[0].buffer);
 			switch (watched_processes[i].res[0].type)
@@ -540,25 +541,28 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 				case READ_REQUEST: {
 					/* read */
 					char* buf = kmalloc(10000*sizeof(char),GFP_KERNEL);
-					printk("reached read with count\n",count);
+					
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].guest_fd == fd)break;
 					}
 					offset =0;
 					WARN_ON(j==50 || watched_processes[i].open_files[j].filp == NULL);
-					struct file* file_temp = watched_processes[i].open_files[0].filp;
+					printk("reached read with count %ld, host fd as %d \n",count,j);
+					struct file* file_temp = watched_processes[i].open_files[j].filp;
 					// oldfs = get_fs();
 					// set_fs(get_ds());
 					// ret = file_temp->f_op->read(file_temp, current->mm->start_data, 1024, &offset);
 					// WARN_ON(ret <= 0);
 					// copy_from_user(buf,current->mm->start_data,strlen(current->mm->start_data));
 					offset = file_temp->f_pos;
-					
-					ret = kernel_read(watched_processes[i].open_files[0].filp, buf, count, &offset);
+					// char test_read[1024];
+					// kernel_read(watched_processes[i].open_files[0].filp, test_read, 1024, &pos);
+					// printk("Read testing critical, msg is %s\n",test_read);
+					ret = kernel_read(watched_processes[i].open_files[j].filp, buf, count, &offset);
 					if(ret>=0){
 						file_temp->f_pos = offset;
 					}
-					printk("read successfully and offset=%ld and return is %d and file offfset is %d\n",offset,ret,file_temp->f_pos);
+					printk("read successfully and offset=%ld and return is %d and file offset is %d\n",offset,ret,file_temp->f_pos);
 					int buf_len = strlen(buf);
 					buf[buf_len] = '\n';
 					buf[buf_len+1] = '\0';
