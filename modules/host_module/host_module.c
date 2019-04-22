@@ -562,6 +562,13 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					if(ret>=0){
 						file_temp->f_pos = offset;
 					}
+					// if (ret==0){
+					// 	int signum = SIGKILL;
+					// 	struct siginfo info;
+					// 	memset(&info, 0, sizeof(struct siginfo));
+					// 	info.si_signo = signum;
+					// 	int ret = send_sig_info(signum, &info, current);
+					// }
 					printk("read successfully and offset=%ld and return is %d and file offset is %d\n",offset,ret,file_temp->f_pos);
 					int buf_len = strlen(buf);
 					buf[buf_len] = '\n';
@@ -686,7 +693,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					set_fs(get_ds());
 
 					struct termios* rr = (struct termios*)ioctl_r->termios;
-					printk("Ioctl termios args %ld and %ld and fd is  %d\n",rr->c_iflag,rr->c_cflag,ioctl_r->fd);
+					printk("Ioctl termios args %ld and %ld, fd is  %d and command is %x\n",rr->c_iflag,rr->c_cflag,ioctl_r->fd,ioctl_r->cmd);
 
 					
 					copy_to_user((void*)current->mm->start_data,(char*)ioctl_r->termios,(unsigned long)sizeof(struct termios) );

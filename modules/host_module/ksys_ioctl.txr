@@ -1,0 +1,28 @@
+                                                                              ksys_ioctl() {
+             ssh-16218 [002] 65379.736436: funcgraph_entry:                   |    __fdget() {
+             ssh-16218 [002] 65379.736436: funcgraph_entry:        0.718 us   |      __fget_light();
+             ssh-16218 [002] 65379.736438: funcgraph_exit:         1.996 us   |    }
+             ssh-16218 [002] 65379.736438: funcgraph_entry:        0.535 us   |    security_file_ioctl();
+             ssh-16218 [002] 65379.736439: funcgraph_entry:                   |    do_vfs_ioctl() {
+             ssh-16218 [002] 65379.736440: funcgraph_entry:                   |      tty_ioctl() {
+             ssh-16218 [002] 65379.736440: funcgraph_entry:        0.454 us   |        tty_paranoia_check.isra.3();
+             ssh-16218 [002] 65379.736441: funcgraph_entry:        0.510 us   |        tty_jobctrl_ioctl();
+             ssh-16218 [002] 65379.736442: funcgraph_entry:                   |        tty_ldisc_ref_wait() {
+             ssh-16218 [002] 65379.736443: funcgraph_entry:        0.450 us   |          ldsem_down_read();
+             ssh-16218 [002] 65379.736444: funcgraph_exit:         1.284 us   |        }
+             ssh-16218 [002] 65379.736445: funcgraph_entry:                   |        n_tty_ioctl() {
+             ssh-16218 [002] 65379.736445: funcgraph_entry:                   |          n_tty_ioctl_helper() {
+             ssh-16218 [002] 65379.736446: funcgraph_entry:                   |            tty_mode_ioctl() {
+             ssh-16218 [002] 65379.736446: funcgraph_entry:                   |              copy_termios() {
+             ssh-16218 [002] 65379.736447: funcgraph_entry:        0.505 us   |                down_read();
+             ssh-16218 [002] 65379.736448: funcgraph_entry:        0.451 us   |                up_read();
+             ssh-16218 [002] 65379.736449: funcgraph_exit:         2.440 us   |              }
+             ssh-16218 [002] 65379.736450: funcgraph_exit:         3.825 us   |            }
+             ssh-16218 [002] 65379.736450: funcgraph_exit:         4.975 us   |          }
+             ssh-16218 [002] 65379.736450: funcgraph_exit:         5.843 us   |        }
+             ssh-16218 [002] 65379.736451: funcgraph_entry:                   |        tty_ldisc_deref() {
+             ssh-16218 [002] 65379.736451: funcgraph_entry:        0.469 us   |          ldsem_up_read();
+             ssh-16218 [002] 65379.736452: funcgraph_exit:         1.283 us   |        }
+             ssh-16218 [002] 65379.736452: funcgraph_exit:       + 12.720 us  |      }
+             ssh-16218 [002] 65379.736453: funcgraph_exit:       + 13.818 us  |    }
+             ssh-16218 [002] 65379.736453: funcgraph_exit:       + 21.283 us  |  }

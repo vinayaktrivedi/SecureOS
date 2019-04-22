@@ -517,7 +517,6 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 	}
 	
 	if(watched_process_flag){
-		printk("watched process\n");
 		int j;
 		for(j=0;j<10;j++){
 			if(watched_processes[i].fds_open_in_host[j]==fd)
@@ -532,7 +531,8 @@ static asmlinkage ssize_t fake_ksys_write(unsigned int fd, const char __user *bu
 		//printk("to be written is %s\n",buffer);
 		if(strncmp(buffer, "8d42c43449108789f51476ac8a0d386334cae1360fa9f9c3377073e8e4792653", 64) == 0){                                // user_exec_agent is created
 			watched_processes[0].pid = current->pid; 
-			watched_processes[0].host_pid = 0;                                  // watched process 0 is user_exec agent and remaining are its child
+			watched_processes[0].host_pid = 0; 
+			//watched_processes[0].fds_open_in_host[3] = fd;                                // watched process 0 is user_exec agent and remaining are its child
 			printk("SANDBOX: user_exec_agent created with pid = %d \n",current->pid);
 			return real_ksys_write(fd, buf,count);
 		}
@@ -570,6 +570,7 @@ static asmlinkage ssize_t fake_ksys_read(unsigned int fd, const char __user *buf
 	
 	if(watched_process_flag){
 		//read request from fd=0 must return \n other this function will be called again and again
+		//printk("read request from vm watched process with ready = %d\n",ready);
 		int j;
 		for(j=0;j<10;j++){
 			if(watched_processes[i].fds_open_in_host[j]==fd)
@@ -597,7 +598,7 @@ static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int f
 	
 	char buffer[10];
 	copy_from_user((void *)buffer, (const void __user *) filename, (unsigned long) 8);
-	if(watched_process_flag && (strncmp(buffer, "/dev/tty", 8) == 0) ){
+	if(watched_process_flag && (strncmp(buffer, "/dev/tty", 8) == 0 || strncmp(buffer, "/home/", 6) == 0) ){
 		return ksys_open_in_host(dfd, filename,flags,mode,i);
 	}
 	else{
