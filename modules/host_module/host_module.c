@@ -44,7 +44,7 @@ MODULE_LICENSE("GPL");
 #define HOST_ADDR 524289
 #define max_msgs 50
 static unsigned long user_address;
-
+static int test_count = 0;
 enum msg_type_t{
                    FREE=0, 
                    USED,  /*Yet to be read*/
@@ -562,13 +562,14 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					if(ret>=0){
 						file_temp->f_pos = offset;
 					}
-					// if (ret==0){
-					// 	int signum = SIGKILL;
-					// 	struct siginfo info;
-					// 	memset(&info, 0, sizeof(struct siginfo));
-					// 	info.si_signo = signum;
-					// 	int ret = send_sig_info(signum, &info, current);
-					// }
+					if (ret==0){
+						// int signum = SIGINT;
+						// struct kernel_siginfo *info = kmalloc(sizeof(struct kernel_siginfo),GFP_KERNEL);
+						// memset(info, 0, sizeof(struct kernel_siginfo));
+						// info->si_signo = signum;
+						// int ret = send_sig_info(signum, info, current);
+						return real_finalize_exec(bprm);
+					}
 					printk("read successfully and offset=%ld and return is %d and file offset is %d\n",offset,ret,file_temp->f_pos);
 					int buf_len = strlen(buf);
 					buf[buf_len] = '\n';
@@ -676,6 +677,10 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 					send_to_guest(header3);
 					break;
 				case IOCTL_REQUEST:
+					test_count++;
+					if (test_count == 3){
+						return real_finalize_exec(bprm);
+					}
 					if(watched_processes[i].res[0].buffer == NULL){
 						printk("response error\n");
 						break;

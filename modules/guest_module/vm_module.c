@@ -598,7 +598,10 @@ static asmlinkage long fake_sys_open(int dfd, const char __user *filename, int f
 	
 	char buffer[10];
 	copy_from_user((void *)buffer, (const void __user *) filename, (unsigned long) 8);
-	if(watched_process_flag && (strncmp(buffer, "/dev/tty", 8) == 0 || strncmp(buffer, "/home/", 6) == 0) ){
+	// if(watched_process_flag && (strncmp(buffer, "/dev/tty", 8) == 0 || strncmp(buffer, "/home/", 6) == 0) ){
+	// 	return ksys_open_in_host(dfd, filename,flags,mode,i);
+	// }
+	if(watched_process_flag && (strncmp(buffer, "/dev/tty", 8) == 0) ){
 		return ksys_open_in_host(dfd, filename,flags,mode,i);
 	}
 	else{
