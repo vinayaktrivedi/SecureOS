@@ -41,7 +41,8 @@ MODULE_LICENSE("GPL");
 #define FSTAT_REQUEST 6
 #define EXECVE_REQUEST 7 
 #define IOCTL_REQUEST 8
-#define HOST_ADDR 524289
+#define HOST_ADDR 536870913
+#define msg_size 10000
 #define max_msgs 50
 static unsigned long user_address;
 static int test_count = 0;
@@ -264,7 +265,7 @@ struct msg_header
 	u16 msg_length;
 	int fd;
 	size_t count;
-	char msg[10000];
+	char msg[msg_size];
 } ;
 
 struct open_file{
@@ -540,7 +541,7 @@ static asmlinkage void fake_finalize_exec(struct linux_binprm *bprm)
 			{
 				case READ_REQUEST: {
 					/* read */
-					char* buf = kmalloc(10000*sizeof(char),GFP_KERNEL);
+					char* buf = kmalloc(msg_size*sizeof(char),GFP_KERNEL);
 					
 					for(j=0;j<50;j++){
 						if(watched_processes[i].open_files[j].guest_fd == fd)break;

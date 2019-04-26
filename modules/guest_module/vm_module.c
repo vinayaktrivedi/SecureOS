@@ -36,8 +36,8 @@ static DEFINE_SPINLOCK(process_counter_lock);
 #define FSTAT_REQUEST 6
 #define EXECVE_REQUEST 7 
 #define IOCTL_REQUEST 8
-
-#define HOST_ADDR 524289
+#define msg_size 10000
+#define HOST_ADDR 536870913
 #define max_msgs 50
 extern void __iomem *regs;
 static char* shared;
@@ -234,7 +234,7 @@ struct msg_header
 	u16 msg_length;
 	int fd;
 	size_t count;
-	char msg[10000];
+	char msg[msg_size];
 } ;
 
 struct open_req{
